@@ -62,6 +62,11 @@ action code {:
 
 /* code below is copied to the Parser class, which drives parsing */
 parser code {:
+    /**
+     * @return the ErrorHandler for this Parser
+     */
+    public ErrorHandler getErrorHandler() { return action_obj.getErrorHandler(); }
+
     /** overrides done_parsing in inherited class, called when parsing finishes
       * either after accepting or because of errors
       * */
@@ -71,20 +76,20 @@ parser code {:
 	action_obj.getErrorHandler().checkErrors();
     }
 
-    /** overrides syntax_error in inherited class and handles syntax errors 
+    /** overrides syntax_error in inherited class and handles syntax errors
       * @param curr current symbol from the bantam.lexer
       * */
     public void syntax_error(Symbol curr) {
 	// get token value from the symbol
 	Token t = (Token)curr.value;
-	
+
 	// get the error handler object
 	ErrorHandler errorHandler = action_obj.getErrorHandler();
 
 	// may want to modify and augment the code below for more
 	// accurate error reporting
-	errorHandler.register(errorHandler.PARSE_ERROR, action_obj.getCurrFilename(), 
-			      action_obj.getCurrLineNum(), 
+	errorHandler.register(errorHandler.PARSE_ERROR, action_obj.getCurrFilename(),
+			      action_obj.getCurrLineNum(),
 			      "unexpected input near '" + t.getLexeme() + "'");
     }
 
@@ -96,7 +101,6 @@ parser code {:
 	return 2;
     }
 :}
-
 /* list of terminals, which correspond to tokens returned by the bantam.lexer
  */
 terminal Token LEX_ERROR;
