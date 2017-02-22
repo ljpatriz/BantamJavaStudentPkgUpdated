@@ -1,0 +1,856 @@
+/* Bantam Java Compiler and Language Toolset.
+
+   Copyright (C) 2009 by Marc Corliss (corliss@hws.edu) and 
+                         David Furcy (furcyd@uwosh.edu) and
+                         E Christopher Lewis (lewis@vmware.com).
+   ALL RIGHTS RESERVED.
+
+   The Bantam Java toolset is distributed under the following 
+   conditions:
+
+     You may make copies of the toolset for your own use and 
+     modify those copies.
+
+     All copies of the toolset must retain the author names and 
+     copyright notice.
+
+     You may not sell the toolset or distribute it in 
+     conjunction with a commerical product or service without 
+     the expressed written consent of the authors.
+
+   THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS 
+   OR IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE 
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A 
+   PARTICULAR PURPOSE. 
+*/
+
+/* code below is copied to the file containing the bantam.parser */
+
+package bantam.parser;
+
+/* import the AST and utility class files */
+import bantam.lexer.*;
+import bantam.ast.*;
+import bantam.util.ErrorHandler;
+/* import Symbol class, which represents the type of token passed
+   from the bantam.lexer to the bantam.parser.  Note: in the bantam.lexer package there is
+   a file Token.java that  defines a subclass of Symbol called Token,
+   which is what is actually passed to the bantam.parser */
+import java_cup.runtime.Symbol;
+
+/* the code below is copied to the class containing the context-free
+   grammar productions */
+action code {: 
+    /** object for error handling */
+    private ErrorHandler errorHandler = new ErrorHandler();
+
+    /* sets the error handler */
+    public ErrorHandler getErrorHandler() {
+	return errorHandler;
+    }
+
+    /* returns the current line number from the scanner */
+    public int getCurrLineNum() {
+	return ((Lexer)parser.getScanner()).getCurrLineNum();
+    }
+
+    /* returns the current file name from the scanner */
+    public String getCurrFilename() {
+	return ((Lexer)parser.getScanner()).getCurrFilename();
+    }
+:} 
+
+/* code below is copied to the Parser class, which drives parsing */
+parser code {:
+    /** overrides done_parsing in inherited class, called when parsing finishes
+      * either after accepting or because of errors
+      * */
+    public void done_parsing() {
+	super.done_parsing();
+	// if lexing and/or parsing errors then exit
+	action_obj.getErrorHandler().checkErrors();
+    }
+
+    /** overrides syntax_error in inherited class and handles syntax errors 
+      * @param curr current symbol from the bantam.lexer
+      * */
+    public void syntax_error(Symbol curr) {
+	// get token value from the symbol
+	Token t = (Token)curr.value;
+	
+	// get the error handler object
+	ErrorHandler errorHandler = action_obj.getErrorHandler();
+
+	// may want to modify and augment the code below for more
+	// accurate error reporting
+	errorHandler.register(errorHandler.PARSE_ERROR, action_obj.getCurrFilename(), 
+			      action_obj.getCurrLineNum(), 
+			      "unexpected input near '" + t.getLexeme() + "'");
+    }
+
+    /** override error_sync_size in inherited class and
+      * change the minimum number of tokens to skip on an error from 3 to 2
+      * @return minimum number of tokens to skip on an error
+      * */
+    protected int error_sync_size() {
+	return 2;
+    }
+:}
+
+/* list of terminals, which correspond to tokens returned by the bantam.lexer
+ */
+terminal Token LEX_ERROR;
+terminal Token CLASS, EXTENDS, IF, ELSE, WHILE, FOR, BREAK, NEW, RETURN, INSTANCEOF;
+terminal Token PLUS, MINUS, TIMES, DIVIDE, MODULUS, NOT, AND, OR;
+terminal Token EQ, NE, LT, LEQ, GT, GEQ, ASSIGN, INCR, DECR;
+terminal Token LPAREN, RPAREN, LBRACE, RBRACE, LSQBRACE, RSQBRACE;
+terminal Token SEMI, COMMA, DOT;
+terminal Token ID, INT_CONST, BOOLEAN_CONST, STRING_CONST;
+
+/* list of non-terminals used in context-free grammar
+   format: nonterminal <type> <list of nonterminal names>
+   example: nonterminal Expr expr1, expr2
+   The type specifies what type of result the non-terminal will return
+   The type should correspond to a class name from the AST
+*/
+
+/*Given non-terminals*/
+nonterminal Program program;
+nonterminal ClassList class_list;
+nonterminal Class_ class;
+nonterminal MemberList member_list;
+/*End of given non-terminals*/
+
+/*Larry's non-terminals*/
+nonterminal Member              member;
+nonterminal Method              method;
+nonterminal Field               field;
+nonterminal Expr                expr;
+nonterminal ExprList            expr_list;
+nonterminal FormalList          formal_list;
+nonterminal Formal              formal;
+nonterminal StmtList            stmt_list;
+nonterminal Stmt                stmt;
+
+nonterminal ExprStmt            exprStmt;
+nonterminal DeclStmt            declStmt;
+nonterminal IfStmt              ifStmt;
+nonterminal WhileStmt           whileStmt;
+nonterminal ForStmt             forStmt;
+nonterminal BreakStmt           breakStmt;
+nonterminal ReturnStmt          returnStmt;
+nonterminal BlockStmt           blockStmt;
+
+nonterminal AssignExpr          assignExpr;
+nonterminal CastExpr            castExpr;
+nonterminal ArrayAssignExpr     arrayassignExpr;
+nonterminal ArrayExpr           arrayExpr;
+nonterminal DispatchExpr        dispatchExpr;
+nonterminal NewExpr             newExpr;
+nonterminal InstanceofExpr      instanceofExpr;
+nonterminal BinaryExpr          binaryExpr;
+nonterminal UnaryExpr           unaryExpr;
+nonterminal ConstExpr           constExpr;
+nonterminal VarExpr             varExpr;
+
+nonterminal BinaryArithExpr     binaryarithExpr;
+nonterminal BinaryCompExpr      binarycompExpr;
+nonterminal BinaryLogicExpr     binarylogicExpr;
+
+nonterminal UnaryNegExpr        unarynegExpr;
+nonterminal UnaryNotExpr        unarynotExpr;
+nonterminal UnaryIncrExpr       unaryincrExpr;
+nonterminal UnaryDecrExpr       unarydecrExpr;
+
+/* End of Larry's non-terminal*/
+
+
+/* add other non-terminals... */
+
+/* precedence/associativity rules
+   format: precedence <associativity> <list of terminals>
+   example: precedence right ASSIGn
+   precedence specified by order (from lowest to highest)
+   note: use a single precedence rule for terminals with same precedence
+   associativity specfied by middle operand (left, right, none)
+*/
+/* add precedence rules... */
+
+precedence right ASSIGN;
+precedence left OR;
+precedence left AND;
+precedence left EQ, NE;
+precedence left LT, LEQ, GT, GEQ, INSTANCEOF;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE, MODULUS;
+precedence left NEW;
+precedence left NOT;
+precedence left DOT, INCR, DECR;
+
+/* program, which is simply a list of classes */
+program	
+	::= class_list:cl
+	    {: RESULT = new Program(0, cl); :}
+        ;
+
+/* list of classes (must be at least one class in program) */
+class_list
+	/* single class */
+        ::= class:c
+            {: RESULT = (ClassList)(new ClassList(0)).addElement(c); :}
+	/* several classes */
+	| class_list:cl class:c
+	    {: RESULT = (ClassList)cl.addElement(c); :}
+	;
+
+/* a single class */
+class
+        ::= 
+        /* class with no specified parent - uses Object class */
+        CLASS:t ID:name LBRACE member_list:ml RBRACE
+	    {: RESULT = new Class_(t.getLineNum(), getCurrFilename(), 
+				   name.getAttribute(), "Object", ml); :}
+        /* class with a specified parent */
+	| CLASS:t ID:name EXTENDS ID:parent LBRACE member_list:ml RBRACE
+	    {: RESULT = new Class_(t.getLineNum(), getCurrFilename(), 
+				   name.getAttribute(), 
+				   parent.getAttribute(), ml); :}
+	;
+
+/*Larry's Section*/
+/* Non-provided material */
+/* member list */
+member_list
+
+	    ::=
+
+        /* empty list */
+	    {: RESULT = new MemberList(getCurrLineNum()); :}
+
+	    /* single member */
+	    | member:m
+	        {: RESULT = (MemberList)(new MemberList(0)).addElement(m); :}
+
+	    /* several members */
+	    | member_list:ml member:m
+	        {: RESULT = (MemberList)ml.addElement(m); :}
+	;
+
+
+/* member */
+member
+
+        ::=
+        method:m
+            {: RESULT = (Method) m; :}
+
+        |field:f
+            {: RESULT = (Field) f; :}
+    ;
+
+
+method
+
+        ::=
+        ID:returnType ID:name LPAREN formal_list:fl RPAREN LBRACE stmt_list:sl RBRACE
+            {: RESULT = new Method(returnType.getLineNum(),
+                                    returnType.getAttribute(),
+                                    name.getAttribute(),
+                                    fl, sl); :}
+    ;
+
+field
+
+        ::=
+        ID:type ID:name SEMI
+            {: RESULT = new Field(type.getLineNum(),
+                                   type.getAttribute(),
+                                   name.getAttribute(),
+                                   null); :}
+
+        |ID:type LSQBRACE RSQBRACE ID:name SEMI
+            {: RESULT = new Field(type.getLineNum(),
+                                   type.getAttribute(),
+                                   name.getAttribute(),
+                                   null); :}
+
+        |ID:type ID:name ASSIGN expr:e SEMI
+            {: RESULT = new Field(type.getLineNum(),
+                                   type.getAttribute(),
+                                   name.getAttribute(),
+                                   e); :}
+
+        |ID:type LSQBRACE RSQBRACE ID:name ASSIGN expr:e SEMI
+            {: RESULT = new Field(type.getLineNum(),
+                                   type.getAttribute(),
+                                   name.getAttribute(),
+                                   e); :}
+    ;
+
+formal_list
+
+        ::=
+
+        /* empty list */
+        {: RESULT = new FormalList(getCurrLineNum()); :}
+
+        /* single member */
+        | formal:f
+            {: RESULT = (FormalList)(new FormalList(0)).addElement(f); :}
+
+        /* several members */
+        | formal_list:fl COMMA formal:f
+            {: RESULT = (FormalList)fl.addElement(f); :}
+    ;
+
+formal
+
+        ::=
+
+        ID:type ID:name
+            {: RESULT = new Formal(type.getLineNum(),
+                                    type.getAttribute(),
+                                    name.getAttribute()); :}
+
+        |ID:type LSQBRACE RSQBRACE ID:name
+             {: RESULT = new Formal(type.getLineNum(),
+                                     type.getAttribute(),
+                                     name.getAttribute()); :}
+     ;
+
+stmt_list
+
+        ::=
+
+        /* empty list */
+        {: RESULT = new StmtList(getCurrLineNum()); :}
+
+        /* single list */
+        | stmt:s
+            {: RESULT = (StmtList)(new StmtList(0)).addElement(s); :}
+
+        /* several lists */
+        | stmt_list:sl COMMA stmt:s
+            {: RESULT = (StmtList)sl.addElement(s); :}
+    ;
+
+stmt
+
+        ::=
+
+        exprStmt:es
+            {: RESULT = (ExprStmt) es; :}
+
+        |declStmt:ds
+            {: RESULT = (DeclStmt) ds; :}
+
+        |ifStmt:is
+            {: RESULT = (IfStmt) is; :}
+
+        |whileStmt:ws
+            {: RESULT = (WhileStmt) ws; :}
+
+        |forStmt:fs
+            {: RESULT = (ForStmt) fs; :}
+
+        |breakStmt:brs
+            {: RESULT = (BreakStmt) brs; :}
+
+        |returnStmt:rs
+            {: RESULT = (ReturnStmt) rs; :}
+
+        |blockStmt:bls
+            {: RESULT = (BlockStmt) bls; :}
+    ;
+
+exprStmt
+
+        ::=
+
+        expr:e
+            {: RESULT = new ExprStmt(e.getLineNum(),
+                                      e); :}
+    ;
+
+declStmt
+
+        ::=
+
+        ID:type ID:name ASSIGN expr:e
+            {: RESULT = new DeclStmt(type.getLineNum(),
+                                      type.getAttribute(),
+                                      name.getAttribute(),
+                                      e); :}
+
+        |ID:type LSQBRACE RSQBRACE ID:name ASSIGN expr:e
+            {: RESULT = new DeclStmt(type.getLineNum(),
+                                      type.getAttribute(),
+                                      name.getAttribute(),
+                                      e); :}
+    ;
+
+ifStmt
+
+        ::=
+
+        IF:i LPAREN expr:predExpr RPAREN stmt:thenStmt
+            {: RESULT = new IfStmt(i.getLineNum(),
+                                    predExpr,
+                                    thenStmt,
+                                    null); :}
+
+        |IF:i LPAREN expr:predExpr RPAREN stmt:thenStmt ELSE stmt:elseStmt
+            {: RESULT = new IfStmt(i.getLineNum(),
+                                    predExpr,
+                                    thenStmt,
+                                    elseStmt); :}
+    ;
+
+whileStmt
+
+        ::=
+        WHILE:w LPAREN expr:predExpr RPAREN stmt:bodyStmt
+            {: RESULT = new WhileStmt(w.getLineNum(),
+                                       predExpr,
+                                       bodyStmt); :}
+   ;
+
+forStmt
+
+        ::=
+
+        FOR:f LPAREN SEMI SEMI RPAREN stmt:bodyStmt
+            {: RESULT = new ForStmt(f.getLineNum(),
+                                     null,
+                                     null,
+                                     null,
+                                     bodyStmt); :}
+
+        |FOR:f LPAREN expr:initExpr SEMI SEMI RPAREN stmt:bodyStmt
+            {: RESULT = new ForStmt(f.getLineNum(),
+                                     initExpr,
+                                     null,
+                                     null,
+                                     bodyStmt); :}
+
+        |FOR:f LPAREN SEMI expr:predExpr SEMI RPAREN stmt:bodyStmt
+            {: RESULT = new ForStmt(f.getLineNum(),
+                                     null,
+                                     predExpr,
+                                     null,
+                                     bodyStmt); :}
+
+        |FOR:f LPAREN SEMI SEMI expr:updateExpr RPAREN stmt:bodyStmt
+            {: RESULT = new ForStmt(f.getLineNum(),
+                                     null,
+                                     null,
+                                     updateExpr,
+                                     bodyStmt); :}
+
+        |FOR:f LPAREN expr:initExpr SEMI expr:predExpr SEMI RPAREN stmt:bodyStmt
+            {: RESULT = new ForStmt(f.getLineNum(),
+                                     initExpr,
+                                     predExpr,
+                                     null,
+                                     bodyStmt); :}
+
+        |FOR:f LPAREN expr:initExpr SEMI SEMI expr:updateExpr RPAREN stmt:bodyStmt
+            {: RESULT = new ForStmt(f.getLineNum(),
+                                     initExpr,
+                                     null,
+                                     updateExpr,
+                                     bodyStmt); :}
+
+        |FOR:f LPAREN SEMI expr:predExpr SEMI expr:updateExpr RPAREN stmt:bodyStmt
+            {: RESULT = new ForStmt(f.getLineNum(),
+                                     null,
+                                     predExpr,
+                                     updateExpr,
+                                     bodyStmt); :}
+
+        |FOR:f LPAREN expr:initExpr SEMI expr:predExpr SEMI expr:updateExpr RPAREN stmt:bodyStmt
+            {: RESULT = new ForStmt(f.getLineNum(),
+                                     initExpr,
+                                     predExpr,
+                                     updateExpr,
+                                     bodyStmt); :}
+    ;
+
+breakStmt
+
+        ::=
+
+        BREAK:b SEMI
+            {: RESULT = new BreakStmt(b.getLineNum()); :}
+    ;
+
+returnStmt
+
+        ::=
+
+        RETURN:r SEMI
+            {: RESULT = new ReturnStmt(r.getLineNum(), null); :}
+
+        |RETURN:r expr:expr
+            {: RESULT = new ReturnStmt(r.getLineNum(),
+                                        expr); :}
+    ;
+
+blockStmt
+
+        ::=
+
+        LBRACE:lb stmt_list:sl RBRACE
+            {: RESULT = new BlockStmt(lb.getLineNum(),
+                                       sl); :}
+   ;
+
+expr_list
+
+         ::=
+
+            /* empty list */
+            {: RESULT = new ExprList(getCurrLineNum()); :}
+
+            /* single expr */
+            | expr:e
+                {: RESULT = (ExprList)(new ExprList(0)).addElement(e); :}
+
+            /* several exprs */
+            | expr_list:el COMMA expr:e
+                {: RESULT = (ExprList)el.addElement(e); :}
+    ;
+
+expr
+
+        ::=
+
+        assignExpr:e
+            {: RESULT = (AssignExpr) e; :}
+
+        |dispatchExpr:e
+            {: RESULT = (DispatchExpr) e; :}
+
+        |newExpr:e
+            {: RESULT = (NewExpr) e; :}
+
+        |instanceofExpr:e
+            {: RESULT = (InstanceofExpr) e; :}
+
+        |castExpr:e
+            {: RESULT = (CastExpr) e; :}
+
+        |binaryExpr:e
+            {: RESULT = (BinaryExpr) e; :}
+
+        |unaryExpr:e
+            {: RESULT = (UnaryExpr) e; :}
+
+        |constExpr:e
+            {: RESULT = (ConstExpr) e; :}
+
+        |varExpr:e
+            {: RESULT = (VarExpr) e; :}
+
+        |LPAREN:lp expr:e
+            {: RESULT = (Expr) e; :}
+
+    ;
+
+assignExpr
+
+        ::=
+
+        varExpr:ve ASSIGN expr:e
+            {: //TODO: VERIFY CORRECT
+                RESULT = new AssignExpr(ve.getLineNum(),
+                                        ve.getRef().getExprType(),
+                                        ve.getName(),
+                                        e); :}
+    ;
+
+arrayassignExpr
+
+        ::=
+
+        arrayExpr:ae ASSIGN expr:e
+            {://TODO: VERIFY CORRECT
+                RESULT = new ArrayAssignExpr(ae.getLineNum(),
+                                             ae.getRef().getExprType(),
+                                             ae.getName(),
+                                             ae,
+                                             e); :}
+    ;
+
+dispatchExpr
+
+        ::=
+
+        ID:methodName LPAREN expr_list:el RPAREN
+            {: RESULT = new DispatchExpr(methodName.getLineNum(),
+                                          null,
+                                          methodName.getAttribute(),
+                                          el); :}
+
+        |expr:e DOT ID:methodName LPAREN expr_list:el RPAREN
+            {: RESULT = new DispatchExpr(e.getLineNum(),
+                                          e,
+                                          methodName.getAttribute(),
+                                          el); :}
+    ;
+
+newExpr
+
+        ::=
+
+        NEW:n ID:type LPAREN RPAREN
+            {: RESULT = new NewExpr(n.getLineNum(),
+                                     type.getAttribute()); :}
+
+        |NEW:n ID:type LSQBRACE expr:e RSQBRACE
+            {: RESULT = new NewExpr(n.getLineNum(),
+                                     type.getAttribute()); :}
+    ;
+
+instanceofExpr
+
+        ::=
+
+        expr:e INSTANCEOF ID:type
+            {: RESULT = new InstanceofExpr(e.getLineNum(),
+                                            e,
+                                            type.getAttribute()); :}
+
+        |expr:e INSTANCEOF ID:type LSQBRACE RSQBRACE
+            {: RESULT = new InstanceofExpr(e.getLineNum(),
+                                            e,
+                                            type.getAttribute()); :}
+    ;
+
+castExpr
+
+        ::=
+
+        LPAREN:lp ID:type RPAREN LPAREN expr:e RPAREN
+            {: RESULT = new CastExpr(lp.getLineNum(),
+                                      type.getAttribute(),
+                                      e); :}
+
+        |LPAREN:lp ID:type LSQBRACE RSQBRACE RPAREN LPAREN expr:e RPAREN
+            {: RESULT = new CastExpr(lp.getLineNum(),
+                                      type.getAttribute(),
+                                      e); :}
+    ;
+
+binaryExpr
+
+        ::=
+
+        binaryarithExpr:e
+            {: RESULT = (BinaryArithExpr) e; :}
+
+        |binarycompExpr:e
+            {: RESULT = (BinaryCompExpr) e; :}
+
+        |binarylogicExpr:e
+            {: RESULT = (BinaryLogicExpr) e; :}
+    ;
+
+unaryExpr
+
+        ::=
+
+        unarynegExpr:e
+            {: RESULT = (UnaryNegExpr) e; :}
+
+        |unarynotExpr:e
+            {: RESULT = (UnaryNotExpr) e; :}
+
+        |unaryincrExpr:e
+            {: RESULT = (UnaryIncrExpr) e; :}
+
+        |unarydecrExpr:e
+            {: RESULT = (UnaryDecrExpr) e; :}
+    ;
+
+constExpr
+
+        ::=
+
+        INT_CONST:i
+            {: RESULT = new ConstIntExpr(i.getLineNum(),
+                                       i.getAttribute()); :}
+
+        |BOOLEAN_CONST:b
+            {: RESULT = new ConstBooleanExpr(b.getLineNum(),
+                                       b.getAttribute()); :}
+
+        |STRING_CONST:s
+            {: RESULT = new ConstStringExpr(s.getLineNum(),
+                                       s.getAttribute()); :}
+    ;
+
+binaryarithExpr
+
+        ::=
+
+        expr:leftExpr PLUS expr:rightExpr
+            {: RESULT = new BinaryArithPlusExpr(leftExpr.getLineNum(),
+                                                leftExpr,
+                                                rightExpr); :}
+
+        |expr:leftExpr MINUS expr:rightExpr
+            {: RESULT = new BinaryArithMinusExpr(leftExpr.getLineNum(),
+                                                leftExpr,
+                                                rightExpr); :}
+
+        |expr:leftExpr TIMES expr:rightExpr
+            {: RESULT = new BinaryArithTimesExpr(leftExpr.getLineNum(),
+                                                leftExpr,
+                                                rightExpr); :}
+
+        |expr:leftExpr DIVIDE expr:rightExpr
+            {: RESULT = new BinaryArithDivideExpr(leftExpr.getLineNum(),
+                                                leftExpr,
+                                                rightExpr); :}
+
+        |expr:leftExpr MODULUS expr:rightExpr
+            {: RESULT = new BinaryArithModulusExpr(leftExpr.getLineNum(),
+                                                leftExpr,
+                                                rightExpr); :}
+    ;
+
+binarycompExpr
+
+        ::=
+
+        expr:leftExpr EQ expr:rightExpr
+            {: RESULT = new BinaryCompEqExpr(leftExpr.getLineNum(),
+                                              leftExpr,
+                                              rightExpr); :}
+        |expr:leftExpr NE expr:rightExpr
+            {: RESULT = new BinaryCompNeExpr(leftExpr.getLineNum(),
+                                              leftExpr,
+                                              rightExpr); :}
+
+        |expr:leftExpr LT expr:rightExpr
+            {: RESULT = new BinaryCompLtExpr(leftExpr.getLineNum(),
+                                              leftExpr,
+                                              rightExpr); :}
+        |expr:leftExpr LEQ expr:rightExpr
+            {: RESULT = new BinaryCompLeqExpr(leftExpr.getLineNum(),
+                                              leftExpr,
+                                              rightExpr); :}
+
+        |expr:leftExpr GT expr:rightExpr
+            {: RESULT = new BinaryCompGtExpr(leftExpr.getLineNum(),
+                                              leftExpr,
+                                              rightExpr); :}
+
+        |expr:leftExpr GEQ expr:rightExpr
+            {: RESULT = new BinaryCompGeqExpr(leftExpr.getLineNum(),
+                                              leftExpr,
+                                              rightExpr); :}
+    ;
+
+
+binarylogicExpr
+
+        ::=
+
+        expr:leftExpr AND expr:rightExpr
+            {: RESULT = new BinaryLogicAndExpr(leftExpr.getLineNum(),
+                                                leftExpr,
+                                                rightExpr); :}
+
+        |expr:leftExpr OR expr:rightExpr
+            {: RESULT = new BinaryLogicOrExpr(leftExpr.getLineNum(),
+                                                leftExpr,
+                                                rightExpr); :}
+    ;
+
+unarynegExpr
+
+        ::=
+
+        MINUS:m expr:e
+            {: RESULT = new UnaryNegExpr(m.getLineNum(),
+                                          e); :}
+    ;
+
+unarynotExpr
+
+        ::=
+
+        NOT:n expr:e
+            {: RESULT = new UnaryNotExpr(n.getLineNum(),
+                                          e); :}
+    ;
+
+
+unaryincrExpr
+
+        ::=
+
+        INCR:i expr:e
+            {: RESULT = new UnaryIncrExpr(i.getLineNum(),
+                                           e,
+                                           true); :}
+
+        |expr:e INCR
+            {: RESULT = new UnaryIncrExpr(e.getLineNum(),
+                                           e,
+                                           false); :}
+    ;
+
+unarydecrExpr
+
+        ::=
+
+        DECR:d expr:e
+            {: RESULT = new UnaryDecrExpr(d.getLineNum(),
+                                           e,
+                                           true); :}
+
+        |expr:e DECR
+            {: RESULT = new UnaryDecrExpr(e.getLineNum(),
+                                           e,
+                                           false); :}
+    ;
+
+
+varExpr
+
+        ::=
+
+        ID:e
+            {: RESULT = new VarExpr(e.getLineNum(),
+                                     null,
+                                     e.getName()); :}
+
+        |LSQBRACE:lb expr:ref DOT RSQBRACE ID:e
+            {: RESULT = new VarExpr(lb.getLineNum(),
+                                     ref,
+                                     e.getName()); :}
+    ;
+
+
+arrayExpr
+
+        ::=
+
+        ID:e LSQBRACE expr:index RSQBRACE
+            {: RESULT = new ArrayExpr(e.getLineNum(),
+                                       null,
+                                       e.getName(),
+                                       index); :}
+
+        |LSQBRACE:lb expr:ref RSQBRACE ID:e LSQBRACE expr:index RSQBRACE
+            {: RESULT = new ArrayExpr(lb.getLineNum(),
+                                       ref,
+                                       e.getName(),
+                                       index); :}
+    ;
+
+
+

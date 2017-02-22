@@ -1,0 +1,363 @@
+/*
+Class: CS461
+Project: 1
+File: lexer.jlex
+Date: Monday, February 13, 2017
+Group: Larry Jacob Nick Luis
+*/
+
+/* Bantam Java Compiler and Language Toolset.
+
+   Copyright (C) 2009 by Marc Corliss (corliss@hws.edu) and 
+                         David Furcy (furcyd@uwosh.edu) and
+                         E Christopher Lewis (lewis@vmware.com).
+   ALL RIGHTS RESERVED.
+
+   The Bantam Java toolset is distributed under the following 
+   conditions:
+
+     You may make copies of the toolset for your own use and 
+     modify those copies.
+
+     All copies of the toolset must retain the author names and 
+     copyright notice.
+
+     You may not sell the toolset or distribute it in 
+     conjunction with a commerical product or service without 
+     the expressed written consent of the authors.
+
+   THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS 
+   OR IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE 
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A 
+   PARTICULAR PURPOSE. 
+*/
+
+/* code below is copied to the file containing the bantam.lexer */
+
+package bantam.lexer;
+
+import bantam.parser.TokenIds;
+/* import Symbol class, which represents the symbols that are passed
+   from the bantam.lexer to the bantam.parser.  Each symbol consists of an ID
+   and a token value, which is defined in Token.java */
+import java_cup.runtime.Symbol;
+
+%%
+
+%{
+    /* code below is copied to the class containing the bantam.lexer */
+
+    /** maximum string size allowed */
+    private final int MAX_STRING_SIZE = 5000;
+    /** boolean indicating whether debugging is enabled */
+    private boolean debug = false;
+    /** boolean indicating whether we're lexing multiple files or a single file */
+    private boolean multipleFiles = false;
+    /** array that holds the names of each file we're lexing 
+      * (used only when multipleFiles is true)
+      * */
+    private String[] filenames;
+    /** array that holds the reader for each file we're lexing 
+      * (used only when multipleFiles is true)
+      * */
+    private java.io.BufferedReader[] fileReaders;
+    /** current file number used to index filenames and fileReaders
+      * (used only when multipleFiles is true)
+      * */
+    private int fileCnt = 0;
+
+    /** Lexer constructor - defined in JLex specification file
+      * Needed to handle lexing multiple files
+      * @param filenames list of filename strings
+      * @param debug boolean indicating whether debugging is enabled
+      * */
+    public Lexer(String[] filenames, boolean debug) {
+	// call private constructor, which does some initialization
+	this();
+
+	this.debug = debug;
+
+	// set the multipleFiles flag to true (provides compatibility
+	// with the single file constructors)
+	multipleFiles = true;
+
+	// initialize filenames field to parameter filenames
+	// used later for finding the name of the current file
+	this.filenames = filenames;
+
+	// check that there is at least one specified filename
+	if (filenames.length == 0)
+	    throw new RuntimeException("Must specify at least one filename to scan");
+
+	// must initialize readers for each file (BufferedReader)
+	fileReaders = new java.io.BufferedReader[filenames.length];
+	for (int i = 0; i < filenames.length; i++) {
+	    // try...catch checks if file is found
+	    try {
+		// create the ith file reader
+		fileReaders[i] = new java.io.BufferedReader(new java.io.FileReader(filenames[i]));
+	    }
+	    catch(java.io.FileNotFoundException e) {
+		// if file not found then report an error and exit
+		System.err.println("Error: file '" + filenames[i] + "' not found");
+		System.exit(1);
+	    }
+	}
+
+	// set yy_reader (a JLex variable) to the first file reader
+	yy_reader = fileReaders[0];
+
+	// set yyline to 1 (as opposed to 0)
+	yyline = 1;
+    }
+
+    /** holds the current string constant
+      * note: we use StringBuffer so that appending does not require constructing a new object 
+      * */
+    private StringBuffer currStringConst;
+
+    /** getter method for accessing the current line number
+      * @return current line number
+      * */
+    public int getCurrLineNum() {
+	return yyline;
+    }
+
+    /** getter method for accessing the current file name
+      * @return current filename string
+      * */
+    public String getCurrFilename() {
+	return filenames[fileCnt];
+    }
+
+    /** print tokens - used primarily for debugging the bantam.lexer
+      * */
+    public void printTokens() throws java.io.IOException {
+	// prevFileCnt is used to determine when the filename has changed
+	// every time an EOF is encountered fileCnt is incremented
+	// by testing fileCnt with prevFileCnt, we can determine when the
+	// filename has changed and print the filename along with the tokens
+	int prevFileCnt = -1;
+
+	// try...catch needed since next_token() can throw an IOException
+	try {
+	    // iterate through all tokens
+	    while (true) {
+		// get the next token
+		Symbol symbol = next_token();
+		// check if file has changed
+		if (prevFileCnt != fileCnt) {
+		    // if it has then print out the new filename
+		    System.out.println("# " + filenames[fileCnt]);
+		    // update prevFileCnt
+		    prevFileCnt = fileCnt;
+		}
+		// print out the token
+		System.out.println((Token)symbol.value);
+		// if we've reached the EOF (EOF only returned for the last
+		// file) then we break out of loop
+		if (symbol.sym == TokenIds.EOF)
+		    break;
+	    }
+	}
+	catch (java.io.IOException e) {
+	    // if an IOException occurs then print error and exit
+	    System.err.println("Unexpected IO exception while scanning.");
+	    throw e;
+	}
+    }
+%}
+
+%init{
+    // set yyline to 1 (as opposed to 0)
+    yyline = 1;
+%init}
+
+%eofval{
+    /* code below is executed when the end-of-file is reached */
+
+    switch(yy_lexical_state) {
+    case YYINITIAL:
+	// if in YYINITIAL when EOF occurs then no error
+	break;
+    // if defining other states then might want to add other cases here...
+    }
+
+    // if we reach here then we should either start lexing the next
+    // file (if there are more files to lex) or return EOF (if we're
+    // at the file)
+    if (multipleFiles && fileCnt < fileReaders.length - 1) {
+	// more files to lex so update yy_reader and yyline and then continue
+	yy_reader = fileReaders[++fileCnt];
+	yyline = 1;
+	continue;
+    }
+
+    // if we reach here, then we're at the last file so we return EOF
+    // to bantam.parser
+    return new Symbol(TokenIds.EOF, new Token("EOF", yyline));
+%eofval}
+
+%cup
+%public
+%class Lexer
+%line
+%char
+
+%%
+<YYINITIAL>" "          {}
+\t                      {}
+\n                      {}
+/\*(.|\n)*[^\\]+\*/     {}
+//.*                    {}
+
+[? @ # ^ ` ~ $ ' :]
+{
+    return new Symbol(
+            TokenIds.LEX_ERROR, new Token("LEX_ERROR", "Unsupported Character", yyline));
+}
+
+"{"             { return new Symbol(TokenIds.LBRACE, new Token("LBRACE", yyline)); }
+"}"             { return new Symbol(TokenIds.RBRACE, new Token("RBRACE", yyline)); }
+"("             { return new Symbol(TokenIds.LPAREN, new Token("LPAREN", yyline)); }
+")"             { return new Symbol(TokenIds.RPAREN, new Token("RPAREN", yyline)); }
+"-"             { return new Symbol(TokenIds.MINUS, new Token("MINUS", yyline)); }
+"+"             { return new Symbol(TokenIds.PLUS, new Token("PLUS", yyline)); }
+"*"             { return new Symbol(TokenIds.TIMES, new Token("TIMES", yyline)); }
+"/"             { return new Symbol(TokenIds.DIVIDE, new Token("DIVIDE", yyline)); }
+"["             { return new Symbol(TokenIds.LSQBRACE, new Token("LSQBRACE", yyline)); }
+"]"             { return new Symbol(TokenIds.RSQBRACE, new Token("RSQBRACE", yyline)); }
+"="             { return new Symbol(TokenIds.ASSIGN, new Token("ASSIGN", yyline)); }
+"++"            { return new Symbol(TokenIds.INCR,  new Token("INCR", yyline)); }
+"--"            { return new Symbol(TokenIds.DECR, new Token("DECR", yyline)); }
+"<"             { return new Symbol(TokenIds.LT, new Token("LT", yyline)); }
+">"             { return new Symbol(TokenIds.GT, new Token("GT", yyline)); }
+"=="            { return new Symbol(TokenIds.EQ, new Token("EQ", yyline)); }
+"!="            { return new Symbol(TokenIds.NE, new Token("NE", yyline)); }
+"<="            { return new Symbol(TokenIds.LEQ, new Token("LEQ", yyline)); }
+">="            { return new Symbol(TokenIds.GEQ, new Token("GEQ", yyline)); }
+"%"             { return new Symbol(TokenIds.MODULUS, new Token("MODULUS", yyline)); }
+";"             { return new Symbol(TokenIds.SEMI, new Token("SEMI", yyline)); }
+
+/\*[^(\*/)]*
+{
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","unterminated multiline comment", yyline));
+}
+
+\"[^\"\n]*\n+[^\"\n]*\"
+{
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","String constant spanning multiple lines",yyline));
+}
+
+\"([^\"]?(\\\")?)*
+{
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","String constant unterminated",yyline));
+}
+
+\"[^\"]*$
+{
+    return new Symbol(
+            TokenIds.error, new Token("LEX_ERROR","String constant unterminated",yyline));
+}
+
+\"[^\"\\]*(\\\\)*(\\[^nrtf\"\\])+[^\"]*\"
+{
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","String constant contains illegal escape characters",yyline));
+}
+
+\"[^\"]*\"
+{
+    if (yytext().length() > 5000) {
+                return new Symbol(TokenIds.error, new Token("LEX_ERROR",
+                "String constant of illegal length", yyline));
+    } else {
+        return new Symbol(TokenIds.STRING_CONST, new Token("STRING_CONST",
+        yytext().substring(1,yytext().length()-1), yyline));
+    }
+}
+
+class       { return new Symbol(TokenIds.CLASS, new Token("CLASS", yyline)); }
+true        { return new Symbol(TokenIds.BOOLEAN_CONST, new Token("TRUE",yyline)); }
+false       { return new Symbol(TokenIds.BOOLEAN_CONST, new Token("FALSE",yyline)); }
+for         { return new Symbol(TokenIds.FOR, new Token("FOR", yyline)); }
+instanceof  { return new Symbol(TokenIds.INSTANCEOF, new Token("INSTANCEOF", yyline)); }
+if          { return new Symbol(TokenIds.IF, new Token("IF", yyline)); }
+return      { return new Symbol(TokenIds.RETURN, new Token("RETURN", yyline)); }
+new         { return new Symbol(TokenIds.NEW, new Token("NEW", yyline)); }
+break       { return new Symbol(TokenIds.BREAK, new Token("BREAK", yyline)); }
+else        { return new Symbol(TokenIds.ELSE, new Token("ELSE", yyline)); }
+while       { return new Symbol(TokenIds.WHILE, new Token("WHILE", yyline)); }
+extends     { return new Symbol(TokenIds.EXTENDS, new Token("EXTENDS", yyline)); }
+
+0*214748364[8-9]
+{
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+}
+0*21474836[5-9][0-9]
+{
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+}
+0*2147483[7-9][0-9][0-9]
+{
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+}
+0*214748[4-9][0-9][0-9][0-9]
+{
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+}
+0*214749[0-9][0-9][0-9][0-9]
+{
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+}
+0*2147[5-9][0-9][0-9][0-9][0-9][0-9]
+{
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+}
+0*214[8-9][0-9][0-9][0-9][0-9][0-9][0-9]
+{
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+}
+0*21[5-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+{
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+}
+0*2[2-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+{
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+}
+0*[3-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]+
+{
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+}
+0*[0-1]?[0-9]?[0-9]?[0-9]?[0-9]?[0-9]?[0-9]?[0-9]?[0-9]?[0-9]?
+{
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+}
+0*[2]?[01]?[0-4]?[0-7]?[0-4]?[0-8]?[0-3]?[0-6]?[0-4]?[0-7]?
+{
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+}
+
+[a-zA-Z][a-zA-Z1-9_]*    { return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
+[0-9_][a-zA-Z0-9_]* {return new Symbol(TokenIds.LEX_ERROR,
+                             new Token("LEX_ERROR", "Illegal Identifier", yyline)); }
+
+.                      { throw new RuntimeException("Unmatched lexeme " +
+                            yytext() + " at line " + yyline); }
