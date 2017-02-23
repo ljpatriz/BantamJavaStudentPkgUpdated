@@ -1,8 +1,6 @@
 package bantam.parser;
 
-import bantam.ast.ClassList;
-import bantam.ast.Class_;
-import bantam.ast.Program;
+import bantam.ast.*;
 import java_cup.runtime.Symbol;
 import bantam.lexer.Lexer;
 import org.junit.BeforeClass;
@@ -45,6 +43,62 @@ public class ParserTest
         assertEquals(0, mainClass.getMemberList().getSize());
     }
 
+    @Test
+    /**
+     * Tests the case of a method
+     */
+    public void emptyMethodTest() throws Exception{
+        Parser parser = new Parser(new Lexer(new StringReader("class Main{ int myInt(){ }}")));
+        Symbol result = parser.parse();
+        ClassList classes = ((Program) result.value).getClassList();
+        Class_ mainClass = (Class_) classes.get(0);
+        Method method = (Method)mainClass.getMemberList().get(0);
+        assertEquals("myInt", method.getName());
+    }
+
+    @Test
+    /**
+     * Tests the case of a field
+     */
+    public void fieldTest() throws Exception{
+        Parser parser = new Parser(new Lexer(new StringReader("class Main{int a;}")));
+        Symbol result = parser.parse();
+        ClassList classes = ((Program) result.value).getClassList();
+        Class_ mainClass = (Class_) classes.get(0);
+        Field field = (Field)mainClass.getMemberList().get(0);
+        assertEquals("a", field.getName());
+        assertEquals("int", field.getType());
+    }
+
+    /**
+     * Tests the case of an initialized field
+     */
+    @Test
+    public void initializedFieldTest() throws Exception{
+        Parser parser = new Parser(new Lexer(new StringReader("class Main{int a = 0;}")));
+        Symbol result = parser.parse();
+        ClassList classes = ((Program) result.value).getClassList();
+        Class_ mainClass = (Class_) classes.get(0);
+        Field field = (Field)mainClass.getMemberList().get(0);
+        assertEquals("a", field.getName());
+        assertEquals("int", field.getType());
+        ConstIntExpr constInt = (ConstIntExpr)field.getInit();
+        assertEquals(0, constInt.getIntConstant());
+    }
+
+    /**
+     * Tests the unaryDecrExpr
+     * @throws Exception
+     */
+    @Test
+    public void unaryDecrExprTest() throws Exception{
+        Parser parser = new Parser(new Lexer(new StringReader("class Main{void test(){int test = 1; test--;}}")));
+        Symbol result = parser.parse();
+        ClassList classes = ((Program) result.value).getClassList();
+        Class_ mainClass = (Class_) classes.get(0);
+        Method method = (Method)mainClass.getMemberList().get(0);
+    }
+
     /**
      * tests the case of a missing right brace at end of a class def
      * using an ExpectedException Rule
@@ -78,5 +132,4 @@ public class ParserTest
         }
         assertTrue(thrown);
     }
-
 }

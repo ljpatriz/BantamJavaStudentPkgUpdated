@@ -371,7 +371,7 @@ exprStmt
 
         ::=
 
-        expr:e
+        expr:e SEMI
             {: RESULT = new ExprStmt(e.getLineNum(),
                                       e); :}
     ;
@@ -380,13 +380,13 @@ declStmt
 
         ::=
 
-        ID:type ID:name ASSIGN expr:e
+        ID:type ID:name ASSIGN expr:e SEMI
             {: RESULT = new DeclStmt(type.getLineNum(),
                                       type.getAttribute(),
                                       name.getAttribute(),
                                       e); :}
 
-        |ID:type LSQBRACE RSQBRACE ID:name ASSIGN expr:e
+        |ID:type LSQBRACE RSQBRACE ID:name ASSIGN expr:e SEMI
             {: RESULT = new DeclStmt(type.getLineNum(),
                                       type.getAttribute(),
                                       name.getAttribute(),
