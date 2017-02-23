@@ -1,10 +1,8 @@
 package bantam.parser;
 
 import bantam.ast.*;
-import com.sun.tools.internal.jxc.ap.Const;
 import java_cup.runtime.Symbol;
 import bantam.lexer.Lexer;
-import jdk.nashorn.internal.ir.Block;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,33 +48,10 @@ public class ParserTest
      * using an ExpectedException Rule
      */
     @Test
-    public void unmatchedLeftBraceTest1() throws Exception {
+    public void unmatchedLeftBraceTest() throws Exception {
         Parser parser = new Parser(new Lexer(new StringReader("class Main {  ")));
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Bantam parser found errors.");
+        this.expectParseFail();
         parser.parse();
-    }
-
-    /**
-     * tests the case of a missing right brace at end of a class def.
-     * This version is like unmatchedLeftBraceTest1 except that it
-     * doesn't use an ExpectedException Rule and it also prints the error messages.
-     */
-    @Test
-    public void unmatchedLeftBraceTest2() throws Exception {
-        Parser parser = new Parser(new Lexer(new StringReader("class Main {  ")));
-        boolean thrown = false;
-
-        try {
-            parser.parse();
-        } catch (RuntimeException e) {
-            thrown = true;
-            assertEquals("Bantam parser found errors.", e.getMessage());
-            for (ErrorHandler.Error err : parser.getErrorHandler().getErrorList()) {
-                System.out.println(err);
-            }
-        }
-        assertTrue(thrown);
     }
 
     @Test
@@ -129,11 +104,9 @@ public class ParserTest
         assertTrue(getStmt(program, 7) instanceof ReturnStmt);
         assertTrue(getStmt(program, 8) instanceof ReturnStmt);
         assertTrue(getStmt(program, 9) instanceof BlockStmt);
-
-
-
     }
-    
+
+
     
     /**
      * Tests the case of a field
@@ -497,5 +470,28 @@ public class ParserTest
         Symbol result = parser.parse();
         ClassList classes = ((Program) result.value).getClassList();
         return (Class_) classes.get(0);
+    }
+
+    public void expectParseFail() {
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage("Bantam parser found errors.");
+    }
+
+    @Test
+    public void missingSemiFail() throws Exception {
+        this.expectParseFail();
+        this.getClass("class a { int x int y; }");
+    }
+
+    @Test
+    public void informalMethodParamFail() throws Exception {
+        this.expectParseFail();
+        this.getClass("class a { int x(int) {} }");
+    }
+
+    @Test
+    public void noClassFail() throws Exception {
+        this.expectParseFail();
+        this.getClass("int x");
     }
 }
