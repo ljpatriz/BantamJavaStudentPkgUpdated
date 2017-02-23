@@ -453,18 +453,30 @@ public class ParserTest
     /**
      * Gets the first statement
      * @param s the java program string
-     * @param index
+     * @param index the index of the statement
      * @return
      */
     public Stmt getStmt(String s, int index)throws Exception{
         return (Stmt)getMethod(s).getStmtList().get(index);
     }
 
+    /**
+     * Gets the first method of the program
+     * @param s the java program string
+     * @return
+     * @throws Exception
+     */
     public Method getMethod(String s)throws Exception{
         Class_ myClass = getClass(s);
         return (Method)myClass.getMemberList().get(0);
     }
 
+    /**
+     * Gets the first class in the program.
+     * @param s the java program string
+     * @return
+     * @throws Exception
+     */
     public Class_ getClass(String s) throws Exception{
         Parser parser = new Parser(new Lexer(new StringReader(s)));
         Symbol result = parser.parse();
@@ -472,26 +484,56 @@ public class ParserTest
         return (Class_) classes.get(0);
     }
 
+    /**
+     * Expects the parser to fail, will cause a test to pass if the parser fails in the
+     * manner specified.
+     */
     public void expectParseFail() {
         thrown.expect(RuntimeException.class);
         thrown.expectMessage("Bantam parser found errors.");
     }
 
+    /**
+     * Tests the illegal case of a missing semicolon between statements.
+     * @throws Exception
+     */
     @Test
     public void missingSemiFail() throws Exception {
         this.expectParseFail();
         this.getClass("class a { int x int y; }");
     }
 
+    /**
+     * Tests the illegal case of something not Formal being passed to a DispatchExpr.
+     * @throws Exception
+     */
     @Test
     public void informalMethodParamFail() throws Exception {
         this.expectParseFail();
         this.getClass("class a { int x(int) {} }");
     }
 
+    /**
+     * Tests the illegal case of no class found
+     * @throws Exception
+     */
     @Test
     public void noClassFail() throws Exception {
         this.expectParseFail();
         this.getClass("int x");
     }
+
+    /**
+     * Tests the illegal case of an improper member of a class.
+     * @throws Exception
+     */
+    @Test
+    public void invalidMemberFail() throws Exception {
+        this.expectParseFail();
+        this.getClass("class a { single_identifier;}");
+    }
+
+
+
+
 }
