@@ -385,13 +385,13 @@ public class Lexer implements java_cup.runtime.Scanner {
 		/* 33 */ YY_NO_ANCHOR,
 		/* 34 */ YY_NO_ANCHOR,
 		/* 35 */ YY_NO_ANCHOR,
-		/* 36 */ YY_END,
+		/* 36 */ YY_NO_ANCHOR,
 		/* 37 */ YY_NO_ANCHOR,
-		/* 38 */ YY_NOT_ACCEPT,
+		/* 38 */ YY_NO_ANCHOR,
 		/* 39 */ YY_NO_ANCHOR,
-		/* 40 */ YY_NO_ANCHOR,
+		/* 40 */ YY_END,
 		/* 41 */ YY_NO_ANCHOR,
-		/* 42 */ YY_NO_ANCHOR,
+		/* 42 */ YY_NOT_ACCEPT,
 		/* 43 */ YY_NO_ANCHOR,
 		/* 44 */ YY_NO_ANCHOR,
 		/* 45 */ YY_NO_ANCHOR,
@@ -417,27 +417,27 @@ public class Lexer implements java_cup.runtime.Scanner {
 		/* 65 */ YY_NO_ANCHOR,
 		/* 66 */ YY_NO_ANCHOR,
 		/* 67 */ YY_NO_ANCHOR,
-		/* 68 */ YY_NOT_ACCEPT,
+		/* 68 */ YY_NO_ANCHOR,
 		/* 69 */ YY_NO_ANCHOR,
 		/* 70 */ YY_NO_ANCHOR,
 		/* 71 */ YY_NO_ANCHOR,
 		/* 72 */ YY_NO_ANCHOR,
-		/* 73 */ YY_NO_ANCHOR,
-		/* 74 */ YY_NOT_ACCEPT,
+		/* 73 */ YY_NOT_ACCEPT,
+		/* 74 */ YY_NO_ANCHOR,
 		/* 75 */ YY_NO_ANCHOR,
 		/* 76 */ YY_NO_ANCHOR,
 		/* 77 */ YY_NO_ANCHOR,
-		/* 78 */ YY_NOT_ACCEPT,
+		/* 78 */ YY_NO_ANCHOR,
 		/* 79 */ YY_NO_ANCHOR,
-		/* 80 */ YY_NO_ANCHOR,
+		/* 80 */ YY_NOT_ACCEPT,
 		/* 81 */ YY_NO_ANCHOR,
-		/* 82 */ YY_NOT_ACCEPT,
+		/* 82 */ YY_NO_ANCHOR,
 		/* 83 */ YY_NO_ANCHOR,
-		/* 84 */ YY_NO_ANCHOR,
+		/* 84 */ YY_NOT_ACCEPT,
 		/* 85 */ YY_NO_ANCHOR,
 		/* 86 */ YY_NO_ANCHOR,
 		/* 87 */ YY_NO_ANCHOR,
-		/* 88 */ YY_NO_ANCHOR,
+		/* 88 */ YY_NOT_ACCEPT,
 		/* 89 */ YY_NO_ANCHOR,
 		/* 90 */ YY_NO_ANCHOR,
 		/* 91 */ YY_NO_ANCHOR,
@@ -587,121 +587,124 @@ public class Lexer implements java_cup.runtime.Scanner {
 		/* 235 */ YY_NO_ANCHOR,
 		/* 236 */ YY_NO_ANCHOR,
 		/* 237 */ YY_NO_ANCHOR,
-		/* 238 */ YY_NO_ANCHOR
+		/* 238 */ YY_NO_ANCHOR,
+		/* 239 */ YY_NO_ANCHOR,
+		/* 240 */ YY_NO_ANCHOR,
+		/* 241 */ YY_NO_ANCHOR,
+		/* 242 */ YY_NO_ANCHOR
 	};
 	private int yy_cmap[] = unpackFromString(1,130,
-"27:9,2,3,27:2,8,27:18,1,21,25,9:2,22,27,9,12,13,5,15,24,14,27,4,45,47,46,51" +
-",48,54,52,49,50,53,9,23,19,18,20,9:2,55:26,16,6,17,9,56,9,30,40,28,44,35,36" +
-",55,42,38,55,41,29,55,7,37,55:2,33,31,32,34,55,39,43,55:2,10,27,11,9,27,0,2" +
-"6")[0];
+"30:9,2,3,30:2,4,30:18,1,21,28,9:2,22,25,9,12,13,6,15,24,14,27,5,48,50,49,54" +
+",51,57,55,52,53,56,9,23,19,18,20,9:2,58:26,16,7,17,9,59,9,33,43,31,47,38,39" +
+",58,45,41,58,44,32,58,8,40,58:2,36,34,35,37,58,42,46,58:2,10,26,11,9,30,0,2" +
+"9")[0];
 
-	private int yy_rmap[] = unpackFromString(1,239,
-"0,1:4,2,1:2,3,1:5,4,5,1:2,6,7,8,9,1:3,10,11,12,13,1:8,14,15,14,1,14,1,14:2," +
-"15,14:7,11:10,16,17,18,19,20,21,22,23,24,25,26,27,11,28,29,23,30,31,32,33,3" +
-"4,35,36,37,38,39,40,41,42,43,44,22,45,46,47,48,49,50,51,52,53,54,55,56,16,5" +
-"7,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,8" +
-"2,83,84,85,86,87,88,89,90,91,92,93,94,95,82,96,80,97,64,98,99,100,82,14,101" +
-",102,53,103,104,103,105,106,107,108,109,58,110,111,112,113,114,115,116,117," +
-"118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136" +
-",137,138,139,140,141,142,143,144,145,146,147,148,149,147,150,151,152,153,15" +
-"4,155,156,157,155,158,159,160,161,162,163,164,165,166,167,168,169,170,171,1" +
-"72,173,174,175,176,177")[0];
+	private int yy_rmap[] = unpackFromString(1,243,
+"0,1:5,2,1:2,3,1:5,4,5,1:2,6,7,8,9,1:4,10,11,12,13,1:10,14,15,14,1,14,1,14:2" +
+",15,14:7,11:10,16,17,18,19,20,21,22,23,24,25,26,27,28,24,11,29,30,31,32,33," +
+"34,35,36,37,38,39,40,41,42,43,44,45,46,23,47,48,49,50,51,52,53,54,55,56,57," +
+"58,16,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81," +
+"82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,82,97,80,98,64,99,100,101,82,1" +
+"4,102,103,74,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,11" +
+"9,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,1" +
+"38,139,140,141,142,143,144,145,146,147,148,149,150,151,149,152,153,154,155," +
+"156,157,158,159,157,160,161,162,163,164,165,166,167,168,169,170,171,172,173" +
+",174,175,176,177,178,179")[0];
 
-	private int yy_nxt[][] = unpackFromString(178,57,
-"1,2,3,4,5,6,7,8,-1,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,1,7,14" +
-"3,156:3,163,166,156,169,171,156,65,173,175,156:4,64,236,237,238:7,156,26,-1" +
-":61,27,28,-1:58,156,-1:20,156:7,72,156:9,-1,156:11,-1:14,29,-1:57,30,-1:59," +
-"31,-1:56,32,-1:56,33,-1:56,34,-1:39,25:2,66,25:2,73,25:18,35,36,25:30,-1:7," +
-"26,-1:20,26:29,-1,27:2,-1,27:4,-1,27:17,-1,27:30,-1,144:3,38:2,28,144,157,1" +
-"44:3,38:2,144:12,-1,144:30,-1:7,156,-1:20,156:17,-1,156:11,-1,38:4,68,74,38" +
-",78,38:17,-1,38:30,-1:7,26,-1:20,26:17,63:10,26:2,-1:7,26,-1:20,26:17,64,23" +
-"6,237,238:7,26:2,-1:7,150,-1:20,156:8,37,156:8,-1,156:11,-1,146:2,66,146:2," +
-"77,146:18,40,36,146:30,-1,67:3,-1:2,67:6,-1:2,67:12,-1,67:30,-1,38:3,45,68," +
-"74,38,78,38:17,-1,38:30,-1,94:5,113,94:18,-1:2,94:30,-1,78:4,82,-1,78:19,-1" +
-",78:30,-1:7,26,-1:20,26:17,53:5,26,53:2,26,53,26:2,-1:7,156,-1:20,156:11,39" +
-",156:5,-1,156:11,-1,81:2,85,81:2,88,91,81:17,94,36,81:5,91:2,81:2,91,81:20," +
-"-1,38:5,74,38,78,38:17,-1,38:30,-1:7,156,-1:20,156:2,161,156:14,-1,156:11,-" +
-"1,149:2,147,149:2,97,160,149:17,69,36,149:5,160:2,149:2,160,149:20,-1:7,26," +
-"-1:20,26:17,54:10,26:2,-1:7,156,-1:20,156:6,102,156:10,-1,156:11,-1,159:2,1" +
-"65,159:2,100,159,103,159:16,42,36,159:30,-1,78:3,70,82,-1,78:19,-1,78:30,-1" +
-":7,26,-1:20,26:17,55:10,26:2,-1:7,156,-1:20,156:4,105,156:12,-1,156:11,-1,1" +
-"68:2,165,168:2,106,168,109,168:16,40,36,168:30,-1:7,26,-1:20,26:17,56:10,26" +
-":2,-1:7,156,-1:20,156:3,108,156:13,-1,156:11,-1,91:2,153,91:2,73,91:18,94,3" +
-"6,91:30,-1:7,26,-1:20,26:17,53:5,57,53:2,57,53,26:2,-1:7,156,-1:20,156,110," +
-"156:15,-1,156:11,-1,91:2,153,91:2,111,91:18,35,36,91:30,-1:7,26,-1:20,26:17" +
-",58:10,26:2,-1:7,156,-1:20,156:5,41,156:11,-1,156:11,-1:7,26,-1:20,26:17,59" +
-":10,26:2,-1:7,156,-1:20,156:10,114,156:6,-1,156:11,-1,160:2,123,160:2,77,16" +
-"0,162,160:16,69,36,160:30,-1:7,26,-1:20,26:17,60:10,26:2,-1:7,156,-1:20,156" +
-":7,116,156:9,-1,156:11,-1,81:2,85,81:2,127,159,81:17,94,36,81:5,159:2,81:2," +
-"159,81:20,-1:7,26,-1:20,26:17,61:10,26:2,-1:7,156,-1:20,156:7,43,156:9,-1,1" +
-"56:11,-1,159:2,165,159:2,127,159,103,159:16,42,36,159:30,-1:7,26,-1:20,26:1" +
-"7,62:10,26:2,-1:7,156,-1:20,156:6,120,156:10,-1,156:11,-1,131:2,133,131:2,1" +
-"29,168,131:17,69,36,131:5,168:2,131:2,168,131:20,-1:7,156,-1:20,156:7,44,15" +
-"6:9,-1,156:11,-1,168:2,119,168:2,129,168,109,168:16,40,36,168:30,-1:7,156,-" +
-"1:20,156:3,124,156:13,-1,156:11,-1,91:2,153,91:2,111,91:18,94,36,91:30,-1:7" +
-",156,-1:20,156:4,154,156:12,-1,156:11,-1,94:5,113,94:19,-1,94:30,-1:7,156,-" +
-"1:20,156,126,156:15,-1,156:11,-1,115:2,151,115:2,117,115:18,35,36,115:30,-1" +
-":7,156,-1:20,156:2,128,156:14,-1,156:11,-1,133:2,147,133:2,135,123,133:17,9" +
-"4,36,133:5,123:2,133:2,123,133:20,-1:7,156,-1:20,156:3,46,156:13,-1,156:11," +
-"-1,119:5,137,119:18,42,36,119:30,-1:7,156,-1:20,156:5,130,156:11,-1,156:11," +
-"-1,155:2,133,155:2,137,119,155:17,94,36,155:5,119:2,155:2,119,155:20,-1:7,1" +
-"32,-1:20,156:17,-1,156:11,-1,123:5,139,123:18,35,36,123:30,-1:7,156,-1:20,1" +
-"56:7,47,156:9,-1,156:11,-1,160:2,123,160:2,125,160,162,160:16,69,36,160:30," +
-"-1:7,156,-1:20,156:7,48,156:9,-1,156:11,-1,159:2,165,159:2,127,159,103,159:" +
-"16,94,36,159:30,-1:7,156,-1:20,156:13,49,156:3,-1,156:11,-1,168:2,119,168:2" +
-",129,168,109,168:16,69,36,168:30,-1:7,50,-1:20,156:17,-1,156:11,-1,168:2,11" +
-"9,168:2,106,168,109,168:16,40,36,168:30,-1:7,156,-1:20,156:16,136,-1,156:11" +
-",-1,119:5,121,119:18,42,36,119:30,-1:7,138,-1:20,156:17,-1,156:11,-1,123:5," +
-"117,123:18,94,36,123:30,-1:7,156,-1:20,156:3,51,156:13,-1,156:11,-1,119:5,1" +
-"37,119:18,94,36,119:30,-1:7,156,-1:20,140,156:16,-1,156:11,-1,123:5,139,123" +
-":18,94,36,123:30,-1:7,156,-1:20,156:7,141,156:9,-1,156:11,-1:7,156,-1:20,15" +
-"6:9,142,156:7,-1,156:11,-1:7,156,-1:20,156:8,52,156:8,-1,156:11,-1:7,156,-1" +
-":20,156,76,156:15,-1,156:11,-1,144:3,38,68,28,144,157,144:3,38:2,144:12,-1," +
-"144:30,-1:7,26,-1:20,26:17,71:4,75:2,71,75:3,26:2,-1,146:2,151,146:2,77,146" +
-":18,40,36,146:30,-1:7,156,-1:20,156:4,152,156:12,-1,156:11,-1:7,156,-1:20,1" +
-"56:3,112,156:13,-1,156:11,-1:7,156,-1:20,156:7,122,156:9,-1,156:11,-1,160:2" +
-",153,160:2,125,160,162,160:16,40,36,160:30,-1:7,156,-1:20,156:2,134,156:14," +
-"-1,156:11,-1,157:3,78,82,67,157:5,78:2,157:12,-1,157:30,-1:7,26,-1:20,26:17" +
-",75:10,26:2,-1,160:2,123,160:2,125,160,162,160:16,40,36,160:30,-1:7,156,-1:" +
-"20,156:3,118,156:13,-1,156:11,-1:7,156,-1:20,156:5,80,156:11,-1,156:11,-1:7" +
-",26,-1:20,26:17,79:10,26:2,-1,168:2,165,168:2,129,168,109,168:16,40,36,168:" +
-"30,-1:7,156,-1:20,156:7,84,156:9,-1,156:11,-1:7,26,-1:20,26:17,83:10,26:2,-" +
-"1:7,156,-1:20,156,87,156:13,148,156,-1,156:11,-1:7,26,-1:20,26:17,86:10,26:" +
-"2,-1:7,156,-1:20,156:2,90,156:6,93,156:7,-1,156:11,-1:7,26,-1:20,26:17,71:3" +
-",89,92:2,71,92:3,26:2,-1:7,156,-1:20,156:14,96,156:2,-1,156:11,-1:7,26,-1:2" +
-"0,26:17,95:10,26:2,-1:7,156,-1:20,156:5,99,156:11,-1,156:11,-1:7,26,-1:20,2" +
-"6:17,98:10,26:2,-1:7,26,-1:20,26:17,101:10,26:2,-1:7,26,-1:20,26:17,104:10," +
-"26:2,-1:7,26,-1:20,26:17,107:10,26:2,-1:7,26,-1:20,26:17,145:4,158:2,145:2," +
-"158,145,26:2,-1:7,26,-1:20,26:17,158:10,26:2,-1:7,26,-1:20,26:17,164:10,26:" +
-"2,-1:7,26,-1:20,26:17,167:10,26:2,-1:7,26,-1:20,26:17,145:4,170:2,145,172,1" +
-"70,145,26:2,-1:7,26,-1:20,26:17,174:10,26:2,-1:7,26,-1:20,26:17,176:10,26:2" +
-",-1:7,26,-1:20,26:17,177:10,26:2,-1:7,26,-1:20,26:17,178:10,26:2,-1:7,26,-1" +
-":20,26:17,179:10,26:2,-1:7,26,-1:20,26:17,180:3,181:3,180,181:3,26:2,-1:7,2" +
-"6,-1:20,26:17,181:10,26:2,-1:7,26,-1:20,26:17,182:10,26:2,-1:7,26,-1:20,26:" +
-"17,180:3,183:3,184,183:3,26:2,-1:7,26,-1:20,26:17,185:10,26:2,-1:7,26,-1:20" +
-",26:17,186:10,26:2,-1:7,26,-1:20,26:17,187:10,26:2,-1:7,26,-1:20,26:17,188:" +
-"10,26:2,-1:7,26,-1:20,26:17,189:10,26:2,-1:7,26,-1:20,26:17,190:8,191,190,2" +
-"6:2,-1:7,26,-1:20,26:17,191:10,26:2,-1:7,26,-1:20,26:17,192:10,26:2,-1:7,26" +
-",-1:20,26:17,190:5,193,190:2,194,190,26:2,-1:7,26,-1:20,26:17,195:10,26:2,-" +
-"1:7,26,-1:20,26:17,196:10,26:2,-1:7,26,-1:20,26:17,197:10,26:2,-1:7,26,-1:2" +
-"0,26:17,200:10,26:2,-1:7,26,-1:20,26:17,198:10,26:2,-1:7,26,-1:20,26:17,199" +
-":4,200:2,199,200:3,26:2,-1:7,26,-1:20,26:17,201:10,26:2,-1:7,26,-1:20,26:17" +
-",199:3,202,203:2,199,203:3,26:2,-1:7,26,-1:20,26:17,204:10,26:2,-1:7,26,-1:" +
-"20,26:17,205:10,26:2,-1:7,26,-1:20,26:17,206:4,209:2,206,209:3,26:2,-1:7,26" +
-",-1:20,26:17,209:10,26:2,-1:7,26,-1:20,26:17,207:10,26:2,-1:7,26,-1:20,26:1" +
-"7,208:5,209,208:2,209,208,26:2,-1:7,26,-1:20,26:17,210:10,26:2,-1:7,26,-1:2" +
-"0,26:17,208:4,211,212,208:2,212,208,26:2,-1:7,26,-1:20,26:17,213:10,26:2,-1" +
-":7,26,-1:20,26:17,214:4,215,218,214,215,218,215,26:2,-1:7,26,-1:20,26:17,21" +
-"5:3,214,215,218,215,214,218,214,26:2,-1:7,26,-1:20,26:17,218:10,26:2,-1:7,2" +
-"6,-1:20,26:17,215:5,218,215:2,218,215,26:2,-1:7,26,-1:20,26:17,214:4,215,21" +
-"8,214:2,218,214,26:2,-1:7,26,-1:20,26:17,216:10,26:2,-1:7,26,-1:20,26:17,21" +
-"7:4,218:2,217,218:3,26:2,-1:7,26,-1:20,26:17,219:10,26:2,-1:7,26,-1:20,26:1" +
-"7,217:3,220,221:2,217,221:3,26:2,-1:7,26,-1:20,26:17,222:5,223,222:2,224,22" +
-"2,26:2,-1:7,26,-1:20,26:17,225:4,223:2,225,223,224,223,26:2,-1:7,26,-1:20,2" +
-"6:17,226:3,225,224:2,226,225,224,225,26:2,-1:7,26,-1:20,26:17,224:10,26:2,-" +
-"1:7,26,-1:20,26:17,227:10,26:2,-1:7,26,-1:20,26:17,228,229,230,229:7,26:2,-" +
-"1:7,26,-1:20,26:17,231:4,232,233,231,232,234,232,26:2,-1:7,26,-1:20,26:17,2" +
-"35:10,26:2");
+	private int yy_nxt[][] = unpackFromString(180,60,
+"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,69,77,26," +
+"27,1,8,148,161:3,166,169,161,172,174,161,70,176,178,161:4,68,240,241,242:7," +
+"161,28,-1:65,29,30,-1:61,161,-1:22,161:7,78,161:9,-1,161:11,-1:14,31,-1:60," +
+"32,-1:62,33,-1:59,34,-1:59,35,-1:59,36,-1:42,27:2,71,27:3,79,27:20,39,40,27" +
+":30,-1:8,28,-1:22,28:29,-1,29:2,-1:2,29:24,-1,29:30,-1,149:3,162,42:2,30,14" +
+"9:4,42:2,149:15,-1,149:30,-1:8,161,-1:22,161:17,-1,161:11,-1,42:3,80,42,73," +
+"88,42:21,-1,42:30,-1:8,28,-1:22,28:17,67:10,28:2,-1:8,28,-1:22,28:17,68,240" +
+",241,242:7,28:2,-1:25,37,-1:42,155,-1:22,161:8,41,161:8,-1,161:11,-1,151:2," +
+"71,151:3,83,151:20,44,40,151:30,-1,72:4,-1:2,72:5,-1:2,72:15,-1,72:30,-1,42" +
+":3,80,49,73,88,42:21,-1,42:30,-1,100:6,117,100:20,-1:2,100:30,-1,80:5,84,-1" +
+",80:21,-1,80:30,-1:8,28,-1:22,28:17,57:5,28,57:2,28,57,28:2,-1:26,38,-1:41," +
+"161,-1:22,161:11,43,161:5,-1,161:11,-1,87:2,91,87:3,94,97,87:19,100,40,87:5" +
+",97:2,87:2,97,87:20,-1:8,161,-1:22,161:2,165,161:14,-1,161:11,-1,154:2,152," +
+"154:3,103,164,154:19,74,40,154:5,164:2,154:2,164,154:20,-1,80:4,75,84,-1,80" +
+":21,-1,80:30,-1:8,28,-1:22,28:17,58:10,28:2,-1:8,161,-1:22,161:6,108,161:10" +
+",-1,161:11,-1,184:2,168,184:3,106,184:20,46,40,184:30,-1,42:3,80,42:2,88,42" +
+":21,-1,42:30,-1:8,28,-1:22,28:17,59:10,28:2,-1:8,161,-1:22,161:4,111,161:12" +
+",-1,161:11,-1,171:2,168,171:3,109,171:20,44,40,171:30,-1:8,28,-1:22,28:17,6" +
+"0:10,28:2,-1:8,161,-1:22,161:3,114,161:13,-1,161:11,-1,97:2,112,97:3,79,97:" +
+"20,100,40,97:30,-1:8,28,-1:22,28:17,57:5,61,57:2,61,57,28:2,-1:8,161,-1:22," +
+"161,116,161:15,-1,161:11,-1,97:2,112,97:3,115,97:20,39,40,97:30,-1:8,28,-1:" +
+"22,28:17,62:10,28:2,-1:8,161,-1:22,161:5,45,161:11,-1,161:11,-1:8,28,-1:22," +
+"28:17,63:10,28:2,-1:8,161,-1:22,161:10,120,161:6,-1,161:11,-1,164:2,127,129" +
+",164:2,83,164:20,74,40,164:30,-1:8,28,-1:22,28:17,64:10,28:2,-1:8,161,-1:22" +
+",161:7,122,161:9,-1,161:11,-1,87:2,91,87:3,158,184,87:19,100,40,87:5,184:2," +
+"87:2,184,87:20,-1:8,28,-1:22,28:17,65:10,28:2,-1:8,161,-1:22,161:7,47,161:9" +
+",-1,161:11,-1,135:2,137,135:3,133,171,135:19,74,40,135:5,171:2,135:2,171,13" +
+"5:20,-1:8,28,-1:22,28:17,66:10,28:2,-1:8,161,-1:22,161:6,126,161:10,-1,161:" +
+"11,-1,164:2,112,129,164:2,131,164:20,44,40,164:30,-1:8,161,-1:22,161:7,48,1" +
+"61:9,-1,161:11,-1,97:2,112,97:3,115,97:20,100,40,97:30,-1:8,161,-1:22,161:3" +
+",130,161:13,-1,161:11,-1,100:6,117,100:21,-1,100:30,-1:8,161,-1:22,161:4,15" +
+"9,161:12,-1,161:11,-1,119:2,156,119:3,121,119:20,39,40,119:30,-1:8,161,-1:2" +
+"2,161,132,161:15,-1,161:11,-1,137:2,152,137:3,139,127,137:19,100,40,137:5,1" +
+"27:2,137:2,127,137:20,-1:8,161,-1:22,161:2,134,161:14,-1,161:11,-1,123:6,14" +
+"1,123:20,46,40,123:30,-1:8,161,-1:22,161:3,50,161:13,-1,161:11,-1,160:2,137" +
+",160:3,141,123,160:19,100,40,160:5,123:2,160:2,123,160:20,-1:8,161,-1:22,16" +
+"1:5,136,161:11,-1,161:11,-1,127:6,143,127:20,39,40,127:30,-1:8,138,-1:22,16" +
+"1:17,-1,161:11,-1,164:2,127,129,164:2,131,164:20,44,40,164:30,-1:8,161,-1:2" +
+"2,161:7,51,161:9,-1,161:11,-1,164:2,127,129,164:2,131,164:20,74,40,164:30,-" +
+"1:8,161,-1:22,161:7,52,161:9,-1,161:11,-1,171:2,123,171:3,133,171:20,74,40," +
+"171:30,-1:8,161,-1:22,161:13,53,161:3,-1,161:11,-1,171:2,123,171:3,109,171:" +
+"20,44,40,171:30,-1:8,54,-1:22,161:17,-1,161:11,-1,123:6,125,123:20,46,40,12" +
+"3:30,-1:8,161,-1:22,161:16,142,-1,161:11,-1,127:6,121,127:20,100,40,127:30," +
+"-1:8,144,-1:22,161:17,-1,161:11,-1,123:6,141,123:20,100,40,123:30,-1:8,161," +
+"-1:22,161:3,55,161:13,-1,161:11,-1,127:6,143,127:20,100,40,127:30,-1:8,161," +
+"-1:22,145,161:16,-1,161:11,-1:8,161,-1:22,161:7,146,161:9,-1,161:11,-1:8,16" +
+"1,-1:22,161:9,147,161:7,-1,161:11,-1:8,161,-1:22,161:8,56,161:8,-1,161:11,-" +
+"1:8,161,-1:22,161,82,161:15,-1,161:11,-1,149:3,162,42,73,30,149:4,42:2,149:" +
+"15,-1,149:30,-1:8,28,-1:22,28:17,76:4,81:2,76,81:3,28:2,-1,151:2,156,151:3," +
+"83,151:20,44,40,151:30,-1:8,161,-1:22,161:4,157,161:12,-1,161:11,-1:8,161,-" +
+"1:22,161:3,118,161:13,-1,161:11,-1:8,161,-1:22,161:7,128,161:9,-1,161:11,-1" +
+",184:2,168,184:3,158,184:20,100,40,184:30,-1:8,161,-1:22,161:2,140,161:14,-" +
+"1,161:11,-1,162:4,80,84,72,162:4,80:2,162:15,-1,162:30,-1:8,28,-1:22,28:17," +
+"81:10,28:2,-1:8,161,-1:22,161:3,124,161:13,-1,161:11,-1:8,161,-1:22,161:5,8" +
+"6,161:11,-1,161:11,-1:8,28,-1:22,28:17,85:10,28:2,-1,171:2,168,171:3,133,17" +
+"1:20,44,40,171:30,-1:8,161,-1:22,161:7,90,161:9,-1,161:11,-1:8,28,-1:22,28:" +
+"17,89:10,28:2,-1,171:2,123,171:3,133,171:20,44,40,171:30,-1:8,161,-1:22,161" +
+",93,161:13,153,161,-1,161:11,-1:8,28,-1:22,28:17,92:10,28:2,-1:8,161,-1:22," +
+"161:2,96,161:6,99,161:7,-1,161:11,-1:8,28,-1:22,28:17,76:3,95,98:2,76,98:3," +
+"28:2,-1:8,161,-1:22,161:14,102,161:2,-1,161:11,-1:8,28,-1:22,28:17,101:10,2" +
+"8:2,-1:8,161,-1:22,161:5,105,161:11,-1,161:11,-1:8,28,-1:22,28:17,104:10,28" +
+":2,-1:8,28,-1:22,28:17,107:10,28:2,-1:8,28,-1:22,28:17,110:10,28:2,-1:8,28," +
+"-1:22,28:17,113:10,28:2,-1:8,28,-1:22,28:17,150:4,163:2,150:2,163,150,28:2," +
+"-1,184:2,168,184:3,158,184:20,46,40,184:30,-1:8,28,-1:22,28:17,163:10,28:2," +
+"-1:8,28,-1:22,28:17,167:10,28:2,-1:8,28,-1:22,28:17,170:10,28:2,-1:8,28,-1:" +
+"22,28:17,150:4,173:2,150,175,173,150,28:2,-1:8,28,-1:22,28:17,177:10,28:2,-" +
+"1:8,28,-1:22,28:17,179:10,28:2,-1:8,28,-1:22,28:17,180:10,28:2,-1:8,28,-1:2" +
+"2,28:17,181:10,28:2,-1:8,28,-1:22,28:17,182:10,28:2,-1:8,28,-1:22,28:17,183" +
+":3,185:3,183,185:3,28:2,-1:8,28,-1:22,28:17,185:10,28:2,-1:8,28,-1:22,28:17" +
+",186:10,28:2,-1:8,28,-1:22,28:17,183:3,187:3,188,187:3,28:2,-1:8,28,-1:22,2" +
+"8:17,189:10,28:2,-1:8,28,-1:22,28:17,190:10,28:2,-1:8,28,-1:22,28:17,191:10" +
+",28:2,-1:8,28,-1:22,28:17,192:10,28:2,-1:8,28,-1:22,28:17,193:10,28:2,-1:8," +
+"28,-1:22,28:17,194:8,195,194,28:2,-1:8,28,-1:22,28:17,195:10,28:2,-1:8,28,-" +
+"1:22,28:17,196:10,28:2,-1:8,28,-1:22,28:17,194:5,197,194:2,198,194,28:2,-1:" +
+"8,28,-1:22,28:17,199:10,28:2,-1:8,28,-1:22,28:17,200:10,28:2,-1:8,28,-1:22," +
+"28:17,201:10,28:2,-1:8,28,-1:22,28:17,204:10,28:2,-1:8,28,-1:22,28:17,202:1" +
+"0,28:2,-1:8,28,-1:22,28:17,203:4,204:2,203,204:3,28:2,-1:8,28,-1:22,28:17,2" +
+"05:10,28:2,-1:8,28,-1:22,28:17,203:3,206,207:2,203,207:3,28:2,-1:8,28,-1:22" +
+",28:17,208:10,28:2,-1:8,28,-1:22,28:17,209:10,28:2,-1:8,28,-1:22,28:17,210:" +
+"4,213:2,210,213:3,28:2,-1:8,28,-1:22,28:17,213:10,28:2,-1:8,28,-1:22,28:17," +
+"211:10,28:2,-1:8,28,-1:22,28:17,212:5,213,212:2,213,212,28:2,-1:8,28,-1:22," +
+"28:17,214:10,28:2,-1:8,28,-1:22,28:17,212:4,215,216,212:2,216,212,28:2,-1:8" +
+",28,-1:22,28:17,217:10,28:2,-1:8,28,-1:22,28:17,218:4,219,222,218,219,222,2" +
+"19,28:2,-1:8,28,-1:22,28:17,219:3,218,219,222,219,218,222,218,28:2,-1:8,28," +
+"-1:22,28:17,222:10,28:2,-1:8,28,-1:22,28:17,219:5,222,219:2,222,219,28:2,-1" +
+":8,28,-1:22,28:17,218:4,219,222,218:2,222,218,28:2,-1:8,28,-1:22,28:17,220:" +
+"10,28:2,-1:8,28,-1:22,28:17,221:4,222:2,221,222:3,28:2,-1:8,28,-1:22,28:17," +
+"223:10,28:2,-1:8,28,-1:22,28:17,221:3,224,225:2,221,225:3,28:2,-1:8,28,-1:2" +
+"2,28:17,226:5,227,226:2,228,226,28:2,-1:8,28,-1:22,28:17,229:4,227:2,229,22" +
+"7,228,227,28:2,-1:8,28,-1:22,28:17,230:3,229,228:2,230,229,228,229,28:2,-1:" +
+"8,28,-1:22,28:17,228:10,28:2,-1:8,28,-1:22,28:17,231:10,28:2,-1:8,28,-1:22," +
+"28:17,232,233,234,233:7,28:2,-1:8,28,-1:22,28:17,235:4,236,237,235,236,238," +
+"236,28:2,-1:8,28,-1:22,28:17,239:10,28:2");
 
 	public java_cup.runtime.Symbol next_token ()
 		throws java.io.IOException {
@@ -790,138 +793,154 @@ public class Lexer implements java_cup.runtime.Scanner {
 					case -6:
 						break;
 					case 5:
-						{ return new Symbol(TokenIds.DIVIDE, new Token("DIVIDE", yyline)); }
+						{}
 					case -7:
 						break;
 					case 6:
-						{ return new Symbol(TokenIds.TIMES, new Token("TIMES", yyline)); }
+						{ return new Symbol(TokenIds.DIVIDE, new Token("DIVIDE", yyline)); }
 					case -8:
 						break;
 					case 7:
-						{ throw new RuntimeException("Unmatched lexeme " +
-                            yytext() + " at line " + yyline); }
+						{ return new Symbol(TokenIds.TIMES, new Token("TIMES", yyline)); }
 					case -9:
 						break;
 					case 8:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+						{ throw new RuntimeException("Unmatched lexeme " +
+                            yytext() + " at line " + yyline); }
 					case -10:
 						break;
 					case 9:
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
+					case -11:
+						break;
+					case 10:
 						{
     return new Symbol(
             TokenIds.LEX_ERROR, new Token("LEX_ERROR", "Unsupported Character", yyline));
 }
-					case -11:
-						break;
-					case 10:
-						{ return new Symbol(TokenIds.LBRACE, new Token("LBRACE", yyline)); }
 					case -12:
 						break;
 					case 11:
-						{ return new Symbol(TokenIds.RBRACE, new Token("RBRACE", yyline)); }
+						{ return new Symbol(TokenIds.LBRACE, new Token("LBRACE", yyline)); }
 					case -13:
 						break;
 					case 12:
-						{ return new Symbol(TokenIds.LPAREN, new Token("LPAREN", yyline)); }
+						{ return new Symbol(TokenIds.RBRACE, new Token("RBRACE", yyline)); }
 					case -14:
 						break;
 					case 13:
-						{ return new Symbol(TokenIds.RPAREN, new Token("RPAREN", yyline)); }
+						{ return new Symbol(TokenIds.LPAREN, new Token("LPAREN", yyline)); }
 					case -15:
 						break;
 					case 14:
-						{ return new Symbol(TokenIds.MINUS, new Token("MINUS", yyline)); }
+						{ return new Symbol(TokenIds.RPAREN, new Token("RPAREN", yyline)); }
 					case -16:
 						break;
 					case 15:
-						{ return new Symbol(TokenIds.PLUS, new Token("PLUS", yyline)); }
+						{ return new Symbol(TokenIds.MINUS, new Token("MINUS", yyline)); }
 					case -17:
 						break;
 					case 16:
-						{ return new Symbol(TokenIds.LSQBRACE, new Token("LSQBRACE", yyline)); }
+						{ return new Symbol(TokenIds.PLUS, new Token("PLUS", yyline)); }
 					case -18:
 						break;
 					case 17:
-						{ return new Symbol(TokenIds.RSQBRACE, new Token("RSQBRACE", yyline)); }
+						{ return new Symbol(TokenIds.LSQBRACE, new Token("LSQBRACE", yyline)); }
 					case -19:
 						break;
 					case 18:
-						{ return new Symbol(TokenIds.ASSIGN, new Token("ASSIGN", yyline)); }
+						{ return new Symbol(TokenIds.RSQBRACE, new Token("RSQBRACE", yyline)); }
 					case -20:
 						break;
 					case 19:
-						{ return new Symbol(TokenIds.LT, new Token("LT", yyline)); }
+						{ return new Symbol(TokenIds.ASSIGN, new Token("ASSIGN", yyline)); }
 					case -21:
 						break;
 					case 20:
-						{ return new Symbol(TokenIds.GT, new Token("GT", yyline)); }
+						{ return new Symbol(TokenIds.LT, new Token("LT", yyline)); }
 					case -22:
 						break;
 					case 21:
-						{ return new Symbol(TokenIds.NOT, new Token("NOT", yyline)); }
+						{ return new Symbol(TokenIds.GT, new Token("GT", yyline)); }
 					case -23:
 						break;
 					case 22:
-						{ return new Symbol(TokenIds.MODULUS, new Token("MODULUS", yyline)); }
+						{ return new Symbol(TokenIds.NOT, new Token("NOT", yyline)); }
 					case -24:
 						break;
 					case 23:
-						{ return new Symbol(TokenIds.SEMI, new Token("SEMI", yyline)); }
+						{ return new Symbol(TokenIds.MODULUS, new Token("MODULUS", yyline)); }
 					case -25:
 						break;
 					case 24:
-						{ return new Symbol(TokenIds.COMMA, new Token("COMMA", yyline)); }
+						{ return new Symbol(TokenIds.SEMI, new Token("SEMI", yyline)); }
 					case -26:
 						break;
 					case 25:
+						{ return new Symbol(TokenIds.COMMA, new Token("COMMA", yyline)); }
+					case -27:
+						break;
+					case 26:
+						{ return new Symbol(TokenIds.DOT, new Token("DOT", yyline)); }
+					case -28:
+						break;
+					case 27:
 						{
     return new Symbol(TokenIds.error, new Token(
             "LEX_ERROR","String constant unterminated",yyline));
 }
-					case -27:
-						break;
-					case 26:
-						{return new Symbol(TokenIds.LEX_ERROR,
-                             new Token("LEX_ERROR", "Illegal Identifier", yyline)); }
-					case -28:
-						break;
-					case 27:
-						{}
 					case -29:
 						break;
 					case 28:
+						{return new Symbol(TokenIds.LEX_ERROR,
+                             new Token("LEX_ERROR", "Illegal Identifier", yyline)); }
+					case -30:
+						break;
+					case 29:
+						{}
+					case -31:
+						break;
+					case 30:
 						{
     return new Symbol(TokenIds.error, new Token(
             "LEX_ERROR","unterminated multiline comment", yyline));
 }
-					case -30:
-						break;
-					case 29:
-						{ return new Symbol(TokenIds.DECR, new Token("DECR", yyline)); }
-					case -31:
-						break;
-					case 30:
-						{ return new Symbol(TokenIds.INCR,  new Token("INCR", yyline)); }
 					case -32:
 						break;
 					case 31:
-						{ return new Symbol(TokenIds.EQ, new Token("EQ", yyline)); }
+						{ return new Symbol(TokenIds.DECR, new Token("DECR", yyline)); }
 					case -33:
 						break;
 					case 32:
-						{ return new Symbol(TokenIds.LEQ, new Token("LEQ", yyline)); }
+						{ return new Symbol(TokenIds.INCR,  new Token("INCR", yyline)); }
 					case -34:
 						break;
 					case 33:
-						{ return new Symbol(TokenIds.GEQ, new Token("GEQ", yyline)); }
+						{ return new Symbol(TokenIds.EQ, new Token("EQ", yyline)); }
 					case -35:
 						break;
 					case 34:
-						{ return new Symbol(TokenIds.NE, new Token("NE", yyline)); }
+						{ return new Symbol(TokenIds.LEQ, new Token("LEQ", yyline)); }
 					case -36:
 						break;
 					case 35:
+						{ return new Symbol(TokenIds.GEQ, new Token("GEQ", yyline)); }
+					case -37:
+						break;
+					case 36:
+						{ return new Symbol(TokenIds.NE, new Token("NE", yyline)); }
+					case -38:
+						break;
+					case 37:
+						{ return new Symbol(TokenIds.AND, new Token("AND", yyline)); }
+					case -39:
+						break;
+					case 38:
+						{ return new Symbol(TokenIds.OR, new Token("OR", yyline)); }
+					case -40:
+						break;
+					case 39:
 						{
     if (yytext().length() > 5000) {
                 return new Symbol(TokenIds.error, new Token("LEX_ERROR",
@@ -931,113 +950,85 @@ public class Lexer implements java_cup.runtime.Scanner {
         yytext().substring(1,yytext().length()-1), yyline));
     }
 }
-					case -37:
+					case -41:
 						break;
-					case 36:
+					case 40:
 						{
     return new Symbol(
             TokenIds.error, new Token("LEX_ERROR","String constant unterminated",yyline));
 }
-					case -38:
+					case -42:
 						break;
-					case 37:
+					case 41:
 						{ return new Symbol(TokenIds.IF, new Token("IF", yyline)); }
-					case -39:
+					case -43:
 						break;
-					case 39:
+					case 43:
 						{ return new Symbol(TokenIds.NEW, new Token("NEW", yyline)); }
-					case -40:
+					case -44:
 						break;
-					case 40:
+					case 44:
 						{
     return new Symbol(TokenIds.error, new Token(
             "LEX_ERROR","String constant spanning multiple lines",yyline));
 }
-					case -41:
+					case -45:
 						break;
-					case 41:
+					case 45:
 						{ return new Symbol(TokenIds.FOR, new Token("FOR", yyline)); }
-					case -42:
+					case -46:
 						break;
-					case 42:
+					case 46:
 						{
     return new Symbol(TokenIds.error, new Token(
             "LEX_ERROR","String constant contains illegal escape characters",yyline));
 }
-					case -43:
-						break;
-					case 43:
-						{ return new Symbol(TokenIds.BOOLEAN_CONST, new Token("TRUE",yyline)); }
-					case -44:
-						break;
-					case 44:
-						{ return new Symbol(TokenIds.ELSE, new Token("ELSE", yyline)); }
-					case -45:
-						break;
-					case 45:
-						{}
-					case -46:
-						break;
-					case 46:
-						{ return new Symbol(TokenIds.CLASS, new Token("CLASS", yyline)); }
 					case -47:
 						break;
 					case 47:
-						{ return new Symbol(TokenIds.BOOLEAN_CONST, new Token("FALSE",yyline)); }
+						{ return new Symbol(TokenIds.BOOLEAN_CONST, new Token("TRUE",yyline)); }
 					case -48:
 						break;
 					case 48:
-						{ return new Symbol(TokenIds.WHILE, new Token("WHILE", yyline)); }
+						{ return new Symbol(TokenIds.ELSE, new Token("ELSE", yyline)); }
 					case -49:
 						break;
 					case 49:
-						{ return new Symbol(TokenIds.BREAK, new Token("BREAK", yyline)); }
+						{}
 					case -50:
 						break;
 					case 50:
-						{ return new Symbol(TokenIds.RETURN, new Token("RETURN", yyline)); }
+						{ return new Symbol(TokenIds.CLASS, new Token("CLASS", yyline)); }
 					case -51:
 						break;
 					case 51:
-						{ return new Symbol(TokenIds.EXTENDS, new Token("EXTENDS", yyline)); }
+						{ return new Symbol(TokenIds.BOOLEAN_CONST, new Token("FALSE",yyline)); }
 					case -52:
 						break;
 					case 52:
-						{ return new Symbol(TokenIds.INSTANCEOF, new Token("INSTANCEOF", yyline)); }
+						{ return new Symbol(TokenIds.WHILE, new Token("WHILE", yyline)); }
 					case -53:
 						break;
 					case 53:
-						{
-    return new Symbol(TokenIds.INT_CONST,
-            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
-}
+						{ return new Symbol(TokenIds.BREAK, new Token("BREAK", yyline)); }
 					case -54:
 						break;
 					case 54:
-						{
-    return new Symbol(TokenIds.LEX_ERROR, new Token(
-        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
-}
+						{ return new Symbol(TokenIds.RETURN, new Token("RETURN", yyline)); }
 					case -55:
 						break;
 					case 55:
-						{
-    return new Symbol(TokenIds.LEX_ERROR, new Token(
-        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
-}
+						{ return new Symbol(TokenIds.EXTENDS, new Token("EXTENDS", yyline)); }
 					case -56:
 						break;
 					case 56:
-						{
-    return new Symbol(TokenIds.LEX_ERROR, new Token(
-        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
-}
+						{ return new Symbol(TokenIds.INSTANCEOF, new Token("INSTANCEOF", yyline)); }
 					case -57:
 						break;
 					case 57:
 						{
-    return new Symbol(TokenIds.LEX_ERROR, new Token(
-        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
 }
 					case -58:
 						break;
@@ -1085,130 +1076,130 @@ public class Lexer implements java_cup.runtime.Scanner {
 						break;
 					case 64:
 						{
-    return new Symbol(TokenIds.INT_CONST,
-            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
 }
 					case -65:
 						break;
 					case 65:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+						{
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
+}
 					case -66:
 						break;
 					case 66:
 						{
-    return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","String constant unterminated",yyline));
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
 }
 					case -67:
 						break;
 					case 67:
 						{
-    return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","unterminated multiline comment", yyline));
+    return new Symbol(TokenIds.LEX_ERROR, new Token(
+        "LEX_ERROR", yytext() + " int const too big: line " + yyline, yyline));
 }
 					case -68:
 						break;
+					case 68:
+						{
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+}
+					case -69:
+						break;
 					case 69:
+						{ throw new RuntimeException("Unmatched lexeme " +
+                            yytext() + " at line " + yyline); }
+					case -70:
+						break;
+					case 70:
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
+					case -71:
+						break;
+					case 71:
+						{
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","String constant unterminated",yyline));
+}
+					case -72:
+						break;
+					case 72:
+						{
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","unterminated multiline comment", yyline));
+}
+					case -73:
+						break;
+					case 74:
 						{
     return new Symbol(TokenIds.error, new Token(
             "LEX_ERROR","String constant spanning multiple lines",yyline));
 }
-					case -69:
-						break;
-					case 70:
-						{}
-					case -70:
-						break;
-					case 71:
-						{
-    return new Symbol(TokenIds.INT_CONST,
-            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
-}
-					case -71:
-						break;
-					case 72:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
-					case -72:
-						break;
-					case 73:
-						{
-    return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","String constant unterminated",yyline));
-}
-					case -73:
-						break;
-					case 75:
-						{
-    return new Symbol(TokenIds.INT_CONST,
-            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
-}
 					case -74:
 						break;
-					case 76:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+					case 75:
+						{}
 					case -75:
 						break;
-					case 77:
+					case 76:
 						{
-    return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","String constant unterminated",yyline));
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
 }
 					case -76:
 						break;
-					case 79:
-						{
-    return new Symbol(TokenIds.INT_CONST,
-            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
-}
+					case 77:
+						{ throw new RuntimeException("Unmatched lexeme " +
+                            yytext() + " at line " + yyline); }
 					case -77:
 						break;
-					case 80:
+					case 78:
 						{ return new Symbol(TokenIds.ID,
                                 new Token("ID", yytext(),yyline));}
 					case -78:
 						break;
-					case 81:
+					case 79:
 						{
     return new Symbol(TokenIds.error, new Token(
             "LEX_ERROR","String constant unterminated",yyline));
 }
 					case -79:
 						break;
-					case 83:
+					case 81:
 						{
     return new Symbol(TokenIds.INT_CONST,
             new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
 }
 					case -80:
 						break;
-					case 84:
+					case 82:
 						{ return new Symbol(TokenIds.ID,
                                 new Token("ID", yytext(),yyline));}
 					case -81:
 						break;
-					case 85:
+					case 83:
 						{
     return new Symbol(TokenIds.error, new Token(
             "LEX_ERROR","String constant unterminated",yyline));
 }
 					case -82:
 						break;
-					case 86:
+					case 85:
 						{
     return new Symbol(TokenIds.INT_CONST,
             new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
 }
 					case -83:
 						break;
-					case 87:
+					case 86:
 						{ return new Symbol(TokenIds.ID,
                                 new Token("ID", yytext(),yyline));}
 					case -84:
 						break;
-					case 88:
+					case 87:
 						{
     return new Symbol(TokenIds.error, new Token(
             "LEX_ERROR","String constant unterminated",yyline));
@@ -1349,26 +1340,28 @@ public class Lexer implements java_cup.runtime.Scanner {
 					case -106:
 						break;
 					case 110:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+						{
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+}
 					case -107:
 						break;
 					case 111:
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
+					case -108:
+						break;
+					case 112:
 						{
     return new Symbol(TokenIds.error, new Token(
             "LEX_ERROR","String constant unterminated",yyline));
 }
-					case -108:
-						break;
-					case 112:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
 					case -109:
 						break;
 					case 113:
 						{
-    return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","String constant unterminated",yyline));
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
 }
 					case -110:
 						break;
@@ -1534,8 +1527,10 @@ public class Lexer implements java_cup.runtime.Scanner {
 					case -137:
 						break;
 					case 141:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+						{
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","String constant unterminated",yyline));
+}
 					case -138:
 						break;
 					case 142:
@@ -1544,36 +1539,30 @@ public class Lexer implements java_cup.runtime.Scanner {
 					case -139:
 						break;
 					case 143:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+						{
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","String constant unterminated",yyline));
+}
 					case -140:
 						break;
 					case 144:
-						{
-    return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","unterminated multiline comment", yyline));
-}
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -141:
 						break;
 					case 145:
-						{
-    return new Symbol(TokenIds.INT_CONST,
-            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
-}
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -142:
 						break;
 					case 146:
-						{
-    return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","String constant unterminated",yyline));
-}
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -143:
 						break;
 					case 147:
-						{
-    return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","String constant unterminated",yyline));
-}
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -144:
 						break;
 					case 148:
@@ -1584,13 +1573,15 @@ public class Lexer implements java_cup.runtime.Scanner {
 					case 149:
 						{
     return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","String constant unterminated",yyline));
+            "LEX_ERROR","unterminated multiline comment", yyline));
 }
 					case -146:
 						break;
 					case 150:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+						{
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+}
 					case -147:
 						break;
 					case 151:
@@ -1601,53 +1592,51 @@ public class Lexer implements java_cup.runtime.Scanner {
 					case -148:
 						break;
 					case 152:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+						{
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","String constant unterminated",yyline));
+}
 					case -149:
 						break;
 					case 153:
-						{
-    return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","String constant unterminated",yyline));
-}
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -150:
 						break;
 					case 154:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
-					case -151:
-						break;
-					case 155:
 						{
     return new Symbol(TokenIds.error, new Token(
             "LEX_ERROR","String constant unterminated",yyline));
 }
+					case -151:
+						break;
+					case 155:
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -152:
 						break;
 					case 156:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+						{
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","String constant unterminated",yyline));
+}
 					case -153:
 						break;
 					case 157:
-						{
-    return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","unterminated multiline comment", yyline));
-}
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -154:
 						break;
 					case 158:
 						{
-    return new Symbol(TokenIds.INT_CONST,
-            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","String constant unterminated",yyline));
 }
 					case -155:
 						break;
 					case 159:
-						{
-    return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","String constant unterminated",yyline));
-}
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -156:
 						break;
 					case 160:
@@ -1665,27 +1654,27 @@ public class Lexer implements java_cup.runtime.Scanner {
 					case 162:
 						{
     return new Symbol(TokenIds.error, new Token(
-            "LEX_ERROR","String constant unterminated",yyline));
+            "LEX_ERROR","unterminated multiline comment", yyline));
 }
 					case -159:
 						break;
 					case 163:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
-					case -160:
-						break;
-					case 164:
 						{
     return new Symbol(TokenIds.INT_CONST,
             new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
 }
-					case -161:
+					case -160:
 						break;
-					case 165:
+					case 164:
 						{
     return new Symbol(TokenIds.error, new Token(
             "LEX_ERROR","String constant unterminated",yyline));
 }
+					case -161:
+						break;
+					case 165:
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -162:
 						break;
 					case 166:
@@ -1720,39 +1709,39 @@ public class Lexer implements java_cup.runtime.Scanner {
 					case -167:
 						break;
 					case 171:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+						{
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","String constant unterminated",yyline));
+}
 					case -168:
 						break;
 					case 172:
-						{
-    return new Symbol(TokenIds.INT_CONST,
-            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
-}
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -169:
 						break;
 					case 173:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+						{
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+}
 					case -170:
 						break;
 					case 174:
-						{
-    return new Symbol(TokenIds.INT_CONST,
-            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
-}
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -171:
 						break;
 					case 175:
-						{ return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
-					case -172:
-						break;
-					case 176:
 						{
     return new Symbol(TokenIds.INT_CONST,
             new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
 }
+					case -172:
+						break;
+					case 176:
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -173:
 						break;
 					case 177:
@@ -1763,10 +1752,8 @@ public class Lexer implements java_cup.runtime.Scanner {
 					case -174:
 						break;
 					case 178:
-						{
-    return new Symbol(TokenIds.INT_CONST,
-            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
-}
+						{ return new Symbol(TokenIds.ID,
+                                new Token("ID", yytext(),yyline));}
 					case -175:
 						break;
 					case 179:
@@ -1806,8 +1793,8 @@ public class Lexer implements java_cup.runtime.Scanner {
 						break;
 					case 184:
 						{
-    return new Symbol(TokenIds.INT_CONST,
-            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+    return new Symbol(TokenIds.error, new Token(
+            "LEX_ERROR","String constant unterminated",yyline));
 }
 					case -181:
 						break;
@@ -2188,6 +2175,34 @@ public class Lexer implements java_cup.runtime.Scanner {
             new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
 }
 					case -235:
+						break;
+					case 239:
+						{
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+}
+					case -236:
+						break;
+					case 240:
+						{
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+}
+					case -237:
+						break;
+					case 241:
+						{
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+}
+					case -238:
+						break;
+					case 242:
+						{
+    return new Symbol(TokenIds.INT_CONST,
+            new Token("INT_CONST", yytext().replaceFirst("^0+(?!$)", ""), yyline));
+}
+					case -239:
 						break;
 					default:
 						yy_error(YY_E_INTERNAL,false);

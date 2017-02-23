@@ -3,6 +3,7 @@ package bantam.parser;
 import bantam.ast.*;
 import java_cup.runtime.Symbol;
 import bantam.lexer.Lexer;
+import jdk.nashorn.internal.ir.Block;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -92,7 +93,7 @@ public class ParserTest
      */
     @Test
     public void parameterizedMethodTest() throws Exception {
-        Method method = getMethod("class Main{int myInt(int p1, String p2){}}");
+        Method method = getMethod("class Main{int myInt(int p1, String p2){int x=5; if (true) break;}}");
         ASTNode n1 = method.getFormalList().get(0);
         ASTNode n2 = method.getFormalList().get(1);
         assertTrue(n1 instanceof Formal);
@@ -103,6 +104,7 @@ public class ParserTest
         assertEquals(formal1.getType(), "int");
         assertEquals(formal2.getName(), "p2");
         assertEquals(formal2.getType(), "String");
+        method.getStmtList().forEach(a -> System.out.println(a));
     }
 
     @Test
@@ -111,7 +113,35 @@ public class ParserTest
                 "int myInt(){ " +
                 "/* ExprStmt */ ident = 5; " +
                 "/* DeclStmt */ type ident = 5;" +
-                "/* IfStmt */ if (true) "
+                "/* IfStmt */ if (true) ident = 5;" +
+                "/* IfStmt */ if (false) ident = 5 else ident = 5;" +
+                "/* WhileStmt */ while (true) ident = 5;" +
+                "/* ForStmt */ for (;;) ident = 5;" +
+                "/* BreakStmt */ break;" +
+                "/* ReturnStmt */ return;" +
+                "/* ReturnStmt */ return ident = 5;" +
+                "/* BlockStmt */ { ident = 5; break; }" +
+                "} }";
+
+        program = "class Main {int myInt(){ident a = 5;type ident = 5;if (true) ident = 5;return;}}";
+//        System.out.println(getStmt(program, 0).getClass());
+//        System.out.println(getMethod(program).getStmtList());
+//        getMethod(program).getStmtList().forEach(a -> System.out.println(a));
+
+
+        assertTrue(getStmt(program, 0) instanceof ExprStmt);
+        assertTrue(getStmt(program, 1) instanceof DeclStmt);
+        assertTrue(getStmt(program, 2) instanceof IfStmt);
+        assertTrue(getStmt(program, 3) instanceof IfStmt);
+        assertTrue(getStmt(program, 4) instanceof WhileStmt);
+        assertTrue(getStmt(program, 5) instanceof ForStmt);
+        assertTrue(getStmt(program, 6) instanceof BreakStmt);
+        assertTrue(getStmt(program, 7) instanceof BlockStmt);
+        assertTrue(getStmt(program, 8) instanceof ReturnStmt);
+        assertTrue(getStmt(program, 9) instanceof ReturnStmt);
+
+
+
     }
 
     /**
