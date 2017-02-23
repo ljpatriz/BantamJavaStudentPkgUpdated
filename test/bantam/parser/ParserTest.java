@@ -1,10 +1,8 @@
 package bantam.parser;
 
 import bantam.ast.*;
-import com.sun.tools.internal.jxc.ap.Const;
 import java_cup.runtime.Symbol;
 import bantam.lexer.Lexer;
-import jdk.nashorn.internal.ir.Block;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,33 +47,10 @@ public class ParserTest {
      * using an ExpectedException Rule
      */
     @Test
-    public void unmatchedLeftBraceTest1() throws Exception {
+    public void unmatchedLeftBraceTest() throws Exception {
         Parser parser = new Parser(new Lexer(new StringReader("class Main {  ")));
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Bantam parser found errors.");
+        this.expectParseFail();
         parser.parse();
-    }
-
-    /**
-     * tests the case of a missing right brace at end of a class def.
-     * This version is like unmatchedLeftBraceTest1 except that it
-     * doesn't use an ExpectedException Rule and it also prints the error messages.
-     */
-    @Test
-    public void unmatchedLeftBraceTest2() throws Exception {
-        Parser parser = new Parser(new Lexer(new StringReader("class Main {  ")));
-        boolean thrown = false;
-
-        try {
-            parser.parse();
-        } catch (RuntimeException e) {
-            thrown = true;
-            assertEquals("Bantam parser found errors.", e.getMessage());
-            for (ErrorHandler.Error err : parser.getErrorHandler().getErrorList()) {
-                System.out.println(err);
-            }
-        }
-        assertTrue(thrown);
     }
 
     @Test
@@ -128,8 +103,7 @@ public class ParserTest {
         assertTrue(getStmt(program, 7) instanceof ReturnStmt);
         assertTrue(getStmt(program, 8) instanceof ReturnStmt);
         assertTrue(getStmt(program, 9) instanceof BlockStmt);
-
-
+    }
 
     }
 
@@ -575,22 +549,87 @@ public class ParserTest {
     /**
      * Gets the first statement
      * @param s the java program string
-     * @param index
+     * @param index the index of the statement
      * @return
      */
     public Stmt getStmt(String s, int index)throws Exception{
         return (Stmt)getMethod(s).getStmtList().get(index);
     }
 
+    /**
+     * Gets the first method of the program
+     * @param s the java program string
+     * @return
+     * @throws Exception
+     */
     public Method getMethod(String s)throws Exception{
         Class_ myClass = getClass(s);
         return (Method)myClass.getMemberList().get(0);
     }
 
+    /**
+     * Gets the first class in the program.
+     * @param s the java program string
+     * @return
+     * @throws Exception
+     */
     public Class_ getClass(String s) throws Exception{
         Parser parser = new Parser(new Lexer(new StringReader(s)));
         Symbol result = parser.parse();
         ClassList classes = ((Program) result.value).getClassList();
         return (Class_) classes.get(0);
     }
+
+    /**
+     * Expects the parser to fail, will cause a test to pass if the parser fails in the
+     * manner specified.
+     */
+    public void expectParseFail() {
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage("Bantam parser found errors.");
+    }
+
+    /**
+     * Tests the illegal case of a missing semicolon between statements.
+     * @throws Exception
+     */
+    @Test
+    public void missingSemiFail() throws Exception {
+        this.expectParseFail();
+        this.getClass("class a { int x int y; }");
+    }
+
+    /**
+     * Tests the illegal case of something not Formal being passed to a DispatchExpr.
+     * @throws Exception
+     */
+    @Test
+    public void informalMethodParamFail() throws Exception {
+        this.expectParseFail();
+        this.getClass("class a { int x(int) {} }");
+    }
+
+    /**
+     * Tests the illegal case of no class found
+     * @throws Exception
+     */
+    @Test
+    public void noClassFail() throws Exception {
+        this.expectParseFail();
+        this.getClass("int x");
+    }
+
+    /**
+     * Tests the illegal case of an improper member of a class.
+     * @throws Exception
+     */
+    @Test
+    public void invalidMemberFail() throws Exception {
+        this.expectParseFail();
+        this.getClass("class a { single_identifier;}");
+    }
+
+
+
+
 }

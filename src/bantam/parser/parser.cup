@@ -571,8 +571,10 @@ assignExpr
 
         varExpr:ve ASSIGN expr:e
             {: //TODO: VERIFY CORRECT
+                String refName = "";
+                if (ve.getRef() != null) {refName = ve.getRef().getExprType();}
                 RESULT = new AssignExpr(ve.getLineNum(),
-                                        /*ve.getRef().getExprType()*/ "",
+                                        refName,
                                         ve.getName(),
                                         e); :}
     ;
@@ -583,8 +585,10 @@ arrayassignExpr
 
         arrayExpr:ae ASSIGN expr:e
             {://TODO: VERIFY CORRECT
+                String refName = "";
+                if (ve.getRef() != null) {refName = ve.getRef().getExprType();}
                 RESULT = new ArrayAssignExpr(ae.getLineNum(),
-                                             /*ae.getRef().getExprType()*/ "",
+                                             refName,
                                              ae.getName(),
                                              ae,
                                              e); :}
