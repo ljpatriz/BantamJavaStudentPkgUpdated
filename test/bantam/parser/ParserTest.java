@@ -107,8 +107,11 @@ public class ParserTest
 
     @Test
     public void statementTest() throws Exception {
-        String program = "class Main{int myInt(){ /* ExprStmt */ ident = 5; /* DeclStmt */" +
-                "type ident = 5"
+        String program = "class Main {" +
+                "int myInt(){ " +
+                "/* ExprStmt */ ident = 5; " +
+                "/* DeclStmt */ type ident = 5;" +
+                "/* IfStmt */ if (true) "
     }
 
     /**
