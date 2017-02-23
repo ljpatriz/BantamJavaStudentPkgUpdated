@@ -99,7 +99,7 @@ public class ParserTest
 
     public Method getMethod(String s)throws Exception{
         Class_ myClass = getClass(s);
-        return (Method)myClass.getMemberList().get(0);;
+        return (Method)myClass.getMemberList().get(0);
     }
 
     public Class_ getClass(String s) throws Exception{
