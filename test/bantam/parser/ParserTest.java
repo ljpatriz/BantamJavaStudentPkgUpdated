@@ -109,6 +109,33 @@ public class ParserTest
     }
 
     /**
+     * Tests all of the statements.
+     */
+    @Test
+    public void statementTest() throws Exception {
+        String program = "class Main {" +
+                "int myInt(){ ident = 5; type ident = 5; if (true) ident = 5;" +
+                "if (false) ident = 5; else ident = 5; while (true) ident = 5;" +
+                "for (;;) ident = 5; break; return; return ident = 5;" +
+                "{ ident = 5; break; } } }";
+
+        assertTrue(getStmt(program, 0) instanceof ExprStmt);
+        assertTrue(getStmt(program, 1) instanceof DeclStmt);
+        assertTrue(getStmt(program, 2) instanceof IfStmt);
+        assertTrue(getStmt(program, 3) instanceof IfStmt);
+        assertTrue(getStmt(program, 4) instanceof WhileStmt);
+        assertTrue(getStmt(program, 5) instanceof ForStmt);
+        assertTrue(getStmt(program, 6) instanceof BreakStmt);
+        assertTrue(getStmt(program, 7) instanceof ReturnStmt);
+        assertTrue(getStmt(program, 8) instanceof ReturnStmt);
+        assertTrue(getStmt(program, 9) instanceof BlockStmt);
+
+
+
+    }
+    
+    
+    /**
      * Tests the case of a field
      */
     @Test
