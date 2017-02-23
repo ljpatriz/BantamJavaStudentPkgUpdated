@@ -221,6 +221,16 @@ public class ParserTest {
     }
 
     /**
+     * Test Parentheses Expressions
+     * @throws Exception
+     */
+    @Test
+    public void parentheseExpressionTest() throws Exception{
+        String program = "class a{int a(){int a = (a)(true);}}";
+        assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof Expr);
+    }
+
+    /**
      * Tests the case of a field
      */
     @Test
