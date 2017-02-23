@@ -79,7 +79,6 @@ public class ParserTest {
         assertEquals(formal1.getType(), "int");
         assertEquals(formal2.getName(), "p2");
         assertEquals(formal2.getType(), "String");
-        method.getStmtList().forEach(a -> System.out.println(a));
     }
 
     /**
@@ -103,8 +102,6 @@ public class ParserTest {
         assertTrue(getStmt(program, 7) instanceof ReturnStmt);
         assertTrue(getStmt(program, 8) instanceof ReturnStmt);
         assertTrue(getStmt(program, 9) instanceof BlockStmt);
-    }
-
     }
 
     /**
@@ -200,7 +197,7 @@ public class ParserTest {
      */
     @Test
     public void parentheseExpressionTest() throws Exception{
-        String program = "class a{int a(){int a = (a)(true);}}";
+        String program = "class a{int a(){(a+1);}}";
         assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof Expr);
     }
 

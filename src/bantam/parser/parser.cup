@@ -225,6 +225,7 @@ class
 /*Larry's Section*/
 /* Non-provided material */
 /* member list */
+
 member_list
 
 	    ::=
@@ -333,8 +334,7 @@ stmt_list
 
         /* single list */
         | stmt:s
-            {: RESULT = (StmtList)(new StmtList(getCurrLineNum())).addElement(s);
-               System.out.println("single statement"); :}
+            {: RESULT = (StmtList)(new StmtList(getCurrLineNum())).addElement(s); :}
 
         /* several lists */
         | stmt_list:sl stmt:s
@@ -570,7 +570,7 @@ assignExpr
         ::=
 
         varExpr:ve ASSIGN expr:e
-            {: //TODO: VERIFY CORRECT
+            {:
                 String refName = "";
                 if (ve.getRef() != null) {refName = ve.getRef().getExprType();}
                 RESULT = new AssignExpr(ve.getLineNum(),
@@ -584,9 +584,9 @@ arrayassignExpr
         ::=
 
         arrayExpr:ae ASSIGN expr:e
-            {://TODO: VERIFY CORRECT
+            {:
                 String refName = "";
-                if (ve.getRef() != null) {refName = ve.getRef().getExprType();}
+                if (ae.getRef() != null) {refName = ae.getRef().getExprType();}
                 RESULT = new ArrayAssignExpr(ae.getLineNum(),
                                              refName,
                                              ae.getName(),
@@ -859,6 +859,3 @@ arrayExpr
                                        e.getName(),
                                        index); :}
     ;
-
-
-
