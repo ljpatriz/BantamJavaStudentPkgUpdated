@@ -1,6 +1,7 @@
 package bantam.parser;
 
 import bantam.ast.*;
+import com.sun.tools.internal.jxc.ap.Const;
 import java_cup.runtime.Symbol;
 import bantam.lexer.Lexer;
 import org.junit.BeforeClass;
@@ -146,7 +147,9 @@ public class ParserTest
     @Test
     public void unaryPostDecrExprTest() throws Exception{
         Method method = getMethod("class Main{void test(){test--;}}");
-        assertTrue(method.getStmtList().get(0) instanceof UnaryDecrExpr);
+        ExprStmt stmt = (ExprStmt)method.getStmtList().get(0);
+        Expr expr = stmt.getExpr();
+        assertTrue(expr instanceof UnaryDecrExpr);
     }
 
     /**
@@ -156,7 +159,9 @@ public class ParserTest
     @Test
     public void unaryPostIncrExprTest() throws Exception{
         Method method = getMethod("class Main{void test(){test++;}}");
-        assertTrue(method.getStmtList().get(0) instanceof UnaryIncrExpr);
+        ExprStmt stmt = (ExprStmt)method.getStmtList().get(0);
+        Expr expr = stmt.getExpr();
+        assertTrue(expr instanceof UnaryIncrExpr);
     }
 
     /**
@@ -166,7 +171,9 @@ public class ParserTest
     @Test
     public void unaryPreDecrExprTest() throws Exception{
         Method method = getMethod("class Main{void test(){--test;}}");
-        assertTrue(method.getStmtList().get(0) instanceof UnaryDecrExpr);
+        ExprStmt stmt = (ExprStmt)method.getStmtList().get(0);
+        Expr expr = stmt.getExpr();
+        assertTrue(expr instanceof UnaryDecrExpr);
     }
 
     /**
@@ -176,7 +183,9 @@ public class ParserTest
     @Test
     public void unaryPreIncrExprTest() throws Exception{
         Method method = getMethod("class Main{void test(){++test;}}");
-        assertTrue(method.getStmtList().get(0) instanceof UnaryIncrExpr);
+        ExprStmt stmt = (ExprStmt)method.getStmtList().get(0);
+        Expr expr = stmt.getExpr();
+        assertTrue(expr instanceof UnaryIncrExpr);
     }
 
     /**
@@ -187,7 +196,8 @@ public class ParserTest
     public void unaryNotExpr() throws Exception{
         Method method = getMethod("class Main{void test(){boolean a = !true;}}");
         DeclStmt statement = (DeclStmt)method.getStmtList().get(0);
-        assertEquals(statement.getInit().getExprType(),"UnaryNotExpr");
+        Expr expr = statement.getInit();
+        assertTrue(expr instanceof UnaryNotExpr);
     }
 
     /**
@@ -198,32 +208,254 @@ public class ParserTest
     public void unaryNegExpr() throws Exception{
         Method method = getMethod("class Main{void test(){int test = -1; }}");
         DeclStmt statement = (DeclStmt)method.getStmtList().get(0);
-
-        assertEquals(statement.getInit().getExprType(),"UnaryNegExpr");
-
+        Expr expr = statement.getInit();
+        assertTrue(expr instanceof UnaryNegExpr);
     }
 
     /**
-     * test the binary logic expression
+     * test the binary logic and expression
      * @throws Exception
      */
     @Test
-    public void BinaryLogicAndExpr() throws Exception{
+    public void binaryLogicAndExpr() throws Exception{
         Method method = getMethod("class Main{void test(){boolean test = true && true;}}");
         DeclStmt statement = (DeclStmt)method.getStmtList().get(0);
-        assertEquals(statement.getInit().getExprType(),"BinaryLogicExpr");
+        Expr expr = statement.getInit();
+        assertTrue(expr instanceof BinaryLogicAndExpr);
     }
 
     /**
-     * test the binary logic expression
+     * test the binary logic or expression
      * @throws Exception
      */
     @Test
-    public void BinaryLogicOrExpr() throws Exception{
+    public void binaryLogicOrExpr() throws Exception{
         Method method = getMethod("class Main{void test(){boolean test = true || true;}}");
         DeclStmt statement = (DeclStmt)method.getStmtList().get(0);
-        assertEquals(statement.getInit().getExprType(),"BinaryLogicExpr");
+        Expr expr = statement.getInit();
+        assertTrue(expr instanceof BinaryLogicOrExpr);
     }
+
+    /**
+     * test the binary Comp Expr
+     * @throws Exception
+     */
+    @Test
+    public void binaryEqualsExpr() throws Exception{
+        BinaryCompExpr binaryCompExpr = getBinaryCompExpr("class Main{void test(){boolean test = true == true;}}");
+        assertEquals("==",binaryCompExpr.getOpName());
+    }
+
+    /**
+     * test the binary less than
+     * @throws Exception
+     */
+    @Test
+    public void binaryLessThanExpr() throws Exception{
+        BinaryCompExpr binaryCompExpr = getBinaryCompExpr("class Main{void test(){boolean test = true < true;}}");
+        assertEquals("<",binaryCompExpr.getOpName());
+    }
+
+    /**
+     * test the binary greater than
+     * @throws Exception
+     */
+    @Test
+    public void binaryGreaterThanExpr() throws Exception{
+        BinaryCompExpr binaryCompExpr = getBinaryCompExpr("class Main{void test(){boolean test = true > true;}}");
+        assertEquals(">",binaryCompExpr.getOpName());
+    }
+
+    /**
+     * test the binary greater or equal to expression
+     * @throws Exception
+     */
+    @Test
+    public void binaryLessThanOrEqualToExpr() throws Exception{
+        BinaryCompExpr binaryCompExpr = getBinaryCompExpr("class Main{void test(){boolean test = true <= true;}}");
+        assertEquals("<=",binaryCompExpr.getOpName());
+    }
+
+    /**
+     * test the binary greater or equal to than
+     * @throws Exception
+     */
+    @Test
+    public void binaryGreaterThanOrEqualToExpr() throws Exception{
+        BinaryCompExpr binaryCompExpr = getBinaryCompExpr("class Main{void test(){boolean test = true >= true;}}");
+        assertEquals(">=",binaryCompExpr.getOpName());
+    }
+
+
+    /**
+     * test the binary Not Equal Expr
+     * @throws Exception
+     */
+    @Test
+    public void BinaryNotEqualsExpr() throws Exception{
+        BinaryCompExpr binaryCompExpr = getBinaryCompExpr("class Main{void test(){boolean test = true != true;}}");
+        assertEquals("!=",binaryCompExpr.getOpName());
+    }
+
+
+    /**
+     * Returns the binary Comparator expression for a declaration in a method
+     * @param s
+     * @return
+     * @throws Exception
+     */
+    public BinaryCompExpr getBinaryCompExpr(String s) throws Exception{
+        Method method = getMethod(s);
+        DeclStmt statement = (DeclStmt)method.getStmtList().get(0);
+        Expr expr = statement.getInit();
+        return (BinaryCompExpr) expr;
+    }
+
+    /**
+     * Tests the Add Expression
+     */
+    @Test
+    public void testAddExpr() throws Exception{
+        BinaryArithExpr binaryArithExpr = getBinaryArithExpr("class Main{void test(){int test = 1 + 1;}}");
+        assertEquals("+",binaryArithExpr.getOpName());
+        assertEquals("1", ((ConstIntExpr)binaryArithExpr.getLeftExpr()).getConstant());
+        assertEquals("1", ((ConstIntExpr)binaryArithExpr.getRightExpr()).getConstant());
+    }
+
+    /**
+     * Tests the Minus Expression
+     */
+    @Test
+    public void testMinusExpr() throws Exception{
+        BinaryArithExpr binaryArithExpr = getBinaryArithExpr("class Main{void test(){int test = 1 - 2;}}");
+        assertEquals("-",binaryArithExpr.getOpName());
+        assertEquals("1", ((ConstIntExpr)binaryArithExpr.getLeftExpr()).getConstant());
+        assertEquals("2", ((ConstIntExpr)binaryArithExpr.getRightExpr()).getConstant());
+    }
+
+    /**
+     * Tests the Times Expression
+     */
+    @Test
+    public void testTimesExpr() throws Exception{
+        BinaryArithExpr binaryArithExpr = getBinaryArithExpr("class Main{void test(){int test = 1 * 4;}}");
+        assertEquals("*",binaryArithExpr.getOpName());
+        assertEquals("1", ((ConstIntExpr)binaryArithExpr.getLeftExpr()).getConstant());
+        assertEquals("4", ((ConstIntExpr)binaryArithExpr.getRightExpr()).getConstant());
+    }
+
+    /**
+     * Tests the Times Expression
+     */
+    @Test
+    public void testDivideExpr() throws Exception{
+        BinaryArithExpr binaryArithExpr = getBinaryArithExpr("class Main{void test(){int test = 1 / 4;}}");
+        assertEquals("/",binaryArithExpr.getOpName());
+        assertEquals("1", ((ConstIntExpr)binaryArithExpr.getLeftExpr()).getConstant());
+        assertEquals("4", ((ConstIntExpr)binaryArithExpr.getRightExpr()).getConstant());
+    }
+
+    /**
+     * Tests the Times Expression
+     */
+    @Test
+    public void testModExpr() throws Exception{
+        BinaryArithExpr binaryArithExpr = getBinaryArithExpr("class Main{void test(){int test = 1 % 4;}}");
+        assertEquals("%",binaryArithExpr.getOpName());
+        assertEquals("int",binaryArithExpr.getOpType());
+        assertEquals("1", ((ConstIntExpr)binaryArithExpr.getLeftExpr()).getConstant());
+        assertEquals("4", ((ConstIntExpr)binaryArithExpr.getRightExpr()).getConstant());
+    }
+
+    /**
+     * Test the const int expr
+     * @throws Exception
+     */
+    @Test
+    public void testConstIntExpr() throws Exception{
+        DeclStmt stmt = (DeclStmt)getStmt("class Main{void test(){int test = 1;}}",0);
+        ConstIntExpr myIntExpr = (ConstIntExpr)stmt.getInit();
+        assertEquals("1",myIntExpr.getConstant());
+    }
+
+    /**
+     * Test the const String expr
+     * @throws Exception
+     */
+    @Test
+    public void testConstStringExpr() throws Exception{
+        DeclStmt stmt = (DeclStmt)getStmt("class Main{void test(){int test = \"string\";}}",0);
+        ConstStringExpr myStringExpr = (ConstStringExpr)stmt.getInit();
+        assertEquals("string",myStringExpr.getConstant());
+    }
+
+    /**
+     * Test the const boolean expr
+     * @throws Exception
+     */
+    @Test
+    public void testConstBooleanExpr() throws Exception{
+        DeclStmt stmt = (DeclStmt)getStmt("class Main{void test(){int test = true;}}",0);
+        ConstBooleanExpr myBooleanExpr = (ConstBooleanExpr)stmt.getInit();
+        assertEquals("TRUE", myBooleanExpr.getConstant());
+    }
+
+    /**
+     * Test the Cast Expression
+     */
+    @Test
+    public void testCastExpression() throws Exception{
+        DeclStmt stmt = (DeclStmt)getStmt("class Main{void test(){int test = (int)(true);}}",0);
+        CastExpr castExpr = (CastExpr)stmt.getInit();
+        assertEquals("int", castExpr.getType());
+        assertEquals("TRUE", ((ConstBooleanExpr)castExpr.getExpr()).getConstant());
+    }
+
+    /**
+     * Test the instanceof Expression
+     */
+    @Test
+    public void testInstanceOfExpression() throws Exception{
+        DeclStmt stmt = (DeclStmt)getStmt("class Main{void test(){boolean test = a instanceof prog;}}",0);
+        InstanceofExpr instanceofExpr = (InstanceofExpr)stmt.getInit();
+        assertEquals("prog", instanceofExpr.getType());
+    }
+
+    /**
+     * Test the NewExpr Expression
+     */
+    @Test
+    public void testNewExpression() throws Exception{
+        DeclStmt stmt = (DeclStmt)getStmt("class Main{void test(){boolean test = new JohnnyBoy();}}",0);
+        NewExpr newExpr = (NewExpr)stmt.getInit();
+        assertEquals("JohnnyBoy", newExpr.getType());
+    }
+
+    /**
+     * Tests the Dispatch Expression
+     * @throws Exception
+     */
+    @Test
+    public void testDispatchExpr() throws Exception{
+        ExprStmt stmt = (ExprStmt)getStmt("class Main{void test(){a.b()}}",0);
+        DispatchExpr dispatchExpr = (DispatchExpr) stmt.getExpr();
+        assertEquals("b",dispatchExpr.getMethodName());
+        assertEquals("a",((VarExpr)dispatchExpr.getRefExpr()).getName());
+    }
+
+    /**
+     * Returns the Binary Arithmetic Expression for the declaration
+     * @param s
+     * @return
+     * @throws Exception
+     */
+    public BinaryArithExpr getBinaryArithExpr(String s) throws Exception{
+        Method method = getMethod(s);
+        DeclStmt statement = (DeclStmt)method.getStmtList().get(0);
+        Expr expr = statement.getInit();
+        return (BinaryArithExpr) expr;
+    }
+
 
     /**
      * Gets the first statement

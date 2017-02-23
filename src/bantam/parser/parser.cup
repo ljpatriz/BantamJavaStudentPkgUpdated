@@ -151,6 +151,7 @@ nonterminal ArrayAssignExpr     arrayassignExpr;
 nonterminal ArrayExpr           arrayExpr;
 nonterminal DispatchExpr        dispatchExpr;
 nonterminal NewExpr             newExpr;
+nonterminal NewArrayExpr        newArrayExpr;
 nonterminal InstanceofExpr      instanceofExpr;
 nonterminal BinaryExpr          binaryExpr;
 nonterminal UnaryExpr           unaryExpr;
@@ -610,11 +611,7 @@ newExpr
         NEW:n ID:type LPAREN RPAREN
             {: RESULT = new NewExpr(n.getLineNum(),
                                      type.getAttribute()); :}
-
-        |NEW:n ID:type LSQBRACE expr:e RSQBRACE
-            {: RESULT = new NewExpr(n.getLineNum(),
-                                     type.getAttribute()); :}
-    ;
+                                     ;
 
 instanceofExpr
 
@@ -687,7 +684,7 @@ constExpr
 
         |BOOLEAN_CONST:b
             {: RESULT = new ConstBooleanExpr(b.getLineNum(),
-                                       b.getAttribute()); :}
+                                       b.getName()); :}
 
         |STRING_CONST:s
             {: RESULT = new ConstStringExpr(s.getLineNum(),
