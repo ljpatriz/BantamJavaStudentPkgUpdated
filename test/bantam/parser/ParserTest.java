@@ -82,7 +82,7 @@ public class ParserTest
      * @throws Exception
      */
     @Test
-    public void unaryDecrExprTest() throws Exception{
+    public void unaryPostDecrExprTest() throws Exception{
         Method method = getMethod("class Main{void test(){int test = 1; test--;}}");
         assertTrue(method.getStmtList().get(1) instanceof UnaryDecrExpr);
     }
@@ -92,8 +92,28 @@ public class ParserTest
      * @throws Exception
      */
     @Test
-    public void unaryIncrExprTest() throws Exception{
+    public void unaryPostIncrExprTest() throws Exception{
         Method method = getMethod("class Main{void test(){int test = 1; test++;}}");
+        assertTrue(method.getStmtList().get(1) instanceof UnaryIncrExpr);
+    }
+
+    /**
+     * Tests the unaryDecrExpr for Pre Unary ops
+     * @throws Exception
+     */
+    @Test
+    public void unaryPreDecrExprTest() throws Exception{
+        Method method = getMethod("class Main{void test(){int test = 1; --test;}}");
+        assertTrue(method.getStmtList().get(1) instanceof UnaryDecrExpr);
+    }
+
+    /**
+     * Tests the UnaryIncrExpr for Post Unary Ops
+     * @throws Exception
+     */
+    @Test
+    public void unaryPreIncrExprTest() throws Exception{
+        Method method = getMethod("class Main{void test(){int test = 1; ++test;}}");
         assertTrue(method.getStmtList().get(1) instanceof UnaryIncrExpr);
     }
 
