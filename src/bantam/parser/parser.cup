@@ -56,7 +56,7 @@ action code {:
 
     /* returns the current file name from the scanner */
     public String getCurrFilename() {
-	return ((Lexer)parser.getScanner()).getCurrFilename();
+	return "filename";//((Lexer)parser.getScanner()).getCurrFilename();
     }
 :} 
 
@@ -212,11 +212,11 @@ class
         ::= 
         /* class with no specified parent - uses Object class */
         CLASS:t ID:name LBRACE member_list:ml RBRACE
-	    {: RESULT = new Class_(t.getLineNum(), getCurrFilename(), 
+	    {: RESULT = new Class_(t.getLineNum(), getCurrFilename(),
 				   name.getAttribute(), "Object", ml); :}
         /* class with a specified parent */
 	| CLASS:t ID:name EXTENDS ID:parent LBRACE member_list:ml RBRACE
-	    {: RESULT = new Class_(t.getLineNum(), getCurrFilename(), 
+	    {: RESULT = new Class_(t.getLineNum(), getCurrFilename(),
 				   name.getAttribute(), 
 				   parent.getAttribute(), ml); :}
 	;
