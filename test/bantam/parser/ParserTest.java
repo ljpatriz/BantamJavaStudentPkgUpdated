@@ -86,6 +86,30 @@ public class ParserTest
         assertEquals("myInt", method.getName());
     }
 
+    /**
+     * Tests an empty method with parameters
+     * @throws Exception
+     */
+    @Test
+    public void parameterizedMethodTest() throws Exception {
+        Method method = getMethod("class Main{int myInt(int p1, String p2){}}");
+        ASTNode n1 = method.getFormalList().get(0);
+        ASTNode n2 = method.getFormalList().get(1);
+        assertTrue(n1 instanceof Formal);
+        assertTrue(n2 instanceof Formal);
+        Formal formal1 = (Formal) n1;
+        Formal formal2 = (Formal) n2;
+        assertEquals(formal1.getName(), "p1");
+        assertEquals(formal1.getType(), "int");
+        assertEquals(formal2.getName(), "p2");
+        assertEquals(formal2.getType(), "String");
+    }
+
+    @Test
+    public void statementTest() throws Exception {
+        String program = "class Main{int myInt(){ /* ExprStmt */ ident = 5; /* DeclStmt */" +
+                "type ident = 5"
+    }
 
     /**
      * Tests the case of a field
@@ -110,6 +134,7 @@ public class ParserTest
         ConstIntExpr constInt = (ConstIntExpr)field.getInit();
         assertEquals(0, constInt.getIntConstant());
     }
+
 
     /**
      * Tests the unaryDecrExpr
@@ -177,7 +202,6 @@ public class ParserTest
      * @param index
      * @return
      */
-    @Test
     public Stmt getStmt(String s, int index)throws Exception{
         return (Stmt)getMethod(s).getStmtList().get(index);
     }
@@ -193,4 +217,7 @@ public class ParserTest
         ClassList classes = ((Program) result.value).getClassList();
         return (Class_) classes.get(0);
     }
+
+
+
 }

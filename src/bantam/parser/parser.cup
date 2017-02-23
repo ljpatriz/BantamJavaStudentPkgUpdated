@@ -334,7 +334,7 @@ stmt_list
             {: RESULT = (StmtList)(new StmtList(0)).addElement(s); :}
 
         /* several lists */
-        | stmt_list:sl COMMA stmt:s
+        | stmt_list:sl stmt:s
             {: RESULT = (StmtList)sl.addElement(s); :}
     ;
 
