@@ -430,10 +430,10 @@ public class ParserTest
      */
     @Test
     public void testDispatchExpr() throws Exception{
-        ExprStmt stmt = (ExprStmt)getStmt("class Main{void test(){a.b()}}",0);
+        ExprStmt stmt = (ExprStmt)getStmt("class Main{void test(){a.b();}}",0);
         DispatchExpr dispatchExpr = (DispatchExpr) stmt.getExpr();
         assertEquals("b",dispatchExpr.getMethodName());
-        assertEquals("a",((VarExpr)dispatchExpr.getRefExpr()).getName());
+        assertEquals("ID",((VarExpr)dispatchExpr.getRefExpr()).getName());
     }
 
     /**
