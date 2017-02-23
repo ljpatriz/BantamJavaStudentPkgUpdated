@@ -20,8 +20,7 @@ import static org.junit.Assert.*;
  * Author: djskrien
  * Date: 2/13/17
  */
-public class ParserTest
-{
+public class ParserTest {
     @Rule
     public ExpectedException thrown= ExpectedException.none();
 
@@ -133,8 +132,94 @@ public class ParserTest
 
 
     }
-    
-    
+
+    /**
+     * Test Assign Expressions
+     * @throws Exception
+     */
+    @Test
+    public void assignExpressionTest() throws Exception{
+        String program = "class a{int a(){a = 2;}}";
+        assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof AssignExpr);
+    }
+
+    /**
+     * Test Dispatch Expressions
+     * @throws Exception
+     */
+    @Test
+    public void dispatchExpressionTest() throws Exception{
+        String program = "class a{int a(){a = 2;}}";
+        assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof AssignExpr);
+    }
+    /**
+     * Test New Expressions
+     * @throws Exception
+     */
+    @Test
+    public void newExpressionTest() throws Exception{
+        String program = "class a{int a(){a = 2;}}";
+        assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof AssignExpr);
+    }
+    /**
+     * Test InstanceOf Expressions
+     * @throws Exception
+     */
+    @Test
+    public void instanceofExpressionTest() throws Exception{
+        String program = "class a{int a(){a instanceof b;}}";
+        assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof InstanceofExpr);
+    }
+    /**
+     * Test Cast Expressions
+     * @throws Exception
+     */
+    @Test
+    public void castExpressionTest() throws Exception{
+        String program = "class a{int a(){(help)(me);}}";
+        assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof CastExpr);
+    }
+
+    /**
+     * Test Binary Expressions
+     * @throws Exception
+     */
+    @Test
+    public void binaryExpressionTest() throws Exception{
+        String program = "class a{int a(){a + b;}}";
+        assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof BinaryExpr);
+    }
+
+    /**
+     * Test Unary Expressions
+     * @throws Exception
+     */
+    @Test
+    public void unaryExpressionTest() throws Exception{
+        String program = "class a{int a(){!a;}}";
+        assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof UnaryExpr);
+    }
+
+    /**
+     * Test Const Expressions
+     * @throws Exception
+     */
+    @Test
+    public void constExpressionTest() throws Exception{
+        String program = "class a{int a(){2;}}";
+        assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof ConstExpr);
+    }
+
+    /**
+     * Test Var Expressions
+     * @throws Exception
+     */
+    @Test
+    public void varExpressionTest() throws Exception{
+        String program = "class a{int a(){a.b;}}";
+        assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof VarExpr);
+    }
+
     /**
      * Tests the case of a field
      */
