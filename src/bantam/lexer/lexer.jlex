@@ -238,6 +238,10 @@ import java_cup.runtime.Symbol;
 ">="            { return new Symbol(TokenIds.GEQ, new Token("GEQ", yyline)); }
 "%"             { return new Symbol(TokenIds.MODULUS, new Token("MODULUS", yyline)); }
 ";"             { return new Symbol(TokenIds.SEMI, new Token("SEMI", yyline)); }
+","             { return new Symbol(TokenIds.COMMA, new Token("COMMA", yyline)); }
+"!"             { return new Symbol(TokenIds.NOT, new Token("NOT", yyline)); }
+"&&"            { return new Symbol(TokenIds.AND, new Token("AND", yyline)); }
+"||"            { return new Symbol(TokenIds.OR, new Token("OR", yyline)); }
 
 /\*[^(\*/)]*
 {
