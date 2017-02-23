@@ -4,6 +4,7 @@ import bantam.ast.*;
 import com.sun.tools.internal.jxc.ap.Const;
 import java_cup.runtime.Symbol;
 import bantam.lexer.Lexer;
+import jdk.nashorn.internal.ir.Block;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -93,7 +94,7 @@ public class ParserTest
      */
     @Test
     public void parameterizedMethodTest() throws Exception {
-        Method method = getMethod("class Main{int myInt(int p1, String p2){}}");
+        Method method = getMethod("class Main{int myInt(int p1, String p2){int x=5; if (true) break;}}");
         ASTNode n1 = method.getFormalList().get(0);
         ASTNode n2 = method.getFormalList().get(1);
         assertTrue(n1 instanceof Formal);
@@ -104,15 +105,7 @@ public class ParserTest
         assertEquals(formal1.getType(), "int");
         assertEquals(formal2.getName(), "p2");
         assertEquals(formal2.getType(), "String");
-    }
-
-    @Test
-    public void statementTest() throws Exception {
-        String program = "class Main {" +
-                "int myInt(){ " +
-                "/* ExprStmt */ ident = 5; " +
-                "/* DeclStmt */ type ident = 5;" +
-                "/* IfStmt */ if (true) ";
+        method.getStmtList().forEach(a -> System.out.println(a));
     }
 
     /**

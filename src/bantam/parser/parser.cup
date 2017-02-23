@@ -262,6 +262,7 @@ method
                                     returnType.getAttribute(),
                                     name.getAttribute(),
                                     fl, sl); :}
+
     ;
 
 field
@@ -332,11 +333,13 @@ stmt_list
 
         /* single list */
         | stmt:s
-            {: RESULT = (StmtList)(new StmtList(0)).addElement(s); :}
+            {: RESULT = (StmtList)(new StmtList(getCurrLineNum())).addElement(s);
+               System.out.println("single statement"); :}
 
         /* several lists */
         | stmt_list:sl stmt:s
-            {: RESULT = (StmtList)sl.addElement(s); :}
+          	    {: RESULT = (StmtList)sl.addElement(s); :}
+
     ;
 
 stmt
@@ -496,9 +499,9 @@ returnStmt
         RETURN:r SEMI
             {: RESULT = new ReturnStmt(r.getLineNum(), null); :}
 
-        |RETURN:r expr:expr
+        |RETURN:r expr:e SEMI
             {: RESULT = new ReturnStmt(r.getLineNum(),
-                                        expr); :}
+                                        e); :}
     ;
 
 blockStmt
@@ -557,7 +560,7 @@ expr
         |varExpr:e
             {: RESULT = (VarExpr) e; :}
 
-        |LPAREN:lp expr:e
+        |LPAREN:lp expr:e RPAREN:rp
             {: RESULT = (Expr) e; :}
 
     ;
@@ -569,7 +572,7 @@ assignExpr
         varExpr:ve ASSIGN expr:e
             {: //TODO: VERIFY CORRECT
                 RESULT = new AssignExpr(ve.getLineNum(),
-                                        ve.getRef().getExprType(),
+                                        /*ve.getRef().getExprType()*/ "",
                                         ve.getName(),
                                         e); :}
     ;
@@ -581,7 +584,7 @@ arrayassignExpr
         arrayExpr:ae ASSIGN expr:e
             {://TODO: VERIFY CORRECT
                 RESULT = new ArrayAssignExpr(ae.getLineNum(),
-                                             ae.getRef().getExprType(),
+                                             /*ae.getRef().getExprType()*/ "",
                                              ae.getName(),
                                              ae,
                                              e); :}
@@ -829,8 +832,8 @@ varExpr
                                      null,
                                      e.getName()); :}
 
-        |LSQBRACE:lb expr:ref DOT RSQBRACE ID:e
-            {: RESULT = new VarExpr(lb.getLineNum(),
+        | expr:ref DOT ID:e
+            {: RESULT = new VarExpr(e.getLineNum(),
                                      ref,
                                      e.getName()); :}
     ;
@@ -846,8 +849,8 @@ arrayExpr
                                        e.getName(),
                                        index); :}
 
-        |LSQBRACE:lb expr:ref RSQBRACE ID:e LSQBRACE expr:index RSQBRACE
-            {: RESULT = new ArrayExpr(lb.getLineNum(),
+        | expr:ref DOT ID:e LSQBRACE expr:index RSQBRACE
+            {: RESULT = new ArrayExpr(e.getLineNum(),
                                        ref,
                                        e.getName(),
                                        index); :}
