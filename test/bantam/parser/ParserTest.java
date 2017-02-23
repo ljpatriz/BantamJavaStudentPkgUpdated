@@ -43,6 +43,40 @@ public class ParserTest
         assertEquals(0, mainClass.getMemberList().getSize());
     }
 
+    /**
+     * tests the case of a missing right brace at end of a class def
+     * using an ExpectedException Rule
+     */
+    @Test
+    public void unmatchedLeftBraceTest1() throws Exception {
+        Parser parser = new Parser(new Lexer(new StringReader("class Main {  ")));
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage("Bantam parser found errors.");
+        parser.parse();
+    }
+
+    /**
+     * tests the case of a missing right brace at end of a class def.
+     * This version is like unmatchedLeftBraceTest1 except that it
+     * doesn't use an ExpectedException Rule and it also prints the error messages.
+     */
+    @Test
+    public void unmatchedLeftBraceTest2() throws Exception {
+        Parser parser = new Parser(new Lexer(new StringReader("class Main {  ")));
+        boolean thrown = false;
+
+        try {
+            parser.parse();
+        } catch (RuntimeException e) {
+            thrown = true;
+            assertEquals("Bantam parser found errors.", e.getMessage());
+            for (ErrorHandler.Error err : parser.getErrorHandler().getErrorList()) {
+                System.out.println(err);
+            }
+        }
+        assertTrue(thrown);
+    }
+
     @Test
     /**
      * Tests the case of a method
@@ -83,8 +117,8 @@ public class ParserTest
      */
     @Test
     public void unaryPostDecrExprTest() throws Exception{
-        Method method = getMethod("class Main{void test(){int test = 1; test--;}}");
-        assertTrue(method.getStmtList().get(1) instanceof UnaryDecrExpr);
+        Method method = getMethod("class Main{void test(){test--;}}");
+        assertTrue(method.getStmtList().get(0) instanceof UnaryDecrExpr);
     }
 
     /**
@@ -93,8 +127,8 @@ public class ParserTest
      */
     @Test
     public void unaryPostIncrExprTest() throws Exception{
-        Method method = getMethod("class Main{void test(){int test = 1; test++;}}");
-        assertTrue(method.getStmtList().get(1) instanceof UnaryIncrExpr);
+        Method method = getMethod("class Main{void test(){test++;}}");
+        assertTrue(method.getStmtList().get(0) instanceof UnaryIncrExpr);
     }
 
     /**
@@ -103,8 +137,8 @@ public class ParserTest
      */
     @Test
     public void unaryPreDecrExprTest() throws Exception{
-        Method method = getMethod("class Main{void test(){int test = 1; --test;}}");
-        assertTrue(method.getStmtList().get(1) instanceof UnaryDecrExpr);
+        Method method = getMethod("class Main{void test(){--test;}}");
+        assertTrue(method.getStmtList().get(0) instanceof UnaryDecrExpr);
     }
 
     /**
@@ -113,8 +147,65 @@ public class ParserTest
      */
     @Test
     public void unaryPreIncrExprTest() throws Exception{
-        Method method = getMethod("class Main{void test(){int test = 1; ++test;}}");
-        assertTrue(method.getStmtList().get(1) instanceof UnaryIncrExpr);
+        Method method = getMethod("class Main{void test(){++test;}}");
+        assertTrue(method.getStmtList().get(0) instanceof UnaryIncrExpr);
+    }
+
+    /**
+     * Tests the UnaryIncrExpr for Post Unary Ops
+     * @throws Exception
+     */
+    @Test
+    public void unaryNotExpr() throws Exception{
+        Method method = getMethod("class Main{void test(){boolean a = !true;}}");
+        DeclStmt statement = (DeclStmt)method.getStmtList().get(0);
+        assertEquals(statement.getInit().getExprType(),"UnaryNotExpr");
+    }
+
+    /**
+     * Tests the UnaryNegateExpression
+     * @throws Exception
+     */
+    @Test
+    public void unaryNegExpr() throws Exception{
+        Method method = getMethod("class Main{void test(){int test = -1; }}");
+        DeclStmt statement = (DeclStmt)method.getStmtList().get(0);
+
+        assertEquals(statement.getInit().getExprType(),"UnaryNegExpr");
+
+    }
+
+
+    /**
+     * test the binary logic expression
+     * @throws Exception
+     */
+    @Test
+    public void BinaryLogicAndExpr() throws Exception{
+        Method method = getMethod("class Main{void test(){boolean test = true && true;}}");
+        DeclStmt statement = (DeclStmt)method.getStmtList().get(0);
+        assertEquals(statement.getInit().getExprType(),"BinaryLogicExpr");
+    }
+
+    /**
+     * test the binary logic expression
+     * @throws Exception
+     */
+    @Test
+    public void BinaryLogicOrExpr() throws Exception{
+        Method method = getMethod("class Main{void test(){boolean test = true || true;}}");
+        DeclStmt statement = (DeclStmt)method.getStmtList().get(0);
+        assertEquals(statement.getInit().getExprType(),"BinaryLogicExpr");
+    }
+
+    /**
+     * Gets the first statement
+     * @param s the java program string
+     * @param index
+     * @return
+     */
+    public Stmt getStmt(String s, int index)throws Exception{
+        return (Stmt)getMethod(s).getStmtList().get(index);
     }
 
     public Method getMethod(String s)throws Exception{
@@ -127,40 +218,5 @@ public class ParserTest
         Symbol result = parser.parse();
         ClassList classes = ((Program) result.value).getClassList();
         return (Class_) classes.get(0);
-    }
-
-
-    /**
-     * tests the case of a missing right brace at end of a class def
-     * using an ExpectedException Rule
-     */
-    @Test
-    public void unmatchedLeftBraceTest1() throws Exception {
-        Parser parser = new Parser(new Lexer(new StringReader("class Main {  ")));
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Bantam parser found errors.");
-        parser.parse();
-    }
-
-    /**
-     * tests the case of a missing right brace at end of a class def.
-     * This version is like unmatchedLeftBraceTest1 except that it
-     * doesn't use an ExpectedException Rule and it also prints the error messages.
-     */
-    @Test
-    public void unmatchedLeftBraceTest2() throws Exception {
-        Parser parser = new Parser(new Lexer(new StringReader("class Main {  ")));
-        boolean thrown = false;
-
-        try {
-            parser.parse();
-        } catch (RuntimeException e) {
-            thrown = true;
-            assertEquals("Bantam parser found errors.", e.getMessage());
-            for (ErrorHandler.Error err : parser.getErrorHandler().getErrorList()) {
-                System.out.println(err);
-            }
-        }
-        assertTrue(thrown);
     }
 }
