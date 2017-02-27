@@ -8,11 +8,7 @@ import bantam.ast.Program;
  */
 public class MainMainVisitor extends Visitor {
 
-    private String currentClass;
-
-    public MainMainVisitor() {
-        this.currentClass = "";
-    }
+    private String currentClass = "";
 
     /**
      * Returns true if the given program contains a Main class with a main method
