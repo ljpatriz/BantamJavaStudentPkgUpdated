@@ -13,16 +13,21 @@ import java.util.Map;
 public class StringConstantsVisitor extends Visitor{
 
     private Map<String, String> stringConstantMap;
+    private StringBuilder nameBuilder = new StringBuilder("StringConst_");
 
     public Map<String, String> getStringConstants(Program ast){
-        stringConstantMap = new HashMap<String,String>();
+        stringConstantMap = new HashMap<>();
         this.visit(ast);
         return stringConstantMap;
     }
 
     public Object visit(ConstStringExpr constStringExpr){
-        String name = "StringConst_"+ stringConstantMap.entrySet().size();
-        stringConstantMap.put(name, constStringExpr.getConstant());
+
+        this.nameBuilder.setLength(11);
+        this.nameBuilder.append(stringConstantMap.entrySet().size());
+        stringConstantMap.put(this.nameBuilder.toString(),
+                constStringExpr.getConstant());
+
         return null;
     }
 
