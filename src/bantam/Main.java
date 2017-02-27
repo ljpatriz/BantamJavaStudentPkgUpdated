@@ -33,6 +33,9 @@ import bantam.codegenjvm.JVMCodeGenerator;
 import bantam.codegenmips.MipsCodeGenerator;
 import bantam.codegenx86.X86CodeGenerator;
 import bantam.interp.Interpreter;
+import bantam.visitor.MainMainVisitor;
+import bantam.visitor.NumLocalVarsVisitor;
+import bantam.visitor.StringConstantsVisitor;
 import java_cup.runtime.Symbol;
 import bantam.lexer.Lexer;
 import bantam.opt.Optimizer;
@@ -99,6 +102,28 @@ public class Main {
      * flag for drawing the AST -- added by DJS
      */
     private static boolean drawTree = false;
+
+    // flags for new visitor funcitons - proj 3 Larry, Jacob, Nick, Luis
+    /**
+     * flag for calling hasMain vistor class
+     */
+    private static boolean hasMainVistor = false;
+
+    /**
+     * flag for calling stringConstants Visitor class
+     */
+    private static boolean stringConstantsVisitor = false;
+
+    /**
+     * flag for calling numLocalVars Visitor class
+     */
+    private static boolean numLocalVarsVistor = false;
+
+    /**
+     * flag for calling printVisitor Visitor Class
+     */
+    private static boolean printVisitorVisitor = false;
+
 
     /**
      * Prints out a usage message to the screen
@@ -200,6 +225,24 @@ public class Main {
             }
             else if (args[i].equals("-so")) {
                 stopAfterOpt = true;
+            }
+
+            // if statements added for project 3 - Larry, Jacob, Nick, Luis
+            else if(args[i].equals("-mm")){
+                stopAfterParsing = true;
+                hasMainVistor = true;
+            }
+            else if(args[i].equals("-sc")){
+                stopAfterParsing = true;
+                stringConstantsVisitor = true;
+            }
+            else if(args[i].equals("-lv")){
+                stopAfterParsing = true;
+                numLocalVarsVistor = true;
+            }
+            else if(args[i].equals("-pv")){
+                stopAfterParsing = true;
+                printVisitorVisitor = true;
             }
 
             // if -int turn on interpreter mode
@@ -352,10 +395,23 @@ public class Main {
                 System.exit(1);
             }
             if (stopAfterParsing) {
-                // if stopAfterParsing==true, then print AST and exit
-                PrintVisitor visitor = new PrintVisitor(/*start at indent 0*/0,
-							/*increment by 4 each indent level*/4);
-                visitor.visit((Program) result.value);
+                if(printVisitorVisitor == true) {
+                    PrintVisitor visitor = new PrintVisitor(/*start at indent 0*/0,
+                                /*increment by 4 each indent level*/4);
+                    visitor.visit((Program) result.value);
+                }
+                else if(hasMainVistor == true){
+                    MainMainVisitor visitor = new MainMainVisitor();
+                    visitor.visit((Program) result.value);
+                }
+                else if(stringConstantsVisitor == true){
+                    StringConstantsVisitor visitor = new StringConstantsVisitor();
+                    visitor.getStringConstants((Program) result.value);
+                }
+                else if(numLocalVarsVistor == true){
+                    NumLocalVarsVisitor visitor = new NumLocalVarsVisitor();
+                    visitor.getNumLocalVars((Program) result.value);
+                }
                 System.exit(0);
             }
             if (drawTree) {
