@@ -1,3 +1,8 @@
+/*
+ * File: ParserTest.java
+ * Author: Jacob, Nick, Larry, Luis, CP
+ * Date: 2/27/17
+ */
 package bantam;/* Bantam Java Compiler and Language Toolset.
 
    Copyright (C) 2007 by Marc Corliss (corliss@hws.edu) and 
