@@ -42,7 +42,7 @@ public class StringConstantsVisitor extends Visitor{
      * @return
      */
     public Object visit(ConstStringExpr constStringExpr){
-        this.nameBuilder.setLength(11);
+        this.nameBuilder.setLength(12);
         this.nameBuilder.append(stringConstantMap.entrySet().size());
 
         stringConstantMap.put(this.nameBuilder.toString(),
