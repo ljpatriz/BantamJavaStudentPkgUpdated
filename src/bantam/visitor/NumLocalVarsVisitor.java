@@ -36,7 +36,9 @@ public class NumLocalVarsVisitor extends Visitor {
      */
     public Map<String,Integer> getNumLocalVars(Program ast) {
         this.numLocalVars = new HashMap<>();
+
         ast.accept(this);
+
         return this.numLocalVars;
     }
 
@@ -74,7 +76,8 @@ public class NumLocalVarsVisitor extends Visitor {
     @Override
     public Object visit(Method node) {
         this.currentMethod = node.getName();
-        this.numLocalVars.put(this.getCurrentID(), node.getFormalList().getSize());
+        this.numLocalVars.put(this.getCurrentID(),
+                node.getFormalList().getSize());
 
         node.getStmtList().accept(this);
         return null;
@@ -87,7 +90,7 @@ public class NumLocalVarsVisitor extends Visitor {
      */
     @Override
     public Object visit(DeclStmt node) {
-        String key = this.getCurrentID();
+        String key = this.getCurrentID(); //for readability
         this.numLocalVars.put(key, this.numLocalVars.get(key)+1);
 
         // the child expression is worthless
@@ -105,22 +108,68 @@ public class NumLocalVarsVisitor extends Visitor {
     }
 
     /**
-     * Stop traversal if the node is a Formal.
-     * @param node the formal node
-     * @return  null
+     * Only traverse the statements, don't bother with the expression
+     * @param node the while statement node
+     * @return null
      */
     @Override
-    public Object visit(Formal node) {
+    public Object visit(WhileStmt node){
+        node.getBodyStmt().accept(this);
+        return null;
+    }
+
+    /**
+     * Only traverse the statements, don't bother with the expression
+     * @param node the if statement node
+     * @return null
+     */
+    @Override
+    public Object visit(IfStmt node){
+        node.getThenStmt().accept(this);
+        if(node.getElseStmt() != null){
+            node.getElseStmt().accept(this);
+        }
+        return null;
+    }
+
+    /**
+     * Only traverse the statements, don't bother with the expression
+     * @param node the for statement node
+     * @return null
+     */
+    @Override
+    public Object visit(ForStmt node){
+        node.getBodyStmt().accept(this);
+        return null;
+    }
+
+    /** Don't bother with this one
+     * @param node the return statement node
+     * @return null
+     */
+    @Override
+    public Object visit(ReturnStmt node){
+        return null;
+    }
+
+    /**
+     * Don't bother with this one
+     * @param node the expression statement node
+     * @return null
+     */
+    @Override
+    public Object visit(ExprStmt node){
         return null;
     }
 
     /**
      * Stops traversal if the node is an Expr.
      * @param node the expression node
-     * @return   null
+     * @return null
      */
     @Override
     public Object visit(Expr node) {
         return null;
     }
+
 }

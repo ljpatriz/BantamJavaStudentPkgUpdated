@@ -43,6 +43,7 @@ public class StringConstantsVisitor extends Visitor{
      */
     public Object visit(ConstStringExpr constStringExpr){
         this.nameBuilder.setLength(12);
+
         this.nameBuilder.append(stringConstantMap.entrySet().size());
 
         stringConstantMap.put(this.nameBuilder.toString(),
