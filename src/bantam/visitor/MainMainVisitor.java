@@ -1,3 +1,9 @@
+/*
+ * File: MainMainVisitor.java
+ * Author: Jacob, Nick, Larry, Luis, CP
+ * Date: 2/28/17
+ */
+
 package bantam.visitor;
 
 import bantam.ast.Class_;
