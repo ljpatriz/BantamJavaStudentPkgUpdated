@@ -1,8 +1,4 @@
 /*
- *
- */
-
-/*
  * File: NumLocalVarsVisitor.java
  * Author: Jacob, Nick, Larry, Luis, CP
  * Date: 2/23/17
