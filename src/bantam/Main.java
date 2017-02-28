@@ -138,7 +138,7 @@ public class Main {
         System.err.println("Usage: bantamc [-h] [-o <output_file>] [-t <architecture>]");
         System.err.println("               [-gc] [-int] [-bantam.opt <num>] [-dt] [-dl] [-dp] [-ds]");
         System.err.println("               [-di] [-do] [-dc] [-sl] [-sp] [-ss] [-so]");
-        System.err.println("               [-mm] [-sc] [-lv] [-pv] <input_files>");
+        System.err.println("               [-mm] [-sc] [-lv] [-pv]  <input_files>");
         System.err.println("man bantamc for more details");
         System.exit(1);
     }
