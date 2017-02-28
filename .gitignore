@@ -59,8 +59,5 @@ crashlytics-build.properties
 fabric.properties
 
 # Generated files
-/src/bantam/lexer/Lexer.java
-/src/bantam/parser/Parser.java
-/src/bantam/parser/TokenIds.java
 .idea/
 testout/
