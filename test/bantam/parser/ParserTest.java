@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 
 /*
  * File: ParserTest.java
- * Author: Jacob, Nick, Larry, Luis
+ * Author: Jacob, Nick, Larry, Luis, CP
  * Date: 2/23/17
  */
 public class ParserTest {

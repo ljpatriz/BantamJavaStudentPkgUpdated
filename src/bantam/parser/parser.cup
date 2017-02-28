@@ -34,7 +34,7 @@
 
 /*
  * File: ParserTest.java
- * Author: Jacob, Nick, Larry, Luis
+ * Author: Jacob, Nick, Larry, Luis, CP
  * Date: 2/23/17
  */
 
@@ -645,7 +645,7 @@ newExpr
             {: RESULT = new NewExpr(n.getLineNum(),
                                      type.getAttribute()); :}
                                      ;
-    `   |NEW:n ID:type LSQBRACE expr:e RSQBRACE
+        |NEW:n ID:type LSQBRACE expr:e RSQBRACE
             {: RESULT = new NewExpr(n.getLineNum(),
                                      type.getAttribute()); :}
     ;
