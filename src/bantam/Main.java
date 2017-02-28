@@ -402,15 +402,15 @@ public class Main {
                 }
                 else if(hasMainVistor == true){
                     MainMainVisitor visitor = new MainMainVisitor();
-                    visitor.visit((Program) result.value);
+                    System.out.println(visitor.hasMain((Program) result.value));
                 }
                 else if(stringConstantsVisitor == true){
                     StringConstantsVisitor visitor = new StringConstantsVisitor();
-                    visitor.getStringConstants((Program) result.value);
+                    System.out.println(visitor.getStringConstants((Program) result.value));
                 }
                 else if(numLocalVarsVistor == true){
                     NumLocalVarsVisitor visitor = new NumLocalVarsVisitor();
-                    visitor.getNumLocalVars((Program) result.value);
+                    System.out.println(visitor.getNumLocalVars((Program) result.value));
                 }
                 System.exit(0);
             }
