@@ -34,6 +34,10 @@ public class NumLocalVarsVisitor extends Visitor {
         return this.numLocalVars;
     }
 
+    /**
+     * Gets the current Class.Method identifier as a string.
+     * @return the current Class.Method identifier as a string.
+     */
     public String getCurrentID() {
         this.currentID.setLength(0);
         this.currentID.append(this.currentClass);
