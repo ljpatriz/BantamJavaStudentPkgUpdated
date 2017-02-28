@@ -34,6 +34,15 @@ public class NumLocalVarsVisitor extends Visitor {
         return this.numLocalVars;
     }
 
+    public String getCurrentID() {
+        this.currentID.setLength(0);
+        this.currentID.append(this.currentClass);
+        this.currentID.append(".");
+        this.currentID.append(this.currentMethod);
+
+        return this.currentID.toString();
+    }
+
     /**
      * Visits a Class_ node and updates the currentClass string
      * @param node the class node
@@ -41,9 +50,9 @@ public class NumLocalVarsVisitor extends Visitor {
      */
     @Override
     public Object visit(Class_ node) {
-        super.visit(node);
         this.currentClass = node.getName();
 
+        super.visit(node);
         return null;
     }
 
@@ -54,9 +63,10 @@ public class NumLocalVarsVisitor extends Visitor {
      */
     @Override
     public Object visit(Method node) {
-        node.getStmtList().accept(this);
         this.currentMethod = node.getName();
+        this.numLocalVars.put(this.getCurrentID(), node.getFormalList().getSize());
 
+        node.getStmtList().accept(this);
         return null;
     }
 
@@ -67,14 +77,8 @@ public class NumLocalVarsVisitor extends Visitor {
      */
     @Override
     public Object visit(DeclStmt node) {
-        this.currentID.setLength(0);
-        this.currentID.append(this.currentClass);
-        this.currentID.append(".");
-        this.currentID.append(this.currentMethod);
-
-        String key = this.currentID.toString();
-        this.numLocalVars.put(key,
-                this.numLocalVars.getOrDefault(key, 0)+1);
+        String key = this.getCurrentID();
+        this.numLocalVars.put(key, this.numLocalVars.get(key)+1);
 
         // the child expression is worthless
         return null;
