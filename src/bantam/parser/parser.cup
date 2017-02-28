@@ -580,6 +580,12 @@ expr
         |varExpr:e
             {: RESULT = (VarExpr) e; :}
 
+        |arrayExpr:e
+                    {: RESULT = (ArrayExpr) e; :}
+
+        |arrayAssignExpr:e
+                    {: RESULT = (ArrayAssignExpr) e; :}
+
         |LPAREN:lp expr:e RPAREN:rp
             {: RESULT = (Expr) e; :}
 
