@@ -1,3 +1,9 @@
+/*
+ * File: parser.cup
+ * Author: Jacob, Nick, Larry, Luis
+ * Date: 2/23/17
+ */
+
 /* Bantam Java Compiler and Language Toolset.
 
    Copyright (C) 2009 by Marc Corliss (corliss@hws.edu) and 
@@ -25,6 +31,12 @@
 */
 
 /* code below is copied to the file containing the bantam.parser */
+
+/*
+ * File: ParserTest.java
+ * Author: Jacob, Nick, Larry, Luis
+ * Date: 2/23/17
+ */
 
 package bantam.parser;
 
@@ -482,6 +494,14 @@ forStmt
                                      predExpr,
                                      updateExpr,
                                      bodyStmt); :}
+
+        |FOR:f LPAREN declStmt:initStmt SEMI expr:predExpr SEMI expr:updateExpr RPAREN stmt:bodyStmt
+            {: RESULT = new ForStmt(f.getLineNum(),
+                                     initStmt.getInit(),
+                                     predExpr,
+                                     updateExpr,
+                                     bodyStmt); :}
+
     ;
 
 breakStmt
@@ -619,6 +639,10 @@ newExpr
             {: RESULT = new NewExpr(n.getLineNum(),
                                      type.getAttribute()); :}
                                      ;
+    `   |NEW:n ID:type LSQBRACE expr:e RSQBRACE
+            {: RESULT = new NewExpr(n.getLineNum(),
+                                     type.getAttribute()); :}
+    ;
 
 instanceofExpr
 
