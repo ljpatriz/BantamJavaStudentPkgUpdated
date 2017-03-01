@@ -101,7 +101,9 @@ public class VisitorBuilderFactory {
         StringBuilder sb = new StringBuilder();
         sb.append("\t@Override\n\t\t\tpublic Object visit(");
         sb.append(clazz.getName());
-        sb.append(" node) {\n\t\t\t\treturn visit");
+        sb.append(" node) {\n\t\t\t\treturn null == visit");
+        sb.append(clazz.getName());
+        sb.append(" ? super.visit(node) : visit");
         sb.append(clazz.getName());
         sb.append(".apply(node);\n\t\t\t}");
         return sb.toString().replaceAll("bantam\\.ast\\.", "");
