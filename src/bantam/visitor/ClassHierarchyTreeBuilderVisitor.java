@@ -31,8 +31,8 @@ public class ClassHierarchyTreeBuilderVisitor extends Visitor {
         return classTreeRootNode;
     }
 
-    private boolean hasCycles{
-
+    private boolean hasCycles() {
+        return false;
     }
 
 
@@ -41,9 +41,10 @@ public class ClassHierarchyTreeBuilderVisitor extends Visitor {
      * @return
      */
     private ClassTreeNode buildBuiltinTree(){
-        classTreeRootNode = new ClassTreeNode();
+        //classTreeRootNode = new ClassTreeNode();
         //TODO find out how to do this
-        return classTreeRootNode;
+        //return classTreeRootNode;
+        return null;
     }
 
     /**
@@ -73,7 +74,7 @@ public class ClassHierarchyTreeBuilderVisitor extends Visitor {
         for(Entry<String, ClassTreeNode> entry:classMap.entrySet()){
             ClassTreeNode classTreeNode = entry.getValue();
             String parent = classTreeNode.getASTNode().getParent();
-            ClassTreeNode parentTreeNode = classMap.get(parent)
+            ClassTreeNode parentTreeNode = classMap.get(parent);
             parentTreeNode.addChild(classTreeNode);
             classTreeNode.setParent(parentTreeNode);
         }
