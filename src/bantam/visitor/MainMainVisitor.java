@@ -12,7 +12,8 @@ import bantam.ast.Method;
 import bantam.ast.Program;
 
 /**
- * Tests to see if program has a class called Main
+ * Tests to see if program has a class called Main which contains a main method of
+ * type void, which takes no arguments
  */
 public class MainMainVisitor extends Visitor {
 
@@ -27,7 +28,9 @@ public class MainMainVisitor extends Visitor {
      */
     public boolean hasMain(Program ast) {
         this.has = false;
-        this.visit(ast);
+
+        ast.accept(this);
+
         return this.has;
     }
 
@@ -54,15 +57,11 @@ public class MainMainVisitor extends Visitor {
      */
     @Override
     public Object visit(Method node) {
-        if (!node.getName().equals("main"))
-            return null;
-        if (!node.getReturnType().equals("void"))
-            return null;
-        if (node.getFormalList().getSize() != 0)
-            return null;
 
-        this.has = true;
-        // do not descend further for efficient traversal
+        this.has =  node.getName().equals("main") &&
+                    node.getReturnType().equals("void") &&
+                    node.getFormalList().getSize() == 0;
+
         return null;
     }
 

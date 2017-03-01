@@ -108,7 +108,7 @@ public class Main {
      */
     private static boolean drawTree = false;
 
-    // flags for new visitor funcitons - proj 3 Larry, Jacob, Nick, Luis
+    // flags for new visitor funcitons - proj 3 Larry, Jacob, Nick, Luis, CP
     /**
      * flag for calling hasMain vistor class
      */
@@ -233,11 +233,12 @@ public class Main {
                 stopAfterOpt = true;
             }
 
-            // if statements added for project 3 - Larry, Jacob, Nick, Luis
+            // if statements added for project 3 - Larry, Jacob, Nick, Luis, CP
             else if(args[i].equals("-mm")){
                 stopAfterParsing = true;
                 hasMainVistor = true;
             }
+
             else if(args[i].equals("-sc")){
                 stopAfterParsing = true;
                 stringConstantsVisitor = true;
@@ -401,21 +402,25 @@ public class Main {
                 System.exit(1);
             }
             if (stopAfterParsing) {
-                if(printVisitorVisitor == true) {
+                if(printVisitorVisitor) {
                     PrintVisitor visitor = new PrintVisitor(/*start at indent 0*/0,
                                 /*increment by 4 each indent level*/4);
                     visitor.visit((Program) result.value);
                 }
-                else if(hasMainVistor == true){
+                else if(hasMainVistor){
                     MainMainVisitor visitor = new MainMainVisitor();
+                    System.out.println("##### Result of hasMain() #####");
                     System.out.println(visitor.hasMain((Program) result.value));
                 }
-                else if(stringConstantsVisitor == true){
+                else if(stringConstantsVisitor){
                     StringConstantsVisitor visitor = new StringConstantsVisitor();
+                    System.out.println("##### String Constants #####");
                     System.out.println(visitor.getStringConstants((Program) result.value));
                 }
-                else if(numLocalVarsVistor == true){
+                else if(numLocalVarsVistor){
                     NumLocalVarsVisitor visitor = new NumLocalVarsVisitor();
+                    System.out.println(
+                            "##### Number of Local Variables in Methods #####");
                     System.out.println(visitor.getNumLocalVars((Program) result.value));
                 }
                 System.exit(0);

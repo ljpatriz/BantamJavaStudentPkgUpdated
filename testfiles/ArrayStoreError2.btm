@@ -3,7 +3,7 @@ class B extends A {}
 class C extends A {}
 class D extends B {}
 
-class bantam.Main {
+class Main {
     void main() {
 	Object[] objects = new B[10];
 	objects[0] = new B();
