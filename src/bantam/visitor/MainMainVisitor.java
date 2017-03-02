@@ -45,6 +45,10 @@ public class MainMainVisitor extends Visitor {
             super.visit(node);
         }
 
+        if (!this.has) {
+            //TODO try superclass until we hit Object
+        }
+
         return null;
     }
 

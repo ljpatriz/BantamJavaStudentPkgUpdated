@@ -3,6 +3,7 @@ package bantam.visitor;
 import bantam.ast.Class_;
 import bantam.ast.Program;
 import bantam.util.ClassTreeNode;
+import bantam.util.ErrorHandler;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -11,27 +12,29 @@ import java.util.Map.Entry;
 /**
  * Created by Jacob on 01/03/17.
  */
-public class ClassHierarchyTreeBuilderVisitor extends Visitor {
+public class ClassHierarchyVisitor extends Visitor {
 
     private ClassTreeNode classTreeRootNode;
     private Hashtable<String, ClassTreeNode> classMap;
 
-    public ClassHierarchyTreeBuilderVisitor(){
+    public ClassHierarchyVisitor(){
         classMap = new Hashtable<>();
     }
 
-    public ClassTreeNode buildClassTree(Program program){
+    public ClassTreeNode buildClassTree(Program program, ErrorHandler errHandler){
         classTreeRootNode = buildBuiltinTree();
         this.visit(program);
         buildInheritanceTree();
         if(hasCycles()){
             //TODO create a specific error class for this
-            throw new RuntimeException("Inheritance Tree has Cycles");
+            errHandler.register(2, "The class inheritance tree has is not well formed.");
+            //TODO change to include line number
         }
         return classTreeRootNode;
     }
 
     private boolean hasCycles() {
+        //TODO don't just return false
         return false;
     }
 
