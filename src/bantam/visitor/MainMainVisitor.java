@@ -42,7 +42,7 @@ public class MainMainVisitor extends Visitor {
     @Override
     public Object visit(Class_ node) {
         if (node.getName().equals("Main")) {
-            super.visit(node);
+            this.visit(node.getMemberList());
         }
 
         if (!this.has) {

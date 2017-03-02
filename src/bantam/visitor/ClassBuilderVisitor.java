@@ -16,6 +16,7 @@ public class ClassBuilderVisitor extends Visitor {
      * Builds the class structure of the class tree node it is given
      * @param classTreeNode
      */
+    //// TODO: 3/2/2017 why is this static ?
     public static void buildClass(ClassTreeNode classTreeNode){
         ClassBuilderVisitor classBuilderVisitor = new ClassBuilderVisitor(classTreeNode);
         classTreeNode.getASTNode().accept(classBuilderVisitor);

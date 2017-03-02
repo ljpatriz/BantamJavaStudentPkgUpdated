@@ -5,9 +5,11 @@ import bantam.ast.Program;
 import bantam.util.ClassTreeNode;
 import bantam.util.ErrorHandler;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Created by Jacob on 01/03/17.
@@ -32,22 +34,23 @@ public class ClassHierarchyVisitor extends Visitor {
     }
 
     private void hasCycles(){
-        Hashtable<ClassTreeNode, String> traversedClasses = new Hashtable<>();
-        hasCycles(traversedClasses,classTreeRootNode);
+        Set<ClassTreeNode> traversed = new HashSet<>();
+        hasCycles(traversed, classTreeRootNode);
     }
 
-    private void hasCycles(Hashtable<ClassTreeNode, String> traversedClasses, ClassTreeNode currentNode ){
+    private void hasCycles(Set<ClassTreeNode> traversed, ClassTreeNode currentNode){
         while(currentNode.getChildrenList().hasNext()) {
             ClassTreeNode currentChild = currentNode.getChildrenList().next();
-            if(traversedClasses.contains(currentChild)){
+            if(traversed.contains(currentChild)){
                 //cyclical error
                 errorHandler.register(2, currentChild.getASTNode().getFilename(),
-                        currentChild.getASTNode().getLineNum(), "The class inheritance tree is not well formed.");
+                        currentChild.getASTNode().getLineNum(),
+                        "The class inheritance tree is not well formed.");
                 //TODO more specific error regarding which class is causing problems
             }
             else{
-                traversedClasses.put(currentChild, currentChild.getName());
-                hasCycles(traversedClasses,currentChild);
+                traversed.add(currentChild);
+                hasCycles(traversed,currentChild);
             }
 
         }
@@ -59,8 +62,13 @@ public class ClassHierarchyVisitor extends Visitor {
      * @return
      */
     public Object visit(Class_ classNode){
+
         ClassTreeNode classTreeNode = new ClassTreeNode(classNode, false, true, classMap);
-        if(classMap.containsKey(classNode.getName())){errorHandler.register(2, classNode.getFilename(), classNode.getLineNum(), "Class with the same name already exists");
+        if(classMap.containsKey(classNode.getName())){
+
+            errorHandler.register(2, classNode.getFilename(),
+                    classNode.getLineNum(),
+                    "Class with the same name already exists");
 
         }
         else{
