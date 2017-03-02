@@ -24,15 +24,39 @@ public class ClassHierarchyTreeBuilderVisitor extends Visitor {
         classTreeRootNode = buildBuiltinTree();
         this.visit(program);
         buildInheritanceTree();
-        if(hasCycles()){
-            //TODO create a specific error class for this
-            throw new RuntimeException("Inheritance Tree has Cycles");
-        }
+        hasCycles();
         return classTreeRootNode;
     }
 
-    private boolean hasCycles{
+    private void hasCycles(){
+        Hashtable<String, ClassTreeNode> tempMap = new Hashtable<>();
+        while(classTreeRootNode.getChildrenList().hasNext()) {
+            ClassTreeNode currentChild = classTreeRootNode.getChildrenList().next();
+            if(tempMap.contains(currentChild)){
+                //cyclical error
+                //ErrorStatement
+            }
+            else{
+                tempMap.put(currentChild.getName(), currentChild);
+                hasCycles(tempMap,currentChild);
+            }
 
+        }
+    }
+
+    private void hasCycles(Hashtable<String, ClassTreeNode> tempMap, ClassTreeNode currentNode ){
+        while(currentNode.getChildrenList().hasNext()) {
+            ClassTreeNode currentChild = currentNode.getChildrenList().next();
+            if(tempMap.contains(currentChild)){
+                //cyclical error
+                //ErrorStatement
+            }
+            else{
+                tempMap.put(currentChild.getName(), currentChild);
+                hasCycles(tempMap,currentChild);
+            }
+
+        }
     }
 
 
@@ -41,7 +65,7 @@ public class ClassHierarchyTreeBuilderVisitor extends Visitor {
      * @return
      */
     private ClassTreeNode buildBuiltinTree(){
-        classTreeRootNode = new ClassTreeNode();
+        //classTreeRootNode = new ClassTreeNode();
         //TODO find out how to do this
         return classTreeRootNode;
     }
@@ -73,7 +97,7 @@ public class ClassHierarchyTreeBuilderVisitor extends Visitor {
         for(Entry<String, ClassTreeNode> entry:classMap.entrySet()){
             ClassTreeNode classTreeNode = entry.getValue();
             String parent = classTreeNode.getASTNode().getParent();
-            ClassTreeNode parentTreeNode = classMap.get(parent)
+            ClassTreeNode parentTreeNode = classMap.get(parent);
             parentTreeNode.addChild(classTreeNode);
             classTreeNode.setParent(parentTreeNode);
         }
