@@ -16,11 +16,7 @@ public class ClassHierarchyVisitor extends Visitor {
 
     private ClassTreeNode classTreeRootNode;
     private Hashtable<String, ClassTreeNode> classMap;
-<<<<<<< HEAD
-    private ErrorHandler errorHandler;
-=======
     private ErrorHandler errorHandler = new ErrorHandler();
->>>>>>> cbc8edfd1317f424fb4d816af1071b55c260fe36
 
     public ClassHierarchyVisitor(){
         classMap = new Hashtable<>();
@@ -29,16 +25,9 @@ public class ClassHierarchyVisitor extends Visitor {
     public ClassTreeNode buildClassTree(Program program, ErrorHandler errHandler, ClassTreeNode classTreeRootNode){
         this.classTreeRootNode = classTreeRootNode;
         this.visit(program);
-<<<<<<< HEAD
-        if(hasCycles()){
-            errHandler.register(2, "The class inheritance tree has is not well formed.");
-            //TODO change to include line number
-        }
-        this.errorHandler = errHandler;
-=======
-        buildInheritanceTree();
         hasCycles();
->>>>>>> cbc8edfd1317f424fb4d816af1071b55c260fe36
+        this.errorHandler = errHandler;
+        hasCycles();
         return classTreeRootNode;
     }
 
@@ -71,13 +60,8 @@ public class ClassHierarchyVisitor extends Visitor {
      */
     public Object visit(Class_ classNode){
         ClassTreeNode classTreeNode = new ClassTreeNode(classNode, false, true, classMap);
-        if(classMap.containsKey(classNode.getName())){
-<<<<<<< HEAD
-           errorHandler.register(2, classNode.getFilename(), classNode.getLineNum(), "Class with the same name already exists");
-=======
-            errorHandler.register(2, classNode.getFilename(),
-                    classNode.getLineNum(), "The class already exists.");
->>>>>>> cbc8edfd1317f424fb4d816af1071b55c260fe36
+        if(classMap.containsKey(classNode.getName())){errorHandler.register(2, classNode.getFilename(), classNode.getLineNum(), "Class with the same name already exists");
+
         }
         else{
             classMap.put(classNode.getName(),classTreeNode);
