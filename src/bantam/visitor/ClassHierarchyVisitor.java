@@ -16,6 +16,7 @@ public class ClassHierarchyVisitor extends Visitor {
 
     private ClassTreeNode classTreeRootNode;
     private Hashtable<String, ClassTreeNode> classMap;
+    private ErrorHandler errorHandler = new ErrorHandler();
 
     public ClassHierarchyVisitor(){
         classMap = new Hashtable<>();
@@ -25,40 +26,27 @@ public class ClassHierarchyVisitor extends Visitor {
         classTreeRootNode = buildBuiltinTree();
         this.visit(program);
         buildInheritanceTree();
-        if(hasCycles()){
-            //TODO create a specific error class for this
-            errHandler.register(2, "The class inheritance tree has is not well formed.");
-            //TODO change to include line number
-        }
+        hasCycles();
         return classTreeRootNode;
     }
 
     private void hasCycles(){
-        Hashtable<String, ClassTreeNode> tempMap = new Hashtable<>();
-        while(classTreeRootNode.getChildrenList().hasNext()) {
-            ClassTreeNode currentChild = classTreeRootNode.getChildrenList().next();
-            if(tempMap.contains(currentChild)){
-                //cyclical error
-                //ErrorStatement
-            }
-            else{
-                tempMap.put(currentChild.getName(), currentChild);
-                hasCycles(tempMap,currentChild);
-            }
-
-        }
+        Hashtable<ClassTreeNode, String> traversedClasses = new Hashtable<>();
+        hasCycles(traversedClasses,classTreeRootNode);
     }
 
-    private void hasCycles(Hashtable<String, ClassTreeNode> tempMap, ClassTreeNode currentNode ){
+    private void hasCycles(Hashtable<ClassTreeNode, String> traversedClasses, ClassTreeNode currentNode ){
         while(currentNode.getChildrenList().hasNext()) {
             ClassTreeNode currentChild = currentNode.getChildrenList().next();
-            if(tempMap.contains(currentChild)){
+            if(traversedClasses.contains(currentChild)){
                 //cyclical error
-                //ErrorStatement
+                errorHandler.register(2, currentChild.getASTNode().getFilename(),
+                        currentChild.getASTNode().getLineNum(), "The class inheritance tree is not well formed.");
+                //TODO more specific error regarding which class is causing problems
             }
             else{
-                tempMap.put(currentChild.getName(), currentChild);
-                hasCycles(tempMap,currentChild);
+                traversedClasses.put(currentChild, currentChild.getName());
+                hasCycles(traversedClasses,currentChild);
             }
 
         }
@@ -85,7 +73,8 @@ public class ClassHierarchyVisitor extends Visitor {
         ClassTreeNode classTreeNode = new ClassTreeNode(classNode,true,false,classMap);
 
         if(classMap.containsKey(classNode.getName())){
-            throw new RuntimeException("Class Tree has duplicate class names");
+            errorHandler.register(2, classNode.getFilename(),
+                    classNode.getLineNum(), "The class already exists.");
         }
         
         else{
