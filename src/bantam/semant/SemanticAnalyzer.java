@@ -28,6 +28,7 @@ package bantam.semant;
 
 import bantam.ast.*;
 import bantam.util.*;
+import bantam.visitor.ClassBuilderVisitor;
 import bantam.visitor.ClassHierarchyVisitor;
 
 import java.util.*;
@@ -86,13 +87,8 @@ public class SemanticAnalyzer {
 	// 1 - add built in classes to class tree
 	updateBuiltins();
 	buildClassHiearchyTree();
-	// comment out
-	throw new RuntimeException("Semantic analyzer unimplemented");
-
-	// add code below...
-
-	// uncomment out
-	// return root;
+	buildClassesInTree();
+	return root;
     }
 
     /**
@@ -257,6 +253,12 @@ public class SemanticAnalyzer {
 		ClassHierarchyVisitor classHierarchyVisitor = new ClassHierarchyVisitor();
 		classHierarchyVisitor.buildClassTree(this.program, this.errorHandler, this.root);
 		buildInheritanceWithinTree();
+	}
+
+	private void buildClassesInTree(){
+		for(Map.Entry<String, ClassTreeNode> entry:classMap.entrySet()){
+			ClassBuilderVisitor.buildClass(entry.getValue());
+		}
 	}
 
 	/**
