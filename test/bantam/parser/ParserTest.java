@@ -148,7 +148,7 @@ public class ParserTest {
      */
     @Test
     public void castExpressionTest() throws Exception{
-        String program = "class a{int a(){(help)(me);}}";
+        String program = "class a{int a(){(help)(me + b);}}";
         assertTrue(((ExprStmt)getStmt(program,0)).getExpr()  instanceof CastExpr);
     }
 

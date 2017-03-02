@@ -60,4 +60,10 @@ fabric.properties
 
 # Generated files
 .idea/
+!.idea/
+.idea/*
+!.idea/ant.xml
+!.idea/libraries/
+
+
 testout/
