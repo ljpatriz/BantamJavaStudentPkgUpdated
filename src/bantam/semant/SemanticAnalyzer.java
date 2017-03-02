@@ -28,6 +28,7 @@ package bantam.semant;
 
 import bantam.ast.*;
 import bantam.util.*;
+import bantam.visitor.ClassHierarchyVisitor;
 
 import java.util.*;
 
@@ -84,7 +85,7 @@ public class SemanticAnalyzer {
     public ClassTreeNode analyze() {
 	// 1 - add built in classes to class tree
 	updateBuiltins();
-
+	buildClassHiearchyTree();
 	// comment out
 	throw new RuntimeException("Semantic analyzer unimplemented");
 
@@ -248,4 +249,27 @@ public class SemanticAnalyzer {
 	// create class tree node for Sys, add it to the mapping
 	classMap.put("Sys", new ClassTreeNode(astNode, /*built-in?*/true, /*extendable?*/false, classMap));
     }
+
+	/**
+	 * Builds the Class Hiearchy Tree
+	 */
+	private void buildClassHiearchyTree(){
+		ClassHierarchyVisitor classHierarchyVisitor = new ClassHierarchyVisitor();
+		classHierarchyVisitor.buildClassTree(this.program, this.errorHandler, this.root);
+		buildInheritanceWithinTree();
+	}
+
+	/**
+	 * Builds the inheritance tree using the classMap that was already generated
+	 * Sets the children and the parent of the tree
+	 */
+	private void buildInheritanceWithinTree(){
+		for(Map.Entry<String, ClassTreeNode> entry:classMap.entrySet()){
+			ClassTreeNode classTreeNode = entry.getValue();
+			String parent = classTreeNode.getASTNode().getParent();
+			ClassTreeNode parentTreeNode = classMap.get(parent);
+			parentTreeNode.addChild(classTreeNode);
+			classTreeNode.setParent(parentTreeNode);
+		}
+	}
 }

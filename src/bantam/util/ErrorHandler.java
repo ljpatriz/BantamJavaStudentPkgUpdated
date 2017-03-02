@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * The <tt>ErrorHandler</tt> class performs error handling.
  */
-public class ErrorHandler {
+public class ErrorHandler { //TODO use consistent error handling
     /**
      * Lexical error constant - use to indicate the type of error
      */

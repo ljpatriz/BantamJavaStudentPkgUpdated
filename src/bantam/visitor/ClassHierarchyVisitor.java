@@ -16,20 +16,20 @@ public class ClassHierarchyVisitor extends Visitor {
 
     private ClassTreeNode classTreeRootNode;
     private Hashtable<String, ClassTreeNode> classMap;
+    private ErrorHandler errorHandler;
 
     public ClassHierarchyVisitor(){
         classMap = new Hashtable<>();
     }
 
-    public ClassTreeNode buildClassTree(Program program, ErrorHandler errHandler){
-        classTreeRootNode = buildBuiltinTree();
+    public ClassTreeNode buildClassTree(Program program, ErrorHandler errHandler, ClassTreeNode classTreeRootNode){
+        this.classTreeRootNode = classTreeRootNode;
         this.visit(program);
-        buildInheritanceTree();
         if(hasCycles()){
-            //TODO create a specific error class for this
             errHandler.register(2, "The class inheritance tree has is not well formed.");
             //TODO change to include line number
         }
+        this.errorHandler = errHandler;
         return classTreeRootNode;
     }
 
@@ -38,48 +38,20 @@ public class ClassHierarchyVisitor extends Visitor {
         return false;
     }
 
-
-    /**
-     * Function for building all the tree of default classes
-     * @return
-     */
-    private ClassTreeNode buildBuiltinTree(){
-        //classTreeRootNode = new ClassTreeNode();
-        //TODO find out how to do this
-        //return classTreeRootNode;
-        return null;
-    }
-
     /**
      * Function for visiting the class Node
      * @param classNode
      * @return
      */
     public Object visit(Class_ classNode){
-        ClassTreeNode classTreeNode = new ClassTreeNode(classNode,true,false,classMap);
-
+        ClassTreeNode classTreeNode = new ClassTreeNode(classNode, false, true, classMap);
         if(classMap.containsKey(classNode.getName())){
-            throw new RuntimeException("Class Tree has duplicate class names");
+           errorHandler.register(2, classNode.getFilename(), classNode.getLineNum(), "Class with the same name already exists");
         }
-        
         else{
             classMap.put(classNode.getName(),classTreeNode);
         }
-
         //TODO add stuff for adding, making method tables
         return null;
-    }
-
-    /**
-     * Builds the inheritance tree using the classMap that was already generated
-     */
-    private void buildInheritanceTree(){
-        for(Entry<String, ClassTreeNode> entry:classMap.entrySet()){
-            ClassTreeNode classTreeNode = entry.getValue();
-            String parent = classTreeNode.getASTNode().getParent();
-            ClassTreeNode parentTreeNode = classMap.get(parent);
-            parentTreeNode.addChild(classTreeNode);
-            classTreeNode.setParent(parentTreeNode);
-        }
     }
 }
