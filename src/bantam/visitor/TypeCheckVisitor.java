@@ -16,6 +16,8 @@ public class TypeCheckVisitor extends Visitor {
     /** Maps class names to ClassTreeNode objects describing the class */
     private Hashtable<String,ClassTreeNode> classMap = new Hashtable<String,ClassTreeNode>();
 
+    private String methodType;
+
     @Override
     public Object visit(DeclStmt node) {
         //// TODO: 3/2/2017 must be valid assignment type
@@ -57,19 +59,17 @@ public class TypeCheckVisitor extends Visitor {
 
     @Override
     public Object visit(Method node){
-        String declaredType = node.getReturnType();
-        //TODO verify that this will return what I think it will return
-        //But it probably won't...
-        String returnType = (String)super.visit(node);
-        if(!legalTypeCheck(declaredType, returnType))
-            errorHandler.register(1,"filename",node.getLineNum(),"Invalid Assignment Type");
-        return returnType;
-
+        //NOTE: This implementation works in a depth first traversal, which is the way this visitor works
+        methodType = node.getReturnType();
+        return super.visit(node);
     }
+
     @Override
     public Object visit(ReturnStmt node) {
-        //// TODO: 3/2/2017 must return the correct type as spec by method
-        return node.getExpr().getExprType();
+        ////TODO fix filename
+        if(legalTypeCheck(methodType,node.getExpr().getExprType()))
+                errorHandler.register(2,"filename", node.getLineNum(), "invalid return type");
+        return super.visit(node);
     }
 
     @Override
