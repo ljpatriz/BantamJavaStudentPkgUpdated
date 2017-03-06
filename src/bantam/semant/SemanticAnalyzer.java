@@ -274,33 +274,4 @@ public class SemanticAnalyzer {
 			classTreeNode.setParent(parentTreeNode);
 		}
 	}
-
-	/**
-	 * Checks to see if the declared type of an object is a type or a supertype of the object
-	 * @param declaredType
-	 * @param objectType
-	 * @return
-	 */
-	public boolean legalTypeCheck(String declaredType, String objectType){
-		ClassTreeNode declaredClass = classMap.get(declaredType);
-		ClassTreeNode objectClass = classMap.get(objectType);
-		return legalTypeCheck(declaredClass, objectClass);
-	}
-
-	/**
-	 * Checks to see if the declared type of an object is a type or a supertype of the object
-	 * @param declaredType
-	 * @param objectType
-	 * @return
-	 */
-	public boolean legalTypeCheck(ClassTreeNode declaredClass,ClassTreeNode objectClass){
-		while(objectClass != declaredClass){
-			objectClass = objectClass.getParent();
-			if(objectClass == null)
-				return false;
-		}
-		return true;
-	}
-
-
 }
