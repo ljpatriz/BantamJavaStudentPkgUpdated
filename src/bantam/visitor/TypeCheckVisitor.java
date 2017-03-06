@@ -56,9 +56,20 @@ public class TypeCheckVisitor extends Visitor {
     }
 
     @Override
+    public Object visit(Method node){
+        String declaredType = node.getReturnType();
+        //TODO verify that this will return what I think it will return
+        //But it probably won't...
+        String returnType = (String)super.visit(node);
+        if(!legalTypeCheck(declaredType, returnType))
+            errorHandler.register(1,"filename",node.getLineNum(),"Invalid Assignment Type");
+        return returnType;
+
+    }
+    @Override
     public Object visit(ReturnStmt node) {
-        //// TODO: 3/2/2017 must return the correct type as spec by method 
-        return super.visit(node);
+        //// TODO: 3/2/2017 must return the correct type as spec by method
+        return node.getExpr().getExprType();
     }
 
     @Override
