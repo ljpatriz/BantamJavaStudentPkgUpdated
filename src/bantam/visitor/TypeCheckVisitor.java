@@ -66,7 +66,11 @@ public class TypeCheckVisitor extends Visitor {
 
     @Override
     public Object visit(ReturnStmt node) {
-        ////TODO fix filename
+        ////TODO: fix filename
+        //TODO: also - is getExprType the right thing to have here... Unclear what that is
+        //So we have to find a way to get the actual type of the expression up here...
+        //maybe we can use that "set expression type method in our other methods
+        //It is unused otherwise
         if(legalTypeCheck(methodType,node.getExpr().getExprType()))
                 errorHandler.register(2,"filename", node.getLineNum(), "invalid return type");
         return super.visit(node);
@@ -74,7 +78,13 @@ public class TypeCheckVisitor extends Visitor {
 
     @Override
     public Object visit(DispatchExpr node) {
-        //// TODO: 3/2/2017 method must exist and take any given params 
+        //// TODO: 3/2/2017 method must exist and take any given params
+        String type = node.getRefExpr().getExprType();
+        ClassTreeNode classTreeNode = classMap.get(type);
+        //perform a more proper lookup of the method.
+        //Still does not check if methods exists or takes those params
+        Method methodNode = (Method)classTreeNode.getMethodSymbolTable().lookup(node.getMethodName());
+        node.setExprType(methodNode.getReturnType());
         return super.visit(node);
     }
 
@@ -94,6 +104,7 @@ public class TypeCheckVisitor extends Visitor {
     @Override
     public Object visit(BinaryArithExpr node) {
         //// TODO: 3/2/2017 left & right must both be numbers
+        if(node.getLeftExpr().getExprType()
         return super.visit(node);
     }
 
