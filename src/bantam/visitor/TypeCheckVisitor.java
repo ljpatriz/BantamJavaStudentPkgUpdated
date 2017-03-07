@@ -14,7 +14,7 @@ public class TypeCheckVisitor extends Visitor {
     ErrorHandler errorHandler;
 
     /** Maps class names to ClassTreeNode objects describing the class */
-    private Hashtable<String,ClassTreeNode> classMap = new Hashtable<String,ClassTreeNode>();
+    private Hashtable<String,ClassTreeNode> classMap;
 
     private String methodType;
 
@@ -38,8 +38,9 @@ public class TypeCheckVisitor extends Visitor {
      */
     @Override
     public Object visit(Field node) {
+        //// TODO: 3/6/2017  remove comment
         //This is wrong, must check if the types have an equal supertype
-        if(!legalTypeCheck(node.getType(), node.getInit().getExprType())
+        if(!legalTypeCheck(node.getType(), node.getInit().getExprType()))
             errorHandler.register(1,"filename",node.getLineNum(),"Invalid Assignment Type");
         //// TODO: 3/2/2017 if assigned must be correct type 
         return super.visit(node);
@@ -81,7 +82,7 @@ public class TypeCheckVisitor extends Visitor {
         //// TODO: 3/2/2017 method must exist and take any given params
         String type = node.getRefExpr().getExprType();
         ClassTreeNode classTreeNode = classMap.get(type);
-        //perform a more proper lookup of the method.
+        //// TODO perform a more proper lookup of the method.
         //Still does not check if methods exists or takes those params
         Method methodNode = (Method)classTreeNode.getMethodSymbolTable().lookup(node.getMethodName());
         node.setExprType(methodNode.getReturnType());
@@ -104,7 +105,6 @@ public class TypeCheckVisitor extends Visitor {
     @Override
     public Object visit(BinaryArithExpr node) {
         //// TODO: 3/2/2017 left & right must both be numbers
-        if(node.getLeftExpr().getExprType()
         return super.visit(node);
     }
 

@@ -256,8 +256,9 @@ public class SemanticAnalyzer {
 	}
 
 	private void buildClassesInTree(){
+		ClassBuilderVisitor classBuilderVisitor = new ClassBuilderVisitor();
 		for(Map.Entry<String, ClassTreeNode> entry:classMap.entrySet()){
-			ClassBuilderVisitor.buildClass(entry.getValue());
+			classBuilderVisitor.buildClass(entry.getValue());
 		}
 	}
 

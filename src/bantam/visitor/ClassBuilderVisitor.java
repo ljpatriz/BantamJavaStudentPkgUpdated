@@ -9,27 +9,29 @@ import bantam.util.SymbolTable;
  */
 public class ClassBuilderVisitor extends Visitor {
 
-    SymbolTable varSymbolTable;
-    SymbolTable methodSymbolTable;
+    private SymbolTable varSymbolTable;
+    private SymbolTable methodSymbolTable;
+
+
 
     /**
      * Builds the class structure of the class tree node it is given
      * @param classTreeNode
      */
-    //// TODO: 3/2/2017 why is this static ?
-    public static void buildClass(ClassTreeNode classTreeNode){
-        ClassBuilderVisitor classBuilderVisitor = new ClassBuilderVisitor(classTreeNode);
-        classTreeNode.getASTNode().accept(classBuilderVisitor);
-    }
-
-    public ClassBuilderVisitor(ClassTreeNode classTreeNode){
+    public void buildClass(ClassTreeNode classTreeNode){
+        classTreeNode.getASTNode().accept(this);
         this.methodSymbolTable = classTreeNode.getMethodSymbolTable();
         this.varSymbolTable = classTreeNode.getVarSymbolTable();
+        this.methodSymbolTable.setParent(classTreeNode.getParent().getMethodSymbolTable());
+        this.varSymbolTable.setParent(classTreeNode.getParent().getVarSymbolTable());
     }
+
+
 
     @Override
     public Object visit(Method node) {
         methodSymbolTable.add(node.getName(),node);
+
         return super.visit(node);
     }
 

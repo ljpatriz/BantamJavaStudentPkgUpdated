@@ -12,26 +12,26 @@ import bantam.ast.Method;
 import bantam.ast.Program;
 
 /**
- * Tests to see if program has a class called Main which contains a main method of
+ * Tests to see if program hasMain a class called Main which contains a main method of
  * type void, which takes no arguments
  */
 public class MainMainVisitor extends Visitor {
 
-    private boolean has;
+    private boolean hasMain;
 
     /**
      * Returns true if the given program contains a Main class with a main method
-     * in it that has a void return type and has no parameters; returns false otherwise.
+     * in it that hasMain a void return type and hasMain no parameters; returns false otherwise.
      *
      * @param ast the program abstract syntax tree
-     * @return whether has a main class or not
+     * @return whether hasMain a main class or not
      */
     public boolean hasMain(Program ast) {
-        this.has = false;
+        this.hasMain = false;
 
         ast.accept(this);
 
-        return this.has;
+        return this.hasMain;
     }
 
     /**
@@ -45,7 +45,7 @@ public class MainMainVisitor extends Visitor {
             this.visit(node.getMemberList());
         }
 
-        if (!this.has) {
+        if (!this.hasMain) {
             //TODO try superclass until we hit Object
         }
 
@@ -55,14 +55,14 @@ public class MainMainVisitor extends Visitor {
     /**
      * Visits a method node in search of a
      * void main() method with no parameters.
-     * Updates the has field if such a method is found.
+     * Updates the hasMain field if such a method is found.
      * @param node the method node
      * @return
      */
     @Override
     public Object visit(Method node) {
 
-        this.has =  node.getName().equals("main") &&
+        this.hasMain =  node.getName().equals("main") &&
                     node.getReturnType().equals("void") &&
                     node.getFormalList().getSize() == 0;
 

@@ -26,9 +26,8 @@ public class ClassHierarchyVisitor extends Visitor {
 
     public ClassTreeNode buildClassTree(Program program, ErrorHandler errHandler, ClassTreeNode classTreeRootNode){
         this.classTreeRootNode = classTreeRootNode;
-        this.visit(program);
-        hasCycles();
         this.errorHandler = errHandler;
+        this.visit(program);
         hasCycles();
         return classTreeRootNode;
     }
@@ -73,6 +72,7 @@ public class ClassHierarchyVisitor extends Visitor {
         }
         else{
             classMap.put(classNode.getName(),classTreeNode);
+
         }
         //TODO add stuff for adding, making method tables
         return null;
