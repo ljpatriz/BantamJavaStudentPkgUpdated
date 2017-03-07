@@ -27,7 +27,7 @@ public class SemanticAnalyzerTest
         boolean thrown = false;
         Parser parser = new Parser(new Lexer(new StringReader("class Main {  }")));
         Program program = (Program) parser.parse().value;
-        SemanticAnalyzer analyzer = new SemanticAnalyzer(program, false);
+        SemanticAnalyzer analyzer = new SemanticAnalyzer(program, true);
         analyzer.analyze();
         try {
             analyzer.analyze();
@@ -39,6 +39,8 @@ public class SemanticAnalyzerTest
             }
         }
         assertTrue(thrown);
+        
+        //// TODO: 3/6/17 Figure out what Dale wants us to do....RuntimeException versus not that 
     }
 
 

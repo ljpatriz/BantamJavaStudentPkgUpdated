@@ -35,9 +35,9 @@ public class MainMainVisitor extends Visitor {
      */
     public boolean hasMain(Program ast) {
         this.hasMain = false;
-
         ast.accept(this);
-
+        if(!this.hasMain)
+            this.errorHandler.register(2,"main() method not found.");
         return this.hasMain;
     }
 
@@ -53,6 +53,7 @@ public class MainMainVisitor extends Visitor {
         }
 
         if (!this.hasMain) {
+
             //TODO try superclass until we hit Object
         }
 
@@ -68,11 +69,10 @@ public class MainMainVisitor extends Visitor {
      */
     @Override
     public Object visit(Method node) {
-
-        this.hasMain =  node.getName().equals("main") &&
+        if(!this.hasMain)
+            this.hasMain =  node.getName().equals("main") &&
                     node.getReturnType().equals("void") &&
                     node.getFormalList().getSize() == 0;
-
         return null;
     }
 
