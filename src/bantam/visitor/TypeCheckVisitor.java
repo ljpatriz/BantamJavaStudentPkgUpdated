@@ -13,6 +13,10 @@ public class TypeCheckVisitor extends Visitor {
 
     ErrorHandler errorHandler;
 
+    public TypeCheckVisitor (ErrorHandler errorHandler){
+        this.errorHandler = errorHandler;
+    }
+
     /** Maps class names to ClassTreeNode objects describing the class */
     private Hashtable<String,ClassTreeNode> classMap;
 

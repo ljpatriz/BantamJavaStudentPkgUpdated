@@ -10,6 +10,7 @@ import bantam.ast.Class_;
 import bantam.ast.Field;
 import bantam.ast.Method;
 import bantam.ast.Program;
+import bantam.util.ErrorHandler;
 
 /**
  * Tests to see if program hasMain a class called Main which contains a main method of
@@ -18,6 +19,12 @@ import bantam.ast.Program;
 public class MainMainVisitor extends Visitor {
 
     private boolean hasMain;
+
+    private ErrorHandler errorHandler;
+
+    public MainMainVisitor(ErrorHandler errorHandler){
+        this.errorHandler = errorHandler;
+    }
 
     /**
      * Returns true if the given program contains a Main class with a main method

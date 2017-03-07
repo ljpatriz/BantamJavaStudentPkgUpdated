@@ -28,6 +28,7 @@ public class SemanticAnalyzerTest
         Parser parser = new Parser(new Lexer(new StringReader("class Main {  }")));
         Program program = (Program) parser.parse().value;
         SemanticAnalyzer analyzer = new SemanticAnalyzer(program, false);
+        analyzer.analyze();
         try {
             analyzer.analyze();
         } catch (RuntimeException e) {

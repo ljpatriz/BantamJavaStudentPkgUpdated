@@ -30,6 +30,7 @@ import bantam.ast.*;
 import bantam.util.*;
 import bantam.visitor.ClassBuilderVisitor;
 import bantam.visitor.ClassHierarchyVisitor;
+import bantam.visitor.MainMainVisitor;
 
 import java.util.*;
 
@@ -84,11 +85,14 @@ public class SemanticAnalyzer {
       * See the lab manual for more details on each of these steps.
       * */
     public ClassTreeNode analyze() {
-	// 1 - add built in classes to class tree
-	updateBuiltins();
-	buildClassHiearchyTree();
-	buildClassesInTree();
-	return root;
+		// 1 - add built in classes to class tree
+		updateBuiltins();
+		buildClassHiearchyTree();
+		buildClassesInTree();
+		//Add visitors
+		MainMainVisitor mainMainVisitor = new MainMainVisitor(this.errorHandler);
+		mainMainVisitor.hasMain(this.program);
+		return root;
     }
 
     /**
@@ -250,13 +254,13 @@ public class SemanticAnalyzer {
 	 * Builds the Class Hiearchy Tree
 	 */
 	private void buildClassHiearchyTree(){
-		ClassHierarchyVisitor classHierarchyVisitor = new ClassHierarchyVisitor();
-		classHierarchyVisitor.buildClassTree(this.program, this.errorHandler, this.root);
+		ClassHierarchyVisitor classHierarchyVisitor = new ClassHierarchyVisitor(this.errorHandler, this.classMap);
+		classHierarchyVisitor.buildClassTree(this.program, this.root);
 		buildInheritanceWithinTree();
 	}
 
 	private void buildClassesInTree(){
-		ClassBuilderVisitor classBuilderVisitor = new ClassBuilderVisitor();
+		ClassBuilderVisitor classBuilderVisitor = new ClassBuilderVisitor(this.errorHandler);
 		for(Map.Entry<String, ClassTreeNode> entry:classMap.entrySet()){
 			classBuilderVisitor.buildClass(entry.getValue());
 		}
@@ -270,6 +274,8 @@ public class SemanticAnalyzer {
 		for(Map.Entry<String, ClassTreeNode> entry:classMap.entrySet()){
 			ClassTreeNode classTreeNode = entry.getValue();
 			String parent = classTreeNode.getASTNode().getParent();
+			if(classTreeNode.getName().equals("Object"))
+				continue;
 			ClassTreeNode parentTreeNode = classMap.get(parent);
 			parentTreeNode.addChild(classTreeNode);
 			classTreeNode.setParent(parentTreeNode);

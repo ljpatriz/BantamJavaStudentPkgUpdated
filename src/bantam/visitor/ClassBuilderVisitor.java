@@ -2,6 +2,7 @@ package bantam.visitor;
 
 import bantam.ast.*;
 import bantam.util.ClassTreeNode;
+import bantam.util.ErrorHandler;
 import bantam.util.SymbolTable;
 
 /**
@@ -11,25 +12,37 @@ public class ClassBuilderVisitor extends Visitor {
 
     private SymbolTable varSymbolTable;
     private SymbolTable methodSymbolTable;
+    private ErrorHandler errorHandler;
 
 
+
+    public ClassBuilderVisitor(ErrorHandler errorHandler){
+        this.errorHandler = errorHandler;
+    }
 
     /**
      * Builds the class structure of the class tree node it is given
      * @param classTreeNode
      */
     public void buildClass(ClassTreeNode classTreeNode){
-        classTreeNode.getASTNode().accept(this);
         this.methodSymbolTable = classTreeNode.getMethodSymbolTable();
         this.varSymbolTable = classTreeNode.getVarSymbolTable();
-        this.methodSymbolTable.setParent(classTreeNode.getParent().getMethodSymbolTable());
-        this.varSymbolTable.setParent(classTreeNode.getParent().getVarSymbolTable());
+        if(!classTreeNode.getName().equals("Object")) {
+            this.methodSymbolTable.setParent(classTreeNode.getParent().getMethodSymbolTable());
+            this.varSymbolTable.setParent(classTreeNode.getParent().getVarSymbolTable());
+        }
+        varSymbolTable.enterScope();
+        methodSymbolTable.enterScope();
+        classTreeNode.getASTNode().accept(this);
+        varSymbolTable.exitScope();
+        methodSymbolTable.exitScope();
     }
 
 
 
     @Override
     public Object visit(Method node) {
+
         methodSymbolTable.add(node.getName(),node);
 
         return super.visit(node);

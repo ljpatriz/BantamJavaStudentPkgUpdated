@@ -28,6 +28,7 @@ public class NumLocalVarsVisitor extends Visitor {
     /** Used to build the current identifier. */
     private StringBuilder currentID = new StringBuilder();
 
+
     /**
      * Returns the map from method identifiers to the Integer count of their local
      * variables.

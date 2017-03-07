@@ -5,11 +5,8 @@ import bantam.ast.Program;
 import bantam.util.ClassTreeNode;
 import bantam.util.ErrorHandler;
 
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Created by Jacob on 01/03/17.
@@ -18,15 +15,16 @@ public class ClassHierarchyVisitor extends Visitor {
 
     private ClassTreeNode classTreeRootNode;
     private Hashtable<String, ClassTreeNode> classMap;
-    private ErrorHandler errorHandler = new ErrorHandler();
+    private ErrorHandler errorHandler;
 
-    public ClassHierarchyVisitor(){
-        classMap = new Hashtable<>();
+
+    public ClassHierarchyVisitor(ErrorHandler errorHandler, Hashtable<String, ClassTreeNode> classMap){
+        this.errorHandler = errorHandler;
+        this.classMap = classMap;
     }
 
-    public ClassTreeNode buildClassTree(Program program, ErrorHandler errHandler, ClassTreeNode classTreeRootNode){
+    public ClassTreeNode buildClassTree(Program program, ClassTreeNode classTreeRootNode){
         this.classTreeRootNode = classTreeRootNode;
-        this.errorHandler = errHandler;
         this.visit(program);
         hasCycles();
         return classTreeRootNode;
@@ -38,13 +36,17 @@ public class ClassHierarchyVisitor extends Visitor {
     }
 
     private void hasCycles(Set<ClassTreeNode> traversed, ClassTreeNode currentNode){
-        while(currentNode.getChildrenList().hasNext()) {
-            ClassTreeNode currentChild = currentNode.getChildrenList().next();
+        Iterator<ClassTreeNode> childrenList = currentNode.getChildrenList();
+        while(childrenList.hasNext()) {
+            ClassTreeNode currentChild = childrenList.next();
             if(traversed.contains(currentChild)){
                 //cyclical error
                 errorHandler.register(2, currentChild.getASTNode().getFilename(),
                         currentChild.getASTNode().getLineNum(),
-                        "The class inheritance tree is not well formed.");
+                        "The class inheritance tree is not well formed: " + currentChild.getName()
+                                + " inherits from itself");
+                currentNode = currentChild;
+                continue;
                 //TODO more specific error regarding which class is causing problems
             }
             else{
@@ -72,6 +74,7 @@ public class ClassHierarchyVisitor extends Visitor {
         }
         else{
             classMap.put(classNode.getName(),classTreeNode);
+            classTreeNode.setParent(classMap.get(classNode.getParent()));
 
         }
         //TODO add stuff for adding, making method tables

@@ -408,9 +408,9 @@ public class Main {
                     visitor.visit((Program) result.value);
                 }
                 else if(hasMainVistor){
-                    MainMainVisitor visitor = new MainMainVisitor();
-                    System.out.println("##### Result of hasMain() #####");
-                    System.out.println(visitor.hasMain((Program) result.value));
+//                    MainMainVisitor visitor = new MainMainVisitor();
+//                    System.out.println("##### Result of hasMain() #####");
+//                    System.out.println(visitor.hasMain((Program) result.value));
                 }
                 else if(stringConstantsVisitor){
                     StringConstantsVisitor visitor = new StringConstantsVisitor();
