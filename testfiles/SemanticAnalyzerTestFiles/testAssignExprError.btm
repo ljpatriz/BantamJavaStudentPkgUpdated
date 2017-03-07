@@ -1,0 +1,6 @@
+class Main{
+    int x;
+    void main(){
+        x = "string";
+    }
+}

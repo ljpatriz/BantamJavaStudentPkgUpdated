@@ -95,7 +95,8 @@ public class TypeCheckVisitor extends Visitor {
 
     @Override
     public Object visit(NewExpr node) {
-        //// TODO: 3/2/2017 array expr must be int 
+        //// TODO: 3/2/2017 array expr must be int
+        // TODO: 3/7/2017 by Larry - must make sure new object based on class is correct
         return super.visit(node);
     }
 

@@ -84,7 +84,7 @@ public class SemanticAnalyzer {
       *   5 - type check each class member
       * See the lab manual for more details on each of these steps.
       * */
-    public ClassTreeNode analyze() {
+    public ClassTreeNode analyze() throws RuntimeException {
 		// 1 - add built in classes to class tree
 		updateBuiltins();
 		buildClassHiearchyTree();

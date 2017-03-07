@@ -1,0 +1,11 @@
+class Dog{
+    void bark(){
+    }
+}
+
+class Main{
+    void main(){
+        Dog myDog = new Dog();
+        myDog.bark();
+    }
+}

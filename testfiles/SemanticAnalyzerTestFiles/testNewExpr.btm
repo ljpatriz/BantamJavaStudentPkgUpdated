@@ -1,0 +1,8 @@
+class Dog{
+}
+
+class Main{
+    void main(){
+        Dog myDog = new Dog();
+    }
+}

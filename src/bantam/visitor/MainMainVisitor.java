@@ -33,11 +33,13 @@ public class MainMainVisitor extends Visitor {
      * @param ast the program abstract syntax tree
      * @return whether hasMain a main class or not
      */
-    public boolean hasMain(Program ast) {
+    public boolean hasMain(Program ast) throws RuntimeException {
         this.hasMain = false;
         ast.accept(this);
-        if(!this.hasMain)
-            this.errorHandler.register(2,"main() method not found.");
+        if(!this.hasMain) {
+            this.errorHandler.register(2, "main() method not found.");
+            throw new RuntimeException("Bantam semantic analyzer found errors.");
+        }
         return this.hasMain;
     }
 
