@@ -48,6 +48,8 @@ public class NumLocalVarsVisitor extends Visitor {
      * @return the current Class.Method identifier as a string.
      */
     public String getCurrentID() {
+        // currentID is not initialized here because creating several new StringBuilders
+        // during every traversal will decrease the efficiency of this class
         this.currentID.setLength(0);
         this.currentID.append(this.currentClass);
         this.currentID.append(".");
@@ -160,16 +162,6 @@ public class NumLocalVarsVisitor extends Visitor {
      */
     @Override
     public Object visit(ExprStmt node){
-        return null;
-    }
-
-    /**
-     * Stops traversal if the node is an Expr.
-     * @param node the expression node
-     * @return null
-     */
-    @Override
-    public Object visit(Expr node) {
         return null;
     }
 

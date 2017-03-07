@@ -2,6 +2,7 @@ package bantam.visitor;
 
 import bantam.ast.ConstStringExpr;
 import bantam.ast.Formal;
+import bantam.ast.FormalList;
 import bantam.ast.Program;
 
 import java.util.HashMap;
@@ -46,8 +47,8 @@ public class StringConstantsVisitor extends Visitor{
 
         this.nameBuilder.append(stringConstantMap.entrySet().size());
 
-        stringConstantMap.put(this.nameBuilder.toString(),
-                constStringExpr.getConstant());
+        stringConstantMap.put(constStringExpr.getConstant(),
+                this.nameBuilder.toString());
 
         return null;
     }
@@ -55,10 +56,10 @@ public class StringConstantsVisitor extends Visitor{
     /**
      * Optimization function as formals cannot be string Constants
      * Does nothing
-     * @param formal
+     * @param node
      * @return
      */
-    public Object visit(Formal formal){
+    public Object visit(FormalList node){
         return null;
     }
 
