@@ -28,16 +28,21 @@ public class TypeCheckVisitor extends Visitor {
 
     @Override
     public Object visit(DeclStmt node) {
-        return super.visit(node);
+        super.visit(node);
+        if(!legalTypeCheck(node.getType(), node.getInit().getExprType()))
+        errorHandler.register(1,"filename",node.getLineNum(),"Invalid Declaration. Must be of type " +
+                node.getType()+"but was of type"+node.getInit().getExprType());
+        return null;
     }
 
     @Override
     public Object visit(AssignExpr node) {
         //// TODO: 3/2/2017 must be valid assignment type
-        String varType = "";
+        super.visit(node)
+        String varType = ""; //TODO properly resolve varType using ref path
         if(!legalTypeCheck(varType, node.getExpr().getExprType()))
-        errorHandler.register(1,"filename",node.getLineNum(),"Invalid Assignment Type");
-        return super.visit(node);
+            errorHandler.register(1,"filename",node.getLineNum(),"Invalid Assignment Type");
+        return null;
     }
 
 
@@ -77,7 +82,6 @@ public class TypeCheckVisitor extends Visitor {
 
     @Override
     public Object visit(Method node){
-        //NOTE: This implementation works in a depth first traversal, which is the way this visitor works
         methodType = node.getReturnType();
         super.visit(node);
         return null;
@@ -151,7 +155,7 @@ public class TypeCheckVisitor extends Visitor {
         super.visit(node);
         if(!node.getLeftExpr().getExprType().equals(node.getRightExpr().getExprType()))
             errorHandler.register(2, "filename", node.getLineNum(), "Both elements of the BinaryCompNeExpr must be of the same type, " +
-                    " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "node.getRightExpr().getExprType());
+                    " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "+ node.getRightExpr().getExprType());
         node.setExprType("boolean");
         return null;
     }
@@ -224,6 +228,7 @@ public class TypeCheckVisitor extends Visitor {
     public Object visit(VarExpr node) {
         super.visit(node);
         //// TODO: 3/2/2017 path must be legal...
+
         return null;
     }
 

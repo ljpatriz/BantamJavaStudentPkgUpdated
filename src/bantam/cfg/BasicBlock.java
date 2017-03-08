@@ -717,7 +717,7 @@ public class BasicBlock {
 	    System.out.println("");
 	}
 
-	// check that each block is OK -- done after printing so 
+	// check that each block is OK -- done after printing so
 	// students can use the printed program to help debug problem
 	for (int i = 0; i < orderedList.size(); i++) {
 	    try {

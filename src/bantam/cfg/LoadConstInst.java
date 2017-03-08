@@ -64,7 +64,7 @@ public class LoadConstInst extends LoadInst {
 	// opcode and destination error checked in super class
 	// only need to error check source
 
-	// check that source is valid constant -- 3 possible cases: 
+	// check that source is valid constant -- 3 possible cases:
 	// int, boolean, or String
 
 	// first check if null
