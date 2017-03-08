@@ -93,6 +93,10 @@ public class TypeCheckVisitor extends Visitor {
         return super.visit(node);
     }
 
+
+    // $$$$ TOP HALF IS NICK and Bottom HALF IS CP
+
+
     @Override
     public Object visit(NewExpr node) {
         //// TODO: 3/2/2017 array expr must be int
