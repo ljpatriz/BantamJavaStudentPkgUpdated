@@ -41,8 +41,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(DeclStmt node) {
         super.visit(node);
         if(!legalTypeCheck(node.getType(), node.getInit().getExprType()))
-        errorHandler.register(1,"filename",node.getLineNum(),"Invalid Declaration. Must be of type " +
-                node.getType()+"but was of type"+node.getInit().getExprType());
+            this.registerError(node, "Invalid Declaration. Must be of type " +
+                    node.getType()+"but was of type"+node.getInit().getExprType());
         return null;
     }
 
@@ -52,7 +52,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         super.visit(node);
         String varType = ""; //TODO properly resolve varType using ref path
         if(!legalTypeCheck(varType, node.getExpr().getExprType()))
-            errorHandler.register(1,"filename",node.getLineNum(),"Invalid Assignment Type");
+            this.registerError(node, "Invalid Assignment Type");
         return null;
     }
 
@@ -67,7 +67,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         //// TODO: 3/2/2017 if assigned must be correct type
         super.visit(node);
         if(!legalTypeCheck(node.getType(), node.getInit().getExprType()))
-            errorHandler.register(1,"filename",node.getLineNum(),"Invalid Assignment Type");
+            this.registerError(node, "Invalid Assignment Type");
         return null;
     }
     
@@ -75,8 +75,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(WhileStmt node) {
         //// TODO: 3/2/2017 expr must be boolean
         super.visit(node);
-        if(node.getPredExpr().getExprType() != "boolean")
-            errorHandler.register(2, "filename", node.getLineNum(), "PredExpression must be a boolean but was of type "
+        if(node.getPredExpr().getExprType().equals(this.BOOLEAN))
+            this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
         return null;
     }
@@ -85,8 +85,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(IfStmt node) {
         //// TODO: 3/2/2017 expr must be boolean
         super.visit(node);
-        if(node.getPredExpr().getExprType() != "boolean")
-            errorHandler.register(2, "filename", node.getLineNum(), "PredExpression must be a boolean but was of type "
+        if(!node.getPredExpr().getExprType().equals(this.BOOLEAN))
+            this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
         return null;
     }
@@ -103,8 +103,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
         ////TODO: fix filename
         super.visit(node);
         if(!legalTypeCheck(methodType,node.getExpr().getExprType()))
-                errorHandler.register(2,"filename", node.getLineNum(), "invalid return type, must be of type:"
-                        + methodType + "but was of type" + node.getExpr().getExprType());
+            this.registerError(node, "invalid return type, must be of type:"
+                    + methodType + "but was of type" + node.getExpr().getExprType());
         return null;
     }
 
@@ -112,7 +112,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(DispatchExpr node) {
         //// TODO: 3/2/2017 method must exist and take any given params
         String type = node.getRefExpr().getExprType();
-        ClassTreeNode classTreeNode = classMap.get(type);
+        ClassTreeNode classTreeNode = this.getClassMap().get(type);
         //// TODO perform a more proper lookup of the method.
         //Note: Still does not check if methods exists or takes those params
         Method methodNode = (Method)classTreeNode.getMethodSymbolTable().lookup(node.getMethodName());
@@ -154,11 +154,13 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(BinaryArithExpr node) {
         //// TODO: 3/2/2017 left & right must both be numbers
         super.visit(node);
-        if(!node.getLeftExpr().getExprType().equals("int"))
-            errorHandler.register(2, "filename", node.getLineNum(), "Left element of BinaryArithExpr must be of type int, is of type " + node.getLeftExpr().getExprType());
-        if(!node.getRightExpr().getExprType().equals("int"))
-            errorHandler.register(2, "filename", node.getLineNum(), "Right element of BinaryArithExpr must be of type int, is of type " + node.getRightExpr().getExprType());
-        node.setExprType("boolean");
+        if(!node.getLeftExpr().getExprType().equals(this.INT))
+            this.registerError(node, "Left element of BinaryArithExpr must be of type int, is of type " +
+                    node.getLeftExpr().getExprType());
+        if(!node.getRightExpr().getExprType().equals(this.INT))
+            this.registerError(node, "Right element of BinaryArithExpr must be of type int, is of type " +
+                            node.getRightExpr().getExprType());
+        node.setExprType(this.BOOLEAN);
         return null;
     }
 
@@ -166,9 +168,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(BinaryCompEqExpr node) {
         super.visit(node);
         if(!node.getLeftExpr().getExprType().equals(node.getRightExpr().getExprType()))
-            errorHandler.register(2, "filename", node.getLineNum(), "Both elements of the BinaryCompEqExpr must be of the same type, " +
+            this.registerError(node, "Both elements of the BinaryCompEqExpr must be of the same type, " +
                     " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "+node.getRightExpr().getExprType());
-        node.setExprType("boolean");
+        node.setExprType(this.BOOLEAN);
         return null;
     }
 
@@ -177,9 +179,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
         //// TODO: 3/2/2017 must be same types
         super.visit(node);
         if(!node.getLeftExpr().getExprType().equals(node.getRightExpr().getExprType()))
-            errorHandler.register(2, "filename", node.getLineNum(), "Both elements of the BinaryCompNeExpr must be of the same type, " +
+            this.registerError(node,"Both elements of the BinaryCompNeExpr must be of the same type, " +
                     " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "+ node.getRightExpr().getExprType());
-        node.setExprType("boolean");
+        node.setExprType(this.BOOLEAN);
         return null;
     }
 
@@ -187,11 +189,13 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(BinaryCompExpr node) {
         //// TODO: 3/2/2017 must be numbers
         super.visit(node);
-        if(!node.getLeftExpr().getExprType().equals("int"))
-            errorHandler.register(2, "filename", node.getLineNum(), "Left element of BinaryCompExpr must be of type int, is of type " + node.getLeftExpr().getExprType());
-        if(!node.getRightExpr().getExprType().equals("int"))
-            errorHandler.register(2, "filename", node.getLineNum(), "Right element of BinaryCompExpr must be of type int, is of type " + node.getRightExpr().getExprType());
-        node.setExprType("int");
+        if(!node.getLeftExpr().getExprType().equals(this.INT))
+            this.registerError(node,
+                    "Left element of BinaryCompExpr must be of type int, is of type " + node.getLeftExpr().getExprType());
+        if(!node.getRightExpr().getExprType().equals(this.INT))
+            this.registerError(node,
+                    "Right element of BinaryCompExpr must be of type int, is of type " + node.getRightExpr().getExprType());
+        node.setExprType(this.INT);
         return null;
     }
 
@@ -199,10 +203,14 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(BinaryLogicExpr node) {
         //// TODO: 3/2/2017 must be booleans
         super.visit(node);
-        if(!node.getLeftExpr().getExprType().equals("boolean"))
-            errorHandler.register(2, "filename", node.getLineNum(), "Left element of BinaryLogicExpr must be of type boolean, is of type " + node.getLeftExpr().getExprType());
-        if(!node.getRightExpr().getExprType().equals("boolean"))
-            errorHandler.register(2, "filename", node.getLineNum(), "Right element of BinaryLogicExpr must be of type boolean, is of type " + node.getRightExpr().getExprType());
+        if(!node.getLeftExpr().getExprType().equals(this.BOOLEAN))
+            this.registerError(node,
+                    "Left element of BinaryLogicExpr must be of type boolean, is of type "
+                            + node.getLeftExpr().getExprType());
+        if(!node.getRightExpr().getExprType().equals(this.BOOLEAN))
+            this.registerError(node,
+                    "Right element of BinaryLogicExpr must be of type boolean, is of type "
+                            + node.getRightExpr().getExprType());
         node.setExprType("boolean");
         return null;
     }
@@ -211,9 +219,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(UnaryNegExpr node) {
         //// TODO: 3/2/2017 must be number
         super.visit(node);
-        if(node.getExpr().getExprType() != "int")
-            errorHandler.register(2, "filename", node.getLineNum(), "UnaryNegExpr must be of type int, is of type " + node.getExpr().getExprType());
-        node.setExprType("int");
+        if(node.getExpr().getExprType() != this.INT)
+            this.registerError(node, "UnaryNegExpr must be of type int, is of type " + node.getExpr().getExprType());
+        node.setExprType(this.INT);
         return null;
     }
 
@@ -221,9 +229,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(UnaryNotExpr node) {
         //// TODO: 3/2/2017 must be boolean
         super.visit(node);
-        if(node.getExpr().getExprType() != "boolean")
-            errorHandler.register(2, "filename", node.getLineNum(), "UnaryNotExpr must be of type boolean, is of type " + node.getExpr().getExprType());
-        node.setExprType("boolean");
+        if(node.getExpr().getExprType() != this.BOOLEAN)
+            this.registerError(node, "UnaryNotExpr must be of type boolean, is of type " + node.getExpr().getExprType());
+        node.setExprType(this.BOOLEAN);
         return null;
     }
 
@@ -231,9 +239,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(UnaryIncrExpr node) {
         //// TODO: 3/2/2017 must be VarExpr
         super.visit(node);
-        if(node.getExpr().getExprType() != "int")
-            errorHandler.register(2, "filename", node.getLineNum(), "UnaryIncrExpr must be of type int, is of type " + node.getExpr().getExprType());
-        node.setExprType("int");
+        if(node.getExpr().getExprType() != this.INT)
+            this.registerError(node,
+                    "UnaryIncrExpr must be of type int, is of type " + node.getExpr().getExprType());
+        node.setExprType(this.INT);
         return null;
     }
 
@@ -241,9 +250,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(UnaryDecrExpr node) {
         //// TODO: 3/2/2017 must be VarExpr
         super.visit(node);
-        if(node.getExpr().getExprType() != "int")
-            errorHandler.register(2, "filename", node.getLineNum(), "UnaryDecrExpr must be of type int, is of type " + node.getExpr().getExprType());
-        node.setExprType("int");
+        if(node.getExpr().getExprType() != this.INT)
+            this.registerError(node,
+                    "UnaryDecrExpr must be of type int, is of type " +
+                            node.getExpr().getExprType());
+        node.setExprType(this.INT);
         return null;
     }
 
@@ -258,14 +269,14 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(ConstIntExpr node) {
         super.visit(node);
-        node.setExprType("int");
+        node.setExprType(this.INT);
         return null;
     }
 
     @Override
     public Object visit(ConstBooleanExpr node) {
         super.visit(node);
-        node.setExprType("boolean");
+        node.setExprType(this.BOOLEAN);
         return null;
     }
 
@@ -283,8 +294,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
      * @return
      */
     public boolean legalTypeCheck(String declaredType, String objectType){
-        ClassTreeNode declaredClass = classMap.get(declaredType);
-        ClassTreeNode objectClass = classMap.get(objectType);
+        ClassTreeNode declaredClass = this.getClassMap().get(declaredType);
+        ClassTreeNode objectClass = this.getClassMap().get(objectType);
         while(objectClass != declaredClass){
             objectClass = objectClass.getParent();
             if(objectClass == null)
