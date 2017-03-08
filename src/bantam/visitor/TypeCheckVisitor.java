@@ -9,16 +9,27 @@ import java.util.Hashtable;
 /**
  * Created by ncameron on 3/2/2017.
  */
-public class TypeCheckVisitor extends Visitor {
+public class TypeCheckVisitor extends SemanticVisitor {
 
-    ErrorHandler errorHandler;
-
-    public TypeCheckVisitor (ErrorHandler errorHandler){
-        this.errorHandler = errorHandler;
+    public TypeCheckVisitor (Hashtable<String, ClassTreeNode> classMap,
+                             ErrorHandler errorHandler){
+        super(classMap, errorHandler);
     }
 
-    /** Maps class names to ClassTreeNode objects describing the class */
-    private Hashtable<String,ClassTreeNode> classMap;
+    @Override
+    public void executeTask(Program ast) {
+        ast.accept(this);
+        this.afterVisit();
+    }
+
+    @Override
+    public void afterVisit(){
+        for (String key : this.getClassMap().keySet()){
+            this.setCurrentClassName(key);
+            this.exitCurrentMethodScope();
+            this.exitCurrentVarScope();
+        }
+    }
 
     private String methodType;
 
@@ -101,6 +112,18 @@ public class TypeCheckVisitor extends Visitor {
     public Object visit(NewExpr node) {
         //// TODO: 3/2/2017 array expr must be int
         // TODO: 3/7/2017 by Larry - must make sure new object based on class is correct
+        return super.visit(node);
+    }
+
+    @Override
+    public Object visit(NewArrayExpr node) {
+        super.visit(node);
+
+        if(!node.getSize().getExprType().equals(INT)){
+            this.registerError(node,
+                    "Expression determining size of array does not resolve to int.");
+        }
+
         return super.visit(node);
     }
 
