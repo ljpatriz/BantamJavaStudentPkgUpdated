@@ -45,43 +45,49 @@ public class TypeCheckVisitor extends Visitor {
      */
     @Override
     public Object visit(Field node) {
-        //// TODO: 3/6/2017  remove comment
-        //This is wrong, must check if the types have an equal supertype
+        //// TODO: 3/2/2017 if assigned must be correct type
+        super.visit(node);
         if(!legalTypeCheck(node.getType(), node.getInit().getExprType()))
             errorHandler.register(1,"filename",node.getLineNum(),"Invalid Assignment Type");
-        //// TODO: 3/2/2017 if assigned must be correct type 
-        return super.visit(node);
+        return null;
     }
     
     @Override
     public Object visit(WhileStmt node) {
-        //// TODO: 3/2/2017 expr must be boolean 
-        return super.visit(node);
+        //// TODO: 3/2/2017 expr must be boolean
+        super.visit(node);
+        if(node.getPredExpr().getExprType() != "boolean")
+            errorHandler.register(2, "filename", node.getLineNum(), "PredExpression must be a boolean but was of type "
+                    + node.getPredExpr().getExprType());
+        return null;
     }
 
     @Override
     public Object visit(IfStmt node) {
-        //// TODO: 3/2/2017 expr must be boolean 
-        return super.visit(node);
+        //// TODO: 3/2/2017 expr must be boolean
+        super.visit(node);
+        if(node.getPredExpr().getExprType() != "boolean")
+            errorHandler.register(2, "filename", node.getLineNum(), "PredExpression must be a boolean but was of type "
+                    + node.getPredExpr().getExprType());
+        return null;
     }
 
     @Override
     public Object visit(Method node){
         //NOTE: This implementation works in a depth first traversal, which is the way this visitor works
         methodType = node.getReturnType();
-        return super.visit(node);
+        super.visit(node);
+        return null;
     }
 
     @Override
     public Object visit(ReturnStmt node) {
         ////TODO: fix filename
-        //TODO: also - is getExprType the right thing to have here... Unclear what that is
-        //So we have to find a way to get the actual type of the expression up here...
-        //maybe we can use that "set expression type method in our other methods
-        //It is unused otherwise
-        if(legalTypeCheck(methodType,node.getExpr().getExprType()))
-                errorHandler.register(2,"filename", node.getLineNum(), "invalid return type");
-        return super.visit(node);
+        super.visit(node);
+        if(!legalTypeCheck(methodType,node.getExpr().getExprType()))
+                errorHandler.register(2,"filename", node.getLineNum(), "invalid return type, must be of type:"
+                        + methodType + "but was of type" + node.getExpr().getExprType());
+        return null;
     }
 
     @Override
@@ -90,7 +96,7 @@ public class TypeCheckVisitor extends Visitor {
         String type = node.getRefExpr().getExprType();
         ClassTreeNode classTreeNode = classMap.get(type);
         //// TODO perform a more proper lookup of the method.
-        //Still does not check if methods exists or takes those params
+        //Note: Still does not check if methods exists or takes those params
         Method methodNode = (Method)classTreeNode.getMethodSymbolTable().lookup(node.getMethodName());
         node.setExprType(methodNode.getReturnType());
         return super.visit(node);
