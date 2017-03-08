@@ -140,31 +140,48 @@ public class TypeCheckVisitor extends Visitor {
     @Override
     public Object visit(UnaryNegExpr node) {
         //// TODO: 3/2/2017 must be number
-        return super.visit(node);
+        super.visit(node);
+        if(node.getExpr().getExprType() != "int")
+            errorHandler.register(2, "filename", node.getLineNum(), "UnaryDecrExpr must be of type int, is of type " + node.getExpr().getExprType());
+        node.setExprType("int");
+        return null;
     }
 
     @Override
     public Object visit(UnaryNotExpr node) {
         //// TODO: 3/2/2017 must be boolean
-        return super.visit(node);
+        super.visit(node);
+        if(node.getExpr().getExprType() != "boolean")
+            errorHandler.register(2, "filename", node.getLineNum(), "UnaryDecrExpr must be of type boolean, is of type " + node.getExpr().getExprType());
+        node.setExprType("boolean");
+        return null;
     }
 
     @Override
     public Object visit(UnaryIncrExpr node) {
         //// TODO: 3/2/2017 must be VarExpr
-        return super.visit(node);
+        super.visit(node);
+        if(node.getExpr().getExprType() != "int")
+            errorHandler.register(2, "filename", node.getLineNum(), "UnaryDecrExpr must be of type int, is of type " + node.getExpr().getExprType());
+        node.setExprType("int");
+        return null;
     }
 
     @Override
     public Object visit(UnaryDecrExpr node) {
         //// TODO: 3/2/2017 must be VarExpr
-        return super.visit(node);
+        super.visit(node);
+        if(node.getExpr().getExprType() != "int")
+            errorHandler.register(2, "filename", node.getLineNum(), "UnaryDecrExpr must be of type int, is of type " + node.getExpr().getExprType());
+        node.setExprType("int");
+        return null;
     }
 
     @Override
     public Object visit(VarExpr node) {
-        //// TODO: 3/2/2017 array expr must be int
-        return super.visit(node);
+        super.visit(node);
+        //// TODO: 3/2/2017 path must be legal...
+        return null;
     }
 
     /**
