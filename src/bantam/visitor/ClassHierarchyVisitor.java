@@ -23,7 +23,7 @@ public class ClassHierarchyVisitor extends Visitor {
         this.classMap = classMap;
     }
 
-    public ClassTreeNode buildClassTree(Program program, ClassTreeNode classTreeRootNode) throws RuntimeException{
+    public ClassTreeNode buildClassTree(Program program, ClassTreeNode classTreeRootNode){
         this.classTreeRootNode = classTreeRootNode;
         this.visit(program);
         hasCycles();
@@ -62,7 +62,7 @@ public class ClassHierarchyVisitor extends Visitor {
      * @param classNode
      * @return
      */
-    public Object visit(Class_ classNode) throws RuntimeException{
+    public Object visit(Class_ classNode){
 
         ClassTreeNode classTreeNode = new ClassTreeNode(classNode, false, true, classMap);
         if(classMap.containsKey(classNode.getName())){
@@ -70,8 +70,6 @@ public class ClassHierarchyVisitor extends Visitor {
             errorHandler.register(2, classNode.getFilename(),
                     classNode.getLineNum(),
                     "Class with the same name already exists");
-            throw new RuntimeException("Bantam semantic analyzer found errors.");
-
         }
         else{
             classMap.put(classNode.getName(),classTreeNode);
