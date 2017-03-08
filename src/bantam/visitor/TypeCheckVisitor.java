@@ -38,7 +38,7 @@ public class TypeCheckVisitor extends Visitor {
     @Override
     public Object visit(AssignExpr node) {
         //// TODO: 3/2/2017 must be valid assignment type
-        super.visit(node)
+        super.visit(node);
         String varType = ""; //TODO properly resolve varType using ref path
         if(!legalTypeCheck(varType, node.getExpr().getExprType()))
             errorHandler.register(1,"filename",node.getLineNum(),"Invalid Assignment Type");
