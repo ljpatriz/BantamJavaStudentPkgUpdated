@@ -24,6 +24,7 @@ public class SemanticAnalyzerTest
 {
     private String testDirectory = "/Users/larrypatrizio/Downloads/" +
             "BantamJavaStudentPkgUpdated/testfiles/SemanticAnalyzerTestFiles/";
+
     private String readFile(String fileName) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(fileName));
         try {

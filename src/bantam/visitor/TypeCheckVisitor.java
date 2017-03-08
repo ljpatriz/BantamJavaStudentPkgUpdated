@@ -22,9 +22,12 @@ public class TypeCheckVisitor extends Visitor {
 
     private String methodType;
 
+    public void check(Program program){
+        program.accept(this);
+    }
+
     @Override
     public Object visit(DeclStmt node) {
-        //// TODO: 3/2/2017 must be valid assignment type
         return super.visit(node);
     }
 
@@ -92,6 +95,10 @@ public class TypeCheckVisitor extends Visitor {
         node.setExprType(methodNode.getReturnType());
         return super.visit(node);
     }
+
+
+    // $$$$ TOP HALF IS NICK and Bottom HALF IS CP
+
 
     @Override
     public Object visit(NewExpr node) {

@@ -31,6 +31,7 @@ import bantam.util.*;
 import bantam.visitor.ClassBuilderVisitor;
 import bantam.visitor.ClassHierarchyVisitor;
 import bantam.visitor.MainMainVisitor;
+import bantam.visitor.TypeCheckVisitor;
 
 import java.util.*;
 
@@ -91,7 +92,12 @@ public class SemanticAnalyzer {
 		buildClassesInTree();
 		//Add visitors
 		MainMainVisitor mainMainVisitor = new MainMainVisitor(this.errorHandler);
-		mainMainVisitor.hasMain(this.program);
+		mainMainVisitor.check(this.program);
+		TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(this.errorHandler);
+		typeCheckVisitor.check(this.program);
+		if(errorHandler.getErrorList().size() > 0){
+			throw new RuntimeException("Bantam semantic analyzer found errors.");
+		}
 		return root;
     }
 
