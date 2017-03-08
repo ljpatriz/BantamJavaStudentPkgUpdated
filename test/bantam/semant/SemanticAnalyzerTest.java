@@ -9,6 +9,7 @@ import bantam.util.ErrorHandler;
 import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
@@ -22,8 +23,23 @@ import java.io.IOException;
  */
 public class SemanticAnalyzerTest
 {
-    private String testDirectory = "/Users/larrypatrizio/Downloads/" +
-            "BantamJavaStudentPkgUpdated/testfiles/SemanticAnalyzerTestFiles/";
+    /**
+     * String of the directory path to the semantic analyzer test files
+     */
+    private String testDirectory = System.getProperty("user.dir") +
+                    "/testfiles/SemanticAnalyzerTestFiles/";
+
+    /**
+     * Receives a filename and directory (constructed by using the above
+     * private testDirectory variable) and then creates a string of the
+     * entire file. This was taken off of StackOverFlow at the following
+     * website address:
+     * http://stackoverflow.com/questions/22019296/java-read-write-a-file-and-more
+     *
+     * @param fileName - string filename (includes the full directory)
+     * @return - returns a string of the entire file
+     * @throws IOException - IOException that can occur during string building
+     */
     private String readFile(String fileName) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(fileName));
         try {
@@ -41,10 +57,20 @@ public class SemanticAnalyzerTest
         }
     }
 
-    private boolean testThrown(String filename) throws Exception{
+    /**
+     * Receives a string of the file contents and then runs the semantic analyzer
+     * on it. It will catch any errors thrown by the analyzer and will then also
+     * print out the errors. It will return a boolean (false for no errors; true
+     * for errors found) for the JUnit test asserts.
+     *
+     * @param fileContents - the file contents in string form
+     * @return - returns a boolean indicating whether errors where found
+     * @throws Exception - RuntimeException thrown by the analyzer
+     */
+    private boolean testThrown(String fileContents) throws Exception {
         boolean thrown = false;
         Parser parser = new Parser(new Lexer(new StringReader(
-                readFile(testDirectory+filename))));
+                readFile(testDirectory+fileContents))));
         Program program = (Program) parser.parse().value;
         SemanticAnalyzer analyzer = new SemanticAnalyzer(program, true);
         try {
@@ -59,10 +85,26 @@ public class SemanticAnalyzerTest
         return thrown;
     }
 
-    private void testCleanFile(String filename) throws Exception{
-        assertTrue(!testThrown(filename));
+    /**
+     * Receives a string of the file contents and then passes that onto testThrown.
+     * It will then run an assertFalse test on the resulting boolean, false is the
+     * desired result which indicates no errors found.
+     *
+     * @param filename - the file contents in string form
+     * @throws Exception - RuntimeException thrown by the analyzer
+     */
+    private void expectNoError(String filename) throws Exception{
+        assertFalse(testThrown(filename));
     }
 
+    /**
+     * Receives a string of the file contents and then passes that onto testThrown.
+     * It will then run an assertTrue test on the resulting boolean, true is the
+     * desired result which indicates errors were found.
+     *
+     * @param filename - the file contents in string form
+     * @throws Exception - RuntimeException thrown by the analyzer
+     */
     private void testErrorFile(String filename) throws Exception{
         assertTrue(testThrown(filename));
     }
@@ -72,7 +114,7 @@ public class SemanticAnalyzerTest
      * method. */
     @Test
     public void testEmptyMainClass() throws Exception {
-        testCleanFile("testEmptyMainClass.btm");
+        expectNoError("testEmptyMainClass.btm");
     }
 
     /** Tests the case of a Main class with no members.  This is illegal
@@ -88,7 +130,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testRepeatedClassName() throws Exception {
-        testCleanFile("testRepeatedClassName.btm");
+        expectNoError("testRepeatedClassName.btm");
     }
 
     /**
@@ -104,7 +146,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testDeclStmt() throws Exception{
-        testCleanFile("testDeclStmt.btm");
+        expectNoError("testDeclStmt.btm");
     }
 
     /**
@@ -120,7 +162,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testAssignExpr() throws Exception{
-        testCleanFile("testAssignExpr.btm");
+        expectNoError("testAssignExpr.btm");
     }
 
     /**
@@ -136,7 +178,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testField() throws Exception{
-        testCleanFile("testField.btm");
+        expectNoError("testField.btm");
     }
 
     /**
@@ -152,7 +194,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testWhileStmt() throws Exception{
-        testCleanFile("testWhileStmt.btm");
+        expectNoError("testWhileStmt.btm");
     }
 
     /**
@@ -168,7 +210,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testIfStmt() throws Exception{
-        testCleanFile("testIfStmt.btm");
+        expectNoError("testIfStmt.btm");
     }
 
     /**
@@ -184,7 +226,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testReturnStmt() throws Exception{
-        testCleanFile("testReturnStmt.btm");
+        expectNoError("testReturnStmt.btm");
     }
 
     /**
@@ -200,7 +242,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testDispatchExpr() throws Exception{
-        testCleanFile("testDispatchExpr.btm");
+        expectNoError("testDispatchExpr.btm");
     }
 
     /**
@@ -216,7 +258,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testNewExpr() throws Exception{
-        testCleanFile("testNewExpr.btm");
+        expectNoError("testNewExpr.btm");
     }
 
     /**
@@ -232,7 +274,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testCastExpr() throws Exception{
-        testCleanFile("testCastExpr.btm");
+        expectNoError("testCastExpr.btm");
     }
 
     /**
@@ -248,7 +290,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testBinaryArithExpr() throws Exception{
-        testCleanFile("testBinaryArithExpr.btm");
+        expectNoError("testBinaryArithExpr.btm");
     }
 
     /**
@@ -264,7 +306,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testBinaryCompEqExpr() throws Exception{
-        testCleanFile("testBinaryCompEqExpr.btm");
+        expectNoError("testBinaryCompEqExpr.btm");
     }
 
     /**
@@ -280,7 +322,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testBinaryCompNeExpr() throws Exception{
-        testCleanFile("testBinaryCompNeExpr.btm");
+        expectNoError("testBinaryCompNeExpr.btm");
     }
 
     /**
@@ -296,7 +338,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testBinaryCompExpr() throws Exception{
-        testCleanFile("testBinaryCompExpr.btm");
+        expectNoError("testBinaryCompExpr.btm");
     }
 
     /**
@@ -312,7 +354,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testBinaryLogicExpr() throws Exception{
-        testCleanFile("testBinaryLogicExpr.btm");
+        expectNoError("testBinaryLogicExpr.btm");
     }
 
     /**
@@ -327,7 +369,7 @@ public class SemanticAnalyzerTest
      * Tests the case of a legal UnaryNegExpr
     @Test
     public void testUnaryNegExpr() throws Exception{
-        testCleanFile("testUnaryNegExpr.btm");
+        expectNoError("testUnaryNegExpr.btm");
     }
 
     /**
@@ -343,7 +385,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testUnaryNotExpr() throws Exception{
-        testCleanFile("testUnaryNotExpr.btm");
+        expectNoError("testUnaryNotExpr.btm");
     }
 
     /**
@@ -359,7 +401,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testUnaryIncrExpr() throws Exception{
-        testCleanFile("testUnaryIncrExpr.btm");
+        expectNoError("testUnaryIncrExpr.btm");
     }
 
     /**
@@ -375,7 +417,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testUnaryDecrExpr() throws Exception{
-        testCleanFile("testUnaryDecrExpr.btm");
+        expectNoError("testUnaryDecrExpr.btm");
     }
 
     /**
@@ -391,7 +433,7 @@ public class SemanticAnalyzerTest
      */
     @Test
     public void testVarExpr() throws Exception{
-        testCleanFile("testVarExpr.btm");
+        expectNoError("testVarExpr.btm");
     }
 
     /**

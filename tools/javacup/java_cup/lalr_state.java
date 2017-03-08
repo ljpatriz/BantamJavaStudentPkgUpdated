@@ -635,7 +635,7 @@ public class lalr_state {
 	  }
 	}
       }
-      /* check if terminal has precedence, if so, shift, since 
+      /* check if terminal has precedence, if so, shift, since
 	 rule does not have precedence */
       else if (term.precedence_num() > assoc.no_prec) {
 	 table_row.under_term[term_index] = 
