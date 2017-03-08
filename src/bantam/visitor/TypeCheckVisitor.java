@@ -117,31 +117,58 @@ public class TypeCheckVisitor extends Visitor {
     @Override
     public Object visit(BinaryArithExpr node) {
         //// TODO: 3/2/2017 left & right must both be numbers
-        return super.visit(node);
+        super.visit(node);
+        if(!node.getLeftExpr().getExprType().equals("int"))
+            errorHandler.register(2, "filename", node.getLineNum(), "Left element of BinaryArithExpr must be of type int, is of type " + node.getLeftExpr().getExprType());
+        if(!node.getRightExpr().getExprType().equals("int"))
+            errorHandler.register(2, "filename", node.getLineNum(), "Right element of BinaryArithExpr must be of type int, is of type " + node.getRightExpr().getExprType());
+        node.setExprType("boolean");
+        return null;
     }
 
     @Override
     public Object visit(BinaryCompEqExpr node) {
-        //// TODO: 3/2/2017 must be same types
-        return super.visit(node);
+        super.visit(node);
+        if(!node.getLeftExpr().getExprType().equals(node.getRightExpr().getExprType()))
+            errorHandler.register(2, "filename", node.getLineNum(), "Both elements of the BinaryCompEqExpr must be of the same type, " +
+                    " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "node.getRightExpr().getExprType());
+        node.setExprType("boolean");
+        return null;
     }
 
     @Override
     public Object visit(BinaryCompNeExpr node) {
         //// TODO: 3/2/2017 must be same types
-        return super.visit(node);
+        super.visit(node);
+        if(!node.getLeftExpr().getExprType().equals(node.getRightExpr().getExprType()))
+            errorHandler.register(2, "filename", node.getLineNum(), "Both elements of the BinaryCompNeExpr must be of the same type, " +
+                    " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "node.getRightExpr().getExprType());
+        node.setExprType("boolean");
+        return null;
     }
 
     @Override
     public Object visit(BinaryCompExpr node) {
         //// TODO: 3/2/2017 must be numbers
-        return super.visit(node);
+        super.visit(node);
+        if(!node.getLeftExpr().getExprType().equals("int"))
+            errorHandler.register(2, "filename", node.getLineNum(), "Left element of BinaryCompExpr must be of type int, is of type " + node.getLeftExpr().getExprType());
+        if(!node.getRightExpr().getExprType().equals("int"))
+            errorHandler.register(2, "filename", node.getLineNum(), "Right element of BinaryCompExpr must be of type int, is of type " + node.getRightExpr().getExprType());
+        node.setExprType("int");
+        return null;
     }
 
     @Override
     public Object visit(BinaryLogicExpr node) {
         //// TODO: 3/2/2017 must be booleans
-        return super.visit(node);
+        super.visit(node);
+        if(!node.getLeftExpr().getExprType().equals("boolean"))
+            errorHandler.register(2, "filename", node.getLineNum(), "Left element of BinaryLogicExpr must be of type boolean, is of type " + node.getLeftExpr().getExprType());
+        if(!node.getRightExpr().getExprType().equals("boolean"))
+            errorHandler.register(2, "filename", node.getLineNum(), "Right element of BinaryLogicExpr must be of type boolean, is of type " + node.getRightExpr().getExprType());
+        node.setExprType("boolean");
+        return null;
     }
 
     @Override
@@ -149,7 +176,7 @@ public class TypeCheckVisitor extends Visitor {
         //// TODO: 3/2/2017 must be number
         super.visit(node);
         if(node.getExpr().getExprType() != "int")
-            errorHandler.register(2, "filename", node.getLineNum(), "UnaryDecrExpr must be of type int, is of type " + node.getExpr().getExprType());
+            errorHandler.register(2, "filename", node.getLineNum(), "UnaryNegExpr must be of type int, is of type " + node.getExpr().getExprType());
         node.setExprType("int");
         return null;
     }
@@ -159,7 +186,7 @@ public class TypeCheckVisitor extends Visitor {
         //// TODO: 3/2/2017 must be boolean
         super.visit(node);
         if(node.getExpr().getExprType() != "boolean")
-            errorHandler.register(2, "filename", node.getLineNum(), "UnaryDecrExpr must be of type boolean, is of type " + node.getExpr().getExprType());
+            errorHandler.register(2, "filename", node.getLineNum(), "UnaryNotExpr must be of type boolean, is of type " + node.getExpr().getExprType());
         node.setExprType("boolean");
         return null;
     }
@@ -169,7 +196,7 @@ public class TypeCheckVisitor extends Visitor {
         //// TODO: 3/2/2017 must be VarExpr
         super.visit(node);
         if(node.getExpr().getExprType() != "int")
-            errorHandler.register(2, "filename", node.getLineNum(), "UnaryDecrExpr must be of type int, is of type " + node.getExpr().getExprType());
+            errorHandler.register(2, "filename", node.getLineNum(), "UnaryIncrExpr must be of type int, is of type " + node.getExpr().getExprType());
         node.setExprType("int");
         return null;
     }
