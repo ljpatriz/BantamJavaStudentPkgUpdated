@@ -34,6 +34,9 @@ public class TypeCheckVisitor extends Visitor {
     @Override
     public Object visit(AssignExpr node) {
         //// TODO: 3/2/2017 must be valid assignment type
+        String varType = "";
+        if(!legalTypeCheck(varType, node.getExpr().getExprType()))
+        errorHandler.register(1,"filename",node.getLineNum(),"Invalid Assignment Type");
         return super.visit(node);
     }
 
@@ -137,7 +140,7 @@ public class TypeCheckVisitor extends Visitor {
         super.visit(node);
         if(!node.getLeftExpr().getExprType().equals(node.getRightExpr().getExprType()))
             errorHandler.register(2, "filename", node.getLineNum(), "Both elements of the BinaryCompEqExpr must be of the same type, " +
-                    " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "node.getRightExpr().getExprType());
+                    " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "+node.getRightExpr().getExprType());
         node.setExprType("boolean");
         return null;
     }
@@ -221,6 +224,27 @@ public class TypeCheckVisitor extends Visitor {
     public Object visit(VarExpr node) {
         super.visit(node);
         //// TODO: 3/2/2017 path must be legal...
+        return null;
+    }
+
+    @Override
+    public Object visit(ConstIntExpr node) {
+        super.visit(node);
+        node.setExprType("int");
+        return null;
+    }
+
+    @Override
+    public Object visit(ConstBooleanExpr node) {
+        super.visit(node);
+        node.setExprType("boolean");
+        return null;
+    }
+
+    @Override
+    public Object visit(ConstStringExpr node) {
+        super.visit(node);
+        node.setExprType("String");
         return null;
     }
 
