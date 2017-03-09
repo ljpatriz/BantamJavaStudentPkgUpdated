@@ -445,4 +445,21 @@ public class SemanticAnalyzerTest
         testErrorFile("testVarExprError.btm");
     }
 
+    /**
+     * Tests the case of legal BreakStmt's
+     */
+    @Test
+    public void testBreakStmt() throws Exception{
+        expectNoError("testBreakStmt.btm");
+    }
+
+    /**
+     * Tests the case of legal BreakStmt's
+     */
+    @Test
+    public void testBreakStmtError() throws Exception{
+        testErrorFile("testBreakStmtError.btm");
+    }
+
+
 }

@@ -17,7 +17,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     }
 
     @Override
-    public void executeTask(Program ast) {
+    public void check(Program ast) {
         ast.accept(this);
         this.afterVisit();
     }
@@ -26,13 +26,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public void afterVisit(){
         for (String key : this.getClassMap().keySet()){
             this.setCurrentClassName(key);
-            this.exitCurrentMethodScope();
-            this.exitCurrentVarScope();
+//            this.exitCurrentMethodScope();
+//            this.exitCurrentVarScope();
         }
-    }
-
-    public void check(Program program){
-        program.accept(this);
     }
 
     @Override
@@ -56,7 +52,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         //// TODO: 3/2/2017 must be valid assignment type
         super.visit(node);
         String varType = ""; //TODO properly resolve varType using ref path
-        if(!legalTypeCheck(varType, node.getExpr().getExprType()))
+        if(!legalTypeCheck(((Expr) getCurrentVarSymbolTable().lookup(node.getName())).getExprType(), node.getExpr().getExprType()))
             this.registerError(node, "Invalid Assignment Type");
         return null;
     }
@@ -267,8 +263,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(VarExpr node) {
         super.visit(node);
-        System.out.println(node.getName());
-        System.out.println(((Field) getCurrentVarSymbolTable().lookup(node.getName())).getType() );
+
+        //This is all fucked up :(
+//        System.out.println(((Member)getCurrentVarSymbolTable().lookup(node.getName())));
+//        System.out.println("HEY");
 
         String type = ((Field)getClassMap().get(getCurrentClassName()).getVarSymbolTable().lookup(node.getName())).getType();
         node.setExprType(type);

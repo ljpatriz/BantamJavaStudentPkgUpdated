@@ -28,10 +28,7 @@ package bantam.semant;
 
 import bantam.ast.*;
 import bantam.util.*;
-import bantam.visitor.ClassBuilderVisitor;
-import bantam.visitor.ClassHierarchyVisitor;
-import bantam.visitor.MainMainVisitor;
-import bantam.visitor.TypeCheckVisitor;
+import bantam.visitor.*;
 
 import java.util.*;
 
@@ -93,9 +90,12 @@ public class SemanticAnalyzer {
 		//Add visitors
 		MainMainVisitor mainMainVisitor = new MainMainVisitor(this.errorHandler);
 		mainMainVisitor.check(this.program);
-//		System.out.println(((Field)classMap.get("Main").getVarSymbolTable().lookup("boo")).getType());
+
 		TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(classMap, this.errorHandler);
 		typeCheckVisitor.check(this.program);
+
+		BreakVisitor breakVisitor = new BreakVisitor(classMap, this.errorHandler);
+		breakVisitor.check(this.program);
 		if(errorHandler.getErrorList().size() > 0){
 			throw new RuntimeException("Bantam semantic analyzer found errors.");
 		}

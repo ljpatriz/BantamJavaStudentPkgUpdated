@@ -1,6 +1,6 @@
 class Main{
-    boolean boo = True;
+    boolean boo = true;
     void main(){
-        3 + 5;
+        boo = 5 + 5;
     }
 }
