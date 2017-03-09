@@ -361,7 +361,8 @@ extends     { return new Symbol(TokenIds.EXTENDS, new Token("EXTENDS", yyline));
 }
 
 [a-zA-Z][a-zA-Z1-9_]*    { return new Symbol(TokenIds.ID,
-                                new Token("ID", yytext(),yyline));}
+                                new Token("ID", yytext() ,yyline));}
+
 [0-9_][a-zA-Z0-9_]* {return new Symbol(TokenIds.LEX_ERROR,
                              new Token("LEX_ERROR", "Illegal Identifier", yyline)); }
 

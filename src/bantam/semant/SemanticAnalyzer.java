@@ -93,7 +93,9 @@ public class SemanticAnalyzer {
 		//Add visitors
 		MainMainVisitor mainMainVisitor = new MainMainVisitor(this.errorHandler);
 		mainMainVisitor.check(this.program);
-		TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(this.errorHandler);
+        
+		TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(this.classMap,
+                                                                 this.errorHandler);
 		typeCheckVisitor.check(this.program);
 		if(errorHandler.getErrorList().size() > 0){
 			throw new RuntimeException("Bantam semantic analyzer found errors.");
