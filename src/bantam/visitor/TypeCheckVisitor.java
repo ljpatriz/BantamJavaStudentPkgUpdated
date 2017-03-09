@@ -24,17 +24,16 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
     @Override
     public void afterVisit(){
-        for (String key : this.getClassMap().keySet()){
-            this.setCurrentClassName(key);
-            this.exitCurrentMethodScope();
-            this.exitCurrentVarScope();
-        }
     }
 
     @Override
     public Object visit(Class_ node){
         this.setCurrentClassName(node.getName());
+        this.enterCurrentVarScope();
+        this.enterCurrentMethodScope();
         super.visit(node);
+        this.exitCurrentVarScope();
+        this.exitCurrentMethodScope();
         return null;
     }
 
