@@ -1,1 +1,6 @@
-//TODO: this file
+class Main{
+    boolean boo = true;
+    void main(){
+        boo = 5 + 5;
+    }
+}

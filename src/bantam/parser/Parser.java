@@ -930,7 +930,7 @@ class CUP$Parser$actions {
 		Token e = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-0)).value;
 		 RESULT = new VarExpr(e.getLineNum(),
                                      ref,
-                                     e.getName()); 
+                                     e.getAttribute());
               CUP$Parser$result = new java_cup.runtime.Symbol(33/*varExpr*/, RESULT);
             }
           return CUP$Parser$result;
@@ -942,7 +942,7 @@ class CUP$Parser$actions {
 		Token e = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-0)).value;
 		 RESULT = new VarExpr(e.getLineNum(),
                                      null,
-                                     e.getName()); 
+                                     e.getAttribute());
               CUP$Parser$result = new java_cup.runtime.Symbol(33/*varExpr*/, RESULT);
             }
           return CUP$Parser$result;

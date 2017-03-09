@@ -508,7 +508,9 @@ public abstract class lr_parser {
    *  and how the various tables are used.
    */
   public Symbol parse() throws java.lang.Exception
-    {
+  {
+      System.out.println("HELLO");
+
       /* the current action code */
       int act;
 

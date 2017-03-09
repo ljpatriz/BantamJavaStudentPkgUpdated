@@ -1,0 +1,7 @@
+class Main{
+    void main(){
+        while(true){
+                break;
+            }
+    }
+}

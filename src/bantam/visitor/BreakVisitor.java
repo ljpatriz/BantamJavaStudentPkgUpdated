@@ -20,7 +20,7 @@ public class BreakVisitor extends SemanticVisitor{
     }
 
     @Override
-    public void executeTask(Program ast) {
+    public void check(Program ast) {
         ast.accept(this);
         this.afterVisit();
     }

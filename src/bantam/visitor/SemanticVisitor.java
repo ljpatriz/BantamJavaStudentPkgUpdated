@@ -82,7 +82,7 @@ public abstract class SemanticVisitor extends Visitor {
         this.errorHandler = errorHandler;
     }
     
-    public abstract void executeTask(Program ast);
+    public abstract void check(Program ast);
     
     public void afterVisit() {}
     

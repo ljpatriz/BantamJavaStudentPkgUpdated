@@ -77,6 +77,7 @@ public class SemanticAnalyzerTest
             analyzer.analyze();
         } catch (RuntimeException e) {
             thrown = true;
+            e.printStackTrace();
             assertEquals("Bantam semantic analyzer found errors.", e.getMessage());
             for (ErrorHandler.Error err : analyzer.getErrorHandler().getErrorList()) {
                 System.out.println(err);
@@ -443,5 +444,22 @@ public class SemanticAnalyzerTest
     public void testVarExprError() throws Exception{
         testErrorFile("testVarExprError.btm");
     }
+
+    /**
+     * Tests the case of legal BreakStmt's
+     */
+    @Test
+    public void testBreakStmt() throws Exception{
+        expectNoError("testBreakStmt.btm");
+    }
+
+    /**
+     * Tests the case of legal BreakStmt's
+     */
+    @Test
+    public void testBreakStmtError() throws Exception{
+        testErrorFile("testBreakStmtError.btm");
+    }
+
 
 }

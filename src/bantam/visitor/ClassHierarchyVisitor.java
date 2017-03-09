@@ -1,7 +1,6 @@
 package bantam.visitor;
 
-import bantam.ast.Class_;
-import bantam.ast.Program;
+import bantam.ast.*;
 import bantam.util.ClassTreeNode;
 import bantam.util.ErrorHandler;
 
@@ -16,6 +15,7 @@ public class ClassHierarchyVisitor extends Visitor {
     private ClassTreeNode classTreeRootNode;
     private Hashtable<String, ClassTreeNode> classMap;
     private ErrorHandler errorHandler;
+    private ClassTreeNode currentClassTreeNode;
 
 
     public ClassHierarchyVisitor(ErrorHandler errorHandler, Hashtable<String, ClassTreeNode> classMap){
@@ -75,8 +75,27 @@ public class ClassHierarchyVisitor extends Visitor {
             classMap.put(classNode.getName(),classTreeNode);
             classTreeNode.setParent(classMap.get(classNode.getParent()));
 
+            classTreeNode.getMethodSymbolTable().enterScope();
+            classTreeNode.getMethodSymbolTable().setParent(classTreeNode.getParent().getMethodSymbolTable());
+
+            classTreeNode.getVarSymbolTable().enterScope();
+            classTreeNode.getVarSymbolTable().setParent(classTreeNode.getParent().getVarSymbolTable());
+            currentClassTreeNode = classTreeNode;
         }
-        //TODO add stuff for adding, making method tables
+        return super.visit(classNode);
+    }
+
+    public Object visit(Method methodNode){
+
+        currentClassTreeNode.getMethodSymbolTable().enterScope();
+        currentClassTreeNode.getMethodSymbolTable().add(methodNode.getName(),methodNode);
+        currentClassTreeNode.getMethodSymbolTable().exitScope();
+
+        return null;
+    }
+
+    public Object visit(Field field){
+        currentClassTreeNode.getVarSymbolTable().add(field.getName(),field);
         return null;
     }
 }
