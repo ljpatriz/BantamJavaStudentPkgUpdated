@@ -31,10 +31,15 @@ public class TypeCheckVisitor extends SemanticVisitor {
         }
     }
 
-    private String methodType;
-
     public void check(Program program){
         program.accept(this);
+    }
+
+    @Override
+    public Object visit(Class_ node){
+        this.setCurrentClassName(node.getName());
+        super.visit(node);
+        return null;
     }
 
     @Override
@@ -93,7 +98,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
     @Override
     public Object visit(Method node){
-        methodType = node.getReturnType();
+        this.setCurrentMethodName(node.getName());
         super.visit(node);
         return null;
     }
@@ -102,9 +107,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(ReturnStmt node) {
         ////TODO: fix filename
         super.visit(node);
-        if(!legalTypeCheck(methodType,node.getExpr().getExprType()))
+        Method methodNode = (Method)this.getCurrentMethodSymbolTable().lookup(this.getCurrentMethodName());
+        if(!legalTypeCheck(methodNode.getReturnType(), node.getExpr().getExprType()))
             this.registerError(node, "invalid return type, must be of type:"
-                    + methodType + "but was of type" + node.getExpr().getExprType());
+                    + methodNode.getReturnType() + "but was of type" + node.getExpr().getExprType());
         return null;
     }
 
