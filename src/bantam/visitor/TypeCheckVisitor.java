@@ -17,7 +17,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     }
 
     @Override
-    public void executeTask(Program ast) {
+    public void check(Program ast) {
         ast.accept(this);
         this.afterVisit();
     }
@@ -29,10 +29,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
             this.exitCurrentMethodScope();
             this.exitCurrentVarScope();
         }
-    }
-
-    public void check(Program program){
-        program.accept(this);
     }
 
     @Override
@@ -316,8 +312,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(VarExpr node) {
         super.visit(node);
-        System.out.println(node.getName());
-        System.out.println(((Field) getCurrentVarSymbolTable().lookup(node.getName())).getType() );
+
+        //This is all fucked up :(
+//        System.out.println(((Member)getCurrentVarSymbolTable().lookup(node.getName())));
+//        System.out.println("HEY");
 
         String type = ((Field)getClassMap().get(getCurrentClassName()).getVarSymbolTable().lookup(node.getName())).getType();
         node.setExprType(type);

@@ -2,6 +2,7 @@ class Main{
     boolean boo = true;
     void main(){
         while(boo){
+
         }
     }
 }
