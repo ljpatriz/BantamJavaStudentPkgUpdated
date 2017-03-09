@@ -80,7 +80,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(WhileStmt node) {
         //// TODO: 3/2/2017 expr must be boolean
         super.visit(node);
-        if(node.getPredExpr().getExprType().equals(this.BOOLEAN))
+        if(!node.getPredExpr().getExprType().equals(this.BOOLEAN))
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
         return null;
@@ -267,6 +267,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(VarExpr node) {
         super.visit(node);
+        System.out.println(node.getName());
+        System.out.println(((Field) getCurrentVarSymbolTable().lookup(node.getName())).getType() );
+
+        String type = ((Field)getClassMap().get(getCurrentClassName()).getVarSymbolTable().lookup(node.getName())).getType();
+        node.setExprType(type);
         //// TODO: 3/2/2017 path must be legal...
 
         return null;
@@ -302,6 +307,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public boolean legalTypeCheck(String declaredType, String objectType){
         ClassTreeNode declaredClass = this.getClassMap().get(declaredType);
         ClassTreeNode objectClass = this.getClassMap().get(objectType);
+
         while(objectClass != declaredClass){
             objectClass = objectClass.getParent();
             if(objectClass == null)

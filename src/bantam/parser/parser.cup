@@ -864,12 +864,12 @@ varExpr
         ID:e
             {: RESULT = new VarExpr(e.getLineNum(),
                                      null,
-                                     e.getName()); :}
+                                     e.getAttribute()); :}
 
         | expr:ref DOT ID:e
             {: RESULT = new VarExpr(e.getLineNum(),
                                      ref,
-                                     e.getName()); :}
+                                     e.getAttribute()); :}
     ;
 
 

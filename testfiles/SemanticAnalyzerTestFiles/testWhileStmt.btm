@@ -1,6 +1,7 @@
 class Main{
+    boolean boo = true;
     void main(){
-        while(true){
+        while(boo){
         }
     }
 }
