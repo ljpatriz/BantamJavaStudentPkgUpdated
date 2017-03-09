@@ -154,10 +154,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return super.visit(node);
     }
 
-
-    // $$$$ TOP HALF IS NICK and Bottom HALF IS CP
-
-
     @Override
     public Object visit(NewExpr node) {
         //// TODO: 3/2/2017 array expr must be int
@@ -168,12 +164,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(NewArrayExpr node) {
         super.visit(node);
-
         if(!node.getSize().getExprType().equals(INT)){
             this.registerError(node,
                     "Expression determining size of array does not resolve to int.");
         }
-
         return super.visit(node);
     }
 
@@ -192,18 +186,46 @@ public class TypeCheckVisitor extends SemanticVisitor {
             node.setUpCast(false);
         } else {
             this.registerError(node, "The type "+ node.getExpr().getExprType() +
-            "cannot be case to " + node.getType());
+            "cannot be cast to " + node.getType());
         }
         node.setExprType(node.getType()); //Jake: Necessary?
         //// TODO: 3/2/2017 must be a valid cast
         return super.visit(node);
     }
 
-    //TODO must change to sub expressions
-    @Override
-    public Object visit(BinaryArithExpr node) {
-        //// TODO: 3/2/2017 left & right must both be numbers
+    public Object visit(BinaryArithDivideExpr node){
         super.visit(node);
+        visitBinaryArithExpr(node);
+        return null;
+    }
+
+    public Object visit(BinaryArithMinusExpr node){
+        super.visit(node);
+        visitBinaryArithExpr(node);
+        return null;
+    }
+
+    public Object visit(BinaryArithModulusExpr node){
+        super.visit(node);
+        visitBinaryArithExpr(node);
+        return null;
+    }
+
+    public Object visit(BinaryArithPlusExpr node){
+        super.visit(node);
+        visitBinaryArithExpr(node);
+        return null;
+    }
+
+    public Object visit(BinaryArithTimesExpr node){
+        super.visit(node);
+        visitBinaryArithExpr(node);
+        return null;
+    }
+
+
+    public Object visitBinaryArithExpr(BinaryArithExpr node) {
+        //Both left and right must be numbers
         if(!node.getLeftExpr().getExprType().equals(this.INT))
             this.registerError(node, "Left element of BinaryArithExpr must be of type int, is of type " +
                     node.getLeftExpr().getExprType());
@@ -237,6 +259,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
     @Override
     public Object visit(BinaryCompExpr node) {
+        ////TODO: must be expanded into subclasses BinaryCompExpr is abstract
         //// TODO: 3/2/2017 must be numbers
         super.visit(node);
         if(!node.getLeftExpr().getExprType().equals(this.INT))
@@ -311,11 +334,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(VarExpr node) {
         super.visit(node);
-
-        //This is all fucked up :(
-//        System.out.println(((Member)getCurrentVarSymbolTable().lookup(node.getName())));
-//        System.out.println("HEY");
-
         String type = ((Field)getClassMap().get(getCurrentClassName()).getVarSymbolTable().lookup(node.getName())).getType();
         node.setExprType(type);
         //// TODO: 3/2/2017 path must be legal...

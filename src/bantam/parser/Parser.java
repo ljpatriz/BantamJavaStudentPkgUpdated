@@ -1910,7 +1910,6 @@ class CUP$Parser$actions {
               StmtList RESULT = null;
 		Stmt s = (Stmt)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-0)).value;
 		 RESULT = (StmtList)(new StmtList(getCurrLineNum())).addElement(s);
-               System.out.println("single statement"); 
               CUP$Parser$result = new java_cup.runtime.Symbol(12/*stmt_list*/, RESULT);
             }
           return CUP$Parser$result;
