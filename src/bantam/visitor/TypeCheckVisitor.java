@@ -116,7 +116,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         super.visit(node);
         if(!VOID.equals(node.getReturnType())){
             ////TODO this line is giving a "Must enter a scope before looking up in table" error
-            //node.getStmtList().get(0);
+            node.getStmtList().get(0);
         }
         this.exitCurrentVarScope();
         //TODO check that the last statement is a return statment
