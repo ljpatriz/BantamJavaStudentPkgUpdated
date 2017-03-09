@@ -139,7 +139,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(ExprStmt node){
         //TODO must be a legal expr
         super.visit(node);
-
+        return null;
     }
 
     @Override
