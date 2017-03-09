@@ -1,5 +1,5 @@
 class Main{
     void main(){
-        int x = (int) 5;
+        int x = (String) "yes";
     }
 }

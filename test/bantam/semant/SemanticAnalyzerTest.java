@@ -110,6 +110,14 @@ public class SemanticAnalyzerTest
         assertTrue(testThrown(filename));
     }
 
+    /**
+     * Tests method creation
+     */
+    @Test
+    public void testMethodCreation() throws Exception {
+        expectNoError("testMethodCreation.btm");
+    }
+
     /** Tests the case of a Main class with only a main.  This is legal
      * because a Bantam Java program must have a Main class with a main
      * method. */

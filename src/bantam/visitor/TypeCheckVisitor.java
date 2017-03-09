@@ -5,6 +5,7 @@ import bantam.util.ClassTreeNode;
 import bantam.util.ErrorHandler;
 
 import java.util.Hashtable;
+import java.util.Objects;
 
 /**
  * Created by ncameron on 3/2/2017.
@@ -113,6 +114,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
         this.setCurrentMethodName(node.getName());
         this.enterCurrentVarScope();
         super.visit(node);
+        if(!VOID.equals(node.getReturnType())){
+            ////TODO this line is giving a "Must enter a scope before looking up in table" error
+            //node.getStmtList().get(0);
+        }
         this.exitCurrentVarScope();
         //TODO check that the last statement is a return statment
         return null;
@@ -154,6 +159,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return super.visit(node);
     }
 
+
+    // $$$$ TOP HALF IS NICK and Bottom HALF IS CP
+
+
     @Override
     public Object visit(NewExpr node) {
         //// TODO: 3/2/2017 array expr must be int
@@ -164,10 +173,12 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(NewArrayExpr node) {
         super.visit(node);
+
         if(!node.getSize().getExprType().equals(INT)){
             this.registerError(node,
                     "Expression determining size of array does not resolve to int.");
         }
+
         return super.visit(node);
     }
 
@@ -227,22 +238,42 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visitBinaryArithExpr(BinaryArithExpr node) {
         //Both left and right must be numbers
         if(!node.getLeftExpr().getExprType().equals(this.INT))
-            this.registerError(node, "Left element of BinaryArithExpr must be of type int, is of type " +
+            this.registerError(node, "Left element of BinaryArithExpr must be of type int, it is of type " +
                     node.getLeftExpr().getExprType());
         if(!node.getRightExpr().getExprType().equals(this.INT))
-            this.registerError(node, "Right element of BinaryArithExpr must be of type int, is of type " +
+            this.registerError(node, "Right element of BinaryArithExpr must be of type int, it is of type " +
                             node.getRightExpr().getExprType());
-        node.setExprType(this.BOOLEAN);
+        node.setExprType(this.INT);
         return null;
     }
 
+    public Object visitBinaryCompExpr(BinaryCompExpr node){
+        //if node.opName() = "==" or "!="
+        if(node.getOpName().equals("==") || node.getOpName().equals("!=")){
+            if(!node.getLeftExpr().equals(this.INT) || !node.getLeftExpr().equals(this.BOOLEAN)){
+                this.registerError(node, "Left element of BinaryArithExpr must be of type int or boolean, it is of type " +
+                        node.getLeftExpr().getExprType());
+            }
+            if(!node.getLeftExpr().equals(this.INT) || !node.getLeftExpr().equals(this.BOOLEAN)){
+                this.registerError(node, "Left element of BinaryArithExpr must be of type int or boolean, it is of type " +
+                        node.getLeftExpr().getExprType());
+            }
+        }
+
+        return null;
+
+    }
+
+
     @Override
     public Object visit(BinaryCompEqExpr node) {
+
         super.visit(node);
-        if(!node.getLeftExpr().getExprType().equals(node.getRightExpr().getExprType()))
-            this.registerError(node, "Both elements of the BinaryCompEqExpr must be of the same type, " +
-                    " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "+node.getRightExpr().getExprType());
-        node.setExprType(this.BOOLEAN);
+        visitBinaryCompExpr(node);
+//        if(!node.getLeftExpr().getExprType().equals(node.getRightExpr().getExprType()))
+//            this.registerError(node, "Both elements of the BinaryCompEqExpr must be of the same type, " +
+//                    " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "+node.getRightExpr().getExprType());
+//        node.setExprType(this.BOOLEAN);
         return null;
     }
 
