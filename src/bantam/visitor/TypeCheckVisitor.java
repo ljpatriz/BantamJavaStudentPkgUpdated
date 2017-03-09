@@ -26,8 +26,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public void afterVisit(){
         for (String key : this.getClassMap().keySet()){
             this.setCurrentClassName(key);
-//            this.exitCurrentMethodScope();
-//            this.exitCurrentVarScope();
+            this.exitCurrentMethodScope();
+            this.exitCurrentVarScope();
         }
     }
 
