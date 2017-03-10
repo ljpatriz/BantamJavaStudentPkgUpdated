@@ -117,10 +117,24 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
         if(!VOID.equals(node.getReturnType())){
             ////TODO this line is giving a "Must enter a scope before looking up in table" error
-            //node.getStmtList().get(0);
+            StmtList stmtList = node.getStmtList();
+            if(stmtList.getSize() == 0)
+                registerError(node, "Method must have a return statement");
+            else{
+                Stmt lastStmt = stmtList.get(stmtList.getSize() - 1;
+                if(!(lastStmt instanceof ReturnStmt))
+                    registerError(node, "Last statement of the method must be a return statement");
+                else {
+                    ReturnStmt returnStmt = (ReturnStmt) lastStmt;
+                    if(!returnStmt.getExpr().getExprType().equals(node.getReturnType())){
+                        registerError(node, "Return type "+node.getReturnType() +
+                                " does not match given return type "+returnStmt.getExpr().getExprType());
+                    }
+                }
+
+            }
         }
         this.exitCurrentVarScope();
-        //TODO check that the last statement is a return statment
         return null;
     }
 
@@ -200,7 +214,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
             this.registerError(node, "The type "+ node.getExpr().getExprType() +
             "cannot be cast to " + node.getType());
         }
-        node.setExprType(node.getType()); //Jake: Necessary?
+        node.setExprType(node.getType()); //From Jake: Necessary?
         //// TODO: 3/2/2017 must be a valid cast
         return super.visit(node);
     }
