@@ -46,7 +46,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
                         node.getType() + "but was of type" + node.getInit().getExprType());
         }
         this.putInCurrentVarSymbolTable(node.getName(), node.getType());
-        return null;
+        return false;
     }
 
     @Override
@@ -57,10 +57,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
         if(varType == null){
             this.registerError(node, "variable "+node.getName()+"was not declared");
         } else if(!isSuperType(varType, node.getExpr().getExprType())) {
-            this.registerError(node, "Invalid Assignment the lefthand expression type " +
-                    varType + " does not match the righthand expression type " + node.getExpr().getExprType());
+            this.registerError(node, "Invalid Assignment the left-hand expression type " +
+                    varType + " does not match the right-hand expression type " + node.getExpr().getExprType());
         }
-        return null;
+        return true;
     }
 
     //TODO ArrayAssignExpr
@@ -93,7 +93,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         this.getCurrentVarSymbolTable().enterScope();
         node.getBodyStmt().accept(this);
         this.getCurrentVarSymbolTable().exitScope();
-        return null;
+        return false;
     }
 
     @Override
@@ -102,19 +102,15 @@ public class TypeCheckVisitor extends SemanticVisitor {
         if(!node.getPredExpr().getExprType().equals(this.BOOLEAN))
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
-//        this.enterCurrentVarScope();
         this.getCurrentVarSymbolTable().enterScope();
         node.getThenStmt().accept(this);
-//        this.exitCurrentVarScope();
         this.getCurrentVarSymbolTable().exitScope();
         if(node.getElseStmt() != null){
-//            this.enterCurrentVarScope();
             this.getCurrentVarSymbolTable().enterScope();
             node.getElseStmt().accept(this);
-//            this.exitCurrentVarScope();
             this.getCurrentVarSymbolTable().exitScope();
         }
-        return null;
+        return false;
     }
 
     @Override
@@ -188,17 +184,20 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
         }
         super.visit(node);
-        return null;
+        return false;
     }
 
     @Override
-    public Object visit(ExprStmt node){
+    public Object visit(ExprStmt node) {
         //TODO must be a legal expr
-        super.visit(node);
+        if (!(boolean) node.getExpr().accept(this)) {
+            this.registerError(node, "Legal statement expressions are only assignments," +
+                    " increment/decrement operations, methods calls, and new object " +
+                    "constructions. Invalid expresion type: " + node.getExpr().getExprType());
+        }
 
         return null;
     }
-
     @Override
     public Object visit(DispatchExpr node) {
         //// TODO: 3/2/2017 method must exist and take any given params
@@ -243,7 +242,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
                 }
             }
         }
-        return null;
+        return true;
     }
 
     @Override
@@ -254,7 +253,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         }
         node.setExprType(node.getType());
         super.visit(node);
-        return null;
+        return true;
     }
 
     @Override
@@ -266,7 +265,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
                     "Expression determining size of array does not resolve to int.");
         }
 
-        return super.visit(node);
+        return true;
     }
 
 
@@ -288,37 +287,37 @@ public class TypeCheckVisitor extends SemanticVisitor {
         }
         node.setExprType(node.getType()); //From Jake: Necessary?
         //// TODO: 3/2/2017 must be a valid cast
-        return super.visit(node);
+        return false;
     }
 
     public Object visit(BinaryArithDivideExpr node){
         super.visit(node);
         visitBinaryArithExpr(node);
-        return null;
+        return false;
     }
 
     public Object visit(BinaryArithMinusExpr node){
         super.visit(node);
         visitBinaryArithExpr(node);
-        return null;
+        return false;
     }
 
     public Object visit(BinaryArithModulusExpr node){
         super.visit(node);
         visitBinaryArithExpr(node);
-        return null;
+        return false;
     }
 
     public Object visit(BinaryArithPlusExpr node){
         super.visit(node);
         visitBinaryArithExpr(node);
-        return null;
+        return false;
     }
 
     public Object visit(BinaryArithTimesExpr node){
         super.visit(node);
         visitBinaryArithExpr(node);
-        return null;
+        return false;
     }
 
 
@@ -332,7 +331,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
                             node.getRightExpr().getExprType());
         node.setExprType(this.INT);
 
-        return null;
+        return false;
     }
 
     public Object visitBinaryCompExpr(BinaryCompExpr node){
@@ -360,49 +359,49 @@ public class TypeCheckVisitor extends SemanticVisitor {
             }
         }
         node.setExprType(this.BOOLEAN);
-        return null;
+        return false;
     }
 
     @Override
     public Object visit(BinaryCompEqExpr node) {
         super.visit(node);
         visitBinaryCompExpr(node);
-        return null;
+        return false;
     }
 
     @Override
     public Object visit(BinaryCompNeExpr node) {
         super.visit(node);
         visitBinaryCompExpr(node);
-        return null;
+        return false;
     }
 
     @Override
     public Object visit(BinaryCompGeqExpr node) {
         super.visit(node);
         visitBinaryCompExpr(node);
-        return null;
+        return false;
     }
 
     @Override
     public Object visit(BinaryCompGtExpr node) {
         super.visit(node);
         visitBinaryCompExpr(node);
-        return null;
+        return false;
     }
 
     @Override
     public Object visit(BinaryCompLeqExpr node) {
         super.visit(node);
         visitBinaryCompExpr(node);
-        return null;
+        return false;
     }
 
     @Override
     public Object visit(BinaryCompLtExpr node) {
         super.visit(node);
         visitBinaryCompExpr(node);
-        return null;
+        return false;
     }
 
     @Override
@@ -417,7 +416,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
                     "Right element of BinaryLogicExpr must be of type boolean, is of type "
                             + node.getRightExpr().getExprType());
         node.setExprType("boolean");
-        return null;
+        return false;
     }
 
     @Override
@@ -427,7 +426,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         if(node.getExpr().getExprType() != this.INT)
             this.registerError(node, "UnaryNegExpr must be of type int, is of type " + node.getExpr().getExprType());
         node.setExprType(this.INT);
-        return null;
+        return false;
     }
 
     @Override
@@ -437,7 +436,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         if(node.getExpr().getExprType() != this.BOOLEAN)
             this.registerError(node, "UnaryNotExpr must be of type boolean, is of type " + node.getExpr().getExprType());
         node.setExprType(this.BOOLEAN);
-        return null;
+        return false;
     }
 
     @Override
@@ -448,7 +447,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
             this.registerError(node,
                     "UnaryIncrExpr must be of type int, is of type " + node.getExpr().getExprType());
         node.setExprType(this.INT);
-        return null;
+        return true;
     }
 
     @Override
@@ -460,7 +459,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
                     "UnaryDecrExpr must be of type int, is of type " +
                             node.getExpr().getExprType());
         node.setExprType(this.INT);
-        return null;
+        return false;
     }
 
     @Override
@@ -500,28 +499,28 @@ public class TypeCheckVisitor extends SemanticVisitor {
             this.registerError(node, "Variable" + node.getName() + " not declared/found");
         }
 
-        return null;
+        return false;
     }
 
     @Override
     public Object visit(ConstIntExpr node) {
         super.visit(node);
         node.setExprType(this.INT);
-        return null;
+        return false;
     }
 
     @Override
     public Object visit(ConstBooleanExpr node) {
         super.visit(node);
         node.setExprType(this.BOOLEAN);
-        return null;
+        return false;
     }
 
     @Override
     public Object visit(ConstStringExpr node) {
         super.visit(node);
         node.setExprType("String");
-        return null;
+        return false;
     }
 
     /**
