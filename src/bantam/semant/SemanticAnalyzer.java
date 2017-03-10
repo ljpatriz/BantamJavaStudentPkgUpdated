@@ -97,6 +97,9 @@ public class SemanticAnalyzer {
                                                                  this.errorHandler);
 		typeCheckVisitor.check(this.program);
 
+		ReservedWordVisitor reservedWordVisitor = new ReservedWordVisitor(classMap, this.errorHandler);
+		reservedWordVisitor.check(this.program);
+		
 		BreakVisitor breakVisitor = new BreakVisitor(classMap, this.errorHandler);
 		breakVisitor.check(this.program);
 
