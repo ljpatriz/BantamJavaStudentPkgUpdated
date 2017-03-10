@@ -159,7 +159,7 @@ nonterminal BlockStmt           blockStmt;
 
 nonterminal AssignExpr          assignExpr;
 nonterminal CastExpr            castExpr;
-nonterminal ArrayAssignExpr     arrayassignExpr;
+nonterminal ArrayAssignExpr     arrayAssignExpr;
 nonterminal ArrayExpr           arrayExpr;
 nonterminal DispatchExpr        dispatchExpr;
 nonterminal NewExpr             newExpr;
@@ -605,7 +605,7 @@ assignExpr
                                         e); :}
     ;
 
-arrayassignExpr
+arrayAssignExpr
 
         ::=
 
@@ -644,7 +644,7 @@ newExpr
         NEW:n ID:type LPAREN RPAREN
             {: RESULT = new NewExpr(n.getLineNum(),
                                      type.getAttribute()); :}
-                                     ;
+
         |NEW:n ID:type LSQBRACE expr:e RSQBRACE
             {: RESULT = new NewExpr(n.getLineNum(),
                                      type.getAttribute()); :}
@@ -721,7 +721,7 @@ constExpr
 
         |BOOLEAN_CONST:b
             {: RESULT = new ConstBooleanExpr(b.getLineNum(),
-                                       b.getName()); :}
+                                       b.getAttribute()); :}
 
         |STRING_CONST:s
             {: RESULT = new ConstStringExpr(s.getLineNum(),
@@ -866,9 +866,10 @@ varExpr
                                      null,
                                      e.getAttribute()); :}
 
-        | expr:ref DOT ID:e
+        | ID:ref DOT ID:e
             {: RESULT = new VarExpr(e.getLineNum(),
-                                     ref,
+                                     new VarExpr(ref.getLineNum(), null,
+                                     ref.getAttribute()),
                                      e.getAttribute()); :}
     ;
 
@@ -880,12 +881,13 @@ arrayExpr
         ID:e LSQBRACE expr:index RSQBRACE
             {: RESULT = new ArrayExpr(e.getLineNum(),
                                        null,
-                                       e.getName(),
+                                       e.getAttribute(),
                                        index); :}
 
-        | expr:ref DOT ID:e LSQBRACE expr:index RSQBRACE
+        | ID:ref DOT ID:e LSQBRACE expr:index RSQBRACE
             {: RESULT = new ArrayExpr(e.getLineNum(),
-                                       ref,
-                                       e.getName(),
+                                       new VarExpr(ref.getLineNum(), null,
+                                       ref.getAttribute()),
+                                       e.getAttribute(),
                                        index); :}
     ;
