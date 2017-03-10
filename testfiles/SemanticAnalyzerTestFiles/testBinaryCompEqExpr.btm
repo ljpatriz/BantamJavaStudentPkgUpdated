@@ -1,5 +1,7 @@
 class Main{
+    int num = 5;
     void main(){
-        5==5;
+        if(this.num == 5){
+        }
     }
 }

@@ -101,12 +101,12 @@ public class MethodOverrideVisitor extends SemanticVisitor {
         }
 
         return null;    // everything is fine
-        {
-            THIS IS A TODO
-            IN ERROR FORM SO THAT WE REMEMBER
-            THIS VISIT METHOD MUST BE CALLED
-            BEFORE METHODS ARE ADDED TO THE SYMBOL TABLE
-        }
+//        {
+//            THIS IS A TODO
+//            IN ERROR FORM SO THAT WE REMEMBER
+//            THIS VISIT METHOD MUST BE CALLED
+//            BEFORE METHODS ARE ADDED TO THE SYMBOL TABLE
+//        }
     }
 
 }
