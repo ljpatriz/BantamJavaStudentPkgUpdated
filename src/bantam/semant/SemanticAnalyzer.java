@@ -86,7 +86,7 @@ public class SemanticAnalyzer {
 		// 1 - add built in classes to class tree
 		updateBuiltins();
 		buildClassHiearchyTree();
-		buildClassesInTree();
+//		buildClassesInTree();
 		//Add visitors
 		MainMainVisitor mainMainVisitor = new MainMainVisitor(this.errorHandler);
 		mainMainVisitor.check(this.program);
