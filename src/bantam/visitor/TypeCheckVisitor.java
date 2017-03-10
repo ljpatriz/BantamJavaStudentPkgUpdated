@@ -35,14 +35,14 @@ public class TypeCheckVisitor extends SemanticVisitor {
 //        System.out.println(this.getCurrentVarSymbolTable());
         System.out.println(this.getCurrentMethodSymbolTable());
 //        this.enterCurrentVarScope();
-        this.getCurrentVarSymbolTable().enterScope();
+        //this.getCurrentVarSymbolTable().enterScope();
 //        this.enterCurrentMethodScope();
-        this.getCurrentMethodSymbolTable().enterScope();
+        //this.getCurrentMethodSymbolTable().enterScope();
         super.visit(node);
 //        this.exitCurrentVarScope();
 //        this.exitCurrentMethodScope();
-        this.getCurrentVarSymbolTable().exitScope();
-        this.getCurrentMethodSymbolTable().exitScope();
+        //this.getCurrentVarSymbolTable().exitScope();
+        //this.getCurrentMethodSymbolTable().exitScope();
         return null;
     }
 
