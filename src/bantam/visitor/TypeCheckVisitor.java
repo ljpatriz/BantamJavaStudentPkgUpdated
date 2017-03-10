@@ -65,9 +65,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
         String varType = (String)this.getCurrentVarSymbolTable().lookup(node.getName());
         if(varType == null){
             this.registerError(node, "variable "+node.getName()+"was not declared");
-        } else if(!isSuperType(varType, node.getExpr().getExprType()))
+        } else if(!isSuperType(varType, node.getExpr().getExprType())) {
             this.registerError(node, "Invalid Assignment the lefthand expression type " +
-                    varType+" does not match the righthand expression type "+node.getExpr().getExprType());
+                    varType + " does not match the righthand expression type " + node.getExpr().getExprType());
+        }
         return null;
     }
 
@@ -82,8 +83,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(Field node) {
         //// TODO: 3/2/2017 if assigned must be correct type
         super.visit(node);
-        if(!isSuperType(node.getType(), node.getInit().getExprType()))
+        if(node.getInit() != null && !isSuperType(node.getType(), node.getInit().getExprType())){
             this.registerError(node, "Invalid Assignment Type");
+        }
 
         return null;
     }
