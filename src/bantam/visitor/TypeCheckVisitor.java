@@ -130,6 +130,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
         System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         super.visit(node);
+        this.getCurrentVarSymbolTable().exitScope();
+
+
         if(!VOID.equals(node.getReturnType())){
             ////TODO this line is giving a "Must enter a scope before looking up in table" error
             StmtList stmtList = node.getStmtList();
