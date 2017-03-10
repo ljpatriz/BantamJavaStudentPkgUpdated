@@ -1,6 +1,5 @@
 class Main{
     void main(){
-        int f = 0;
     }
     int foo() {
         return 5;

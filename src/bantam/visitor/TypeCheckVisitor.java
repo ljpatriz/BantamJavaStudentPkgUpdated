@@ -94,10 +94,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
         if(!node.getPredExpr().getExprType().equals(this.BOOLEAN))
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
-//        this.enterCurrentVarScope();
         this.getCurrentVarSymbolTable().enterScope();
         node.getBodyStmt().accept(this);
-//        this.exitCurrentVarScope();
         this.getCurrentVarSymbolTable().exitScope();
         return null;
     }
@@ -130,7 +128,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
         System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         super.visit(node);
-        this.getCurrentVarSymbolTable().exitScope();
+
 
 
         if(!VOID.equals(node.getReturnType())){
