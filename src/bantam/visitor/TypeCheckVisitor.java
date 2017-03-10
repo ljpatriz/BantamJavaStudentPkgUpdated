@@ -29,20 +29,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
     @Override
     public Object visit(Class_ node){
-//        System.out.println(this.getCurrentMethodSymbolTable().getCurrScopeLevel());
-//        System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         this.setCurrentClassName(node.getName());
-//        System.out.println(this.getCurrentVarSymbolTable());
-        System.out.println(this.getCurrentMethodSymbolTable());
-//        this.enterCurrentVarScope();
-        //this.getCurrentVarSymbolTable().enterScope();
-//        this.enterCurrentMethodScope();
-        //this.getCurrentMethodSymbolTable().enterScope();
         super.visit(node);
-//        this.exitCurrentVarScope();
-//        this.exitCurrentMethodScope();
-        //this.getCurrentVarSymbolTable().exitScope();
-        //this.getCurrentMethodSymbolTable().exitScope();
         return null;
     }
 
@@ -128,8 +116,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(Method node){
         this.setCurrentMethodName(node.getName());
         this.getCurrentVarSymbolTable().enterScope();
-
-        System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         super.visit(node);
 
 
@@ -167,22 +153,12 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(ReturnStmt node) {
         ////TODO: fix filename
         super.visit(node);
-        System.out.println("In return");
-        System.out.println(this.getCurrentMethodSymbolTable().getCurrScopeLevel());
-        System.out.println(this.getCurrentMethodName());
-        System.out.println(this.getCurrentMethodSymbolTable().getSize());
-        System.out.println(this.getCurrentMethodSymbolTable().lookup(this.getCurrentMethodName()));
-        Method methodNode = (Method)this.getCurrentMethodSymbolTable().lookup(this.getCurrentMethodName());
-//        if(!isSuperType(methodNode.getReturnType(), node.getExpr().getExprType()))
-//            this.registerError(node, "invalid return type, must be of type:"
-//                    + methodNode.getReturnType() + "but was of type" + node.getExpr().getExprType());
         return null;
     }
 
     @Override
     public Object visit(ExprStmt node){
         //TODO must be a legal expr
-        System.out.println((Boolean) node.getExpr().accept(this));
         super.visit(node);
         return null;
     }
