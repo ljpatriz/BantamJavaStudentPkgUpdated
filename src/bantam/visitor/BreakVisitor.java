@@ -22,11 +22,6 @@ public class BreakVisitor extends SemanticVisitor{
     @Override
     public void check(Program ast) {
         ast.accept(this);
-        this.afterVisit();
-    }
-
-    @Override
-    public void afterVisit(){
         this.currentlyInLoop = false;
     }
 

@@ -15,56 +15,25 @@ import java.util.Hashtable;
 
 public abstract class SemanticVisitor extends Visitor {
 
-    /** Static field for the int keyword */
+    /** Declares a set of constants, for cleaner code */
     public static final String INT = "int";
-
-    /** Static field for the boolean keyword */
     public static final String BOOLEAN = "boolean";
-
-    /** Static field for the this keyword */
     public static final String THIS = "this";
-
-    /** Static field for the super keyword */
     public static final String SUPER = "super";
-
-    /** Static field for the void keyword */
     public static final String VOID = "void";
-
-    /** Static field for the null keyword */
     public static final String NULL = "null";
-
-    /** Static field for the class keyword */
     public static final String CLASS = "class";
-
-    /** Static field for the extends keyword */
     public static final String EXTENDS = "extends";
-
-    /** Static field for the if keyword */
     public static final String IF = "if";
-
-    /** Static field for the else keyword */
     public static final String ELSE = "else";
-
-    /** Static field for the new keyword */
     public static final String NEW = "new";
-
-    /** Static field for the true keyword */
     public static final String TRUE = "TRUE";
-
-    /** Static field for the false keyword */
     public static final String FALSE = "false";
-
-    /** Static field for the for keyword */
     public static final String FOR = "for";
-
-    /** Static field for the while keyword */
     public static final String WHILE = "while";
-
-    /** Static field for the return keyword */
     public static final String RETURN = "return";
 
-    /** The set of all keywords */
-    public static final String[] KEYWORDS = {INT, BOOLEAN, THIS, SUPER, VOID,
+    public static final String[] RESERVED_WORDS = {INT, BOOLEAN, THIS, SUPER, VOID,
             NULL, CLASS, EXTENDS, IF, ELSE, NEW, TRUE, FALSE, FOR, WHILE, RETURN};
 
 
@@ -76,16 +45,14 @@ public abstract class SemanticVisitor extends Visitor {
 
     private String currentMethodName;
 
-    public SemanticVisitor(Hashtable<String, ClassTreeNode> classMap, ErrorHandler 
+    public SemanticVisitor(Hashtable<String, ClassTreeNode> classMap, ErrorHandler
             errorHandler){
         this.classMap = classMap;
         this.errorHandler = errorHandler;
     }
-    
+
     public abstract void check(Program ast);
-    
-    public void afterVisit() {}
-    
+
     public void registerError(ASTNode node, String message) {
         this.getErrorHandler().register(
                 this.getErrorHandler().SEMANT_ERROR,
@@ -101,28 +68,16 @@ public abstract class SemanticVisitor extends Visitor {
 
     public String getCurrentFileName() {
         if(this.getCurrentClassName() != null){
-            return this.getClassMap().get(getCurrentClassName()).getASTNode()
+            return this.getClassMap()
+                    .get(getCurrentClassName())
+                    .getASTNode()
                     .getFilename();
         }
         return "";
     }
 
-    public boolean isDeclaredType(String type){
-        if(type == null || type.equals(""))
-            return false;
-
-        String stripped = type.replace("[]", "");
-
-        if(stripped.equals(INT) || stripped.equals(BOOLEAN)){
-            return true;
-        }
-        else {
-            return this.getClassMap().containsKey(stripped);
-        }
-    }
-
-    public boolean isKeyword(String term){
-        for (String k : KEYWORDS){
+    public boolean isReservedWord(String term){
+        for (String k : RESERVED_WORDS){
             if(k.equals(term)) return true;
         }
         return false;
@@ -136,16 +91,8 @@ public abstract class SemanticVisitor extends Visitor {
         return this.getClassMap().get(this.getCurrentClassName()).getMethodSymbolTable();
     }
 
-    public void putInCurrentMethodSymbolTable(String name, Method method){
-        this.getCurrentMethodSymbolTable().add(name, method);
-    }
-
-    public void putInCurrentVarSymbolTable(String name, String type){
-        this.getCurrentVarSymbolTable().add(name, type);
-    }
-
     public String getCurrentClassName() {
-        return currentClassName;
+        return this.currentClassName;
     }
 
     public void setCurrentClassName(String currentClassName) {
@@ -153,7 +100,7 @@ public abstract class SemanticVisitor extends Visitor {
     }
 
     public String getCurrentMethodName() {
-        return currentMethodName;
+        return this.currentMethodName;
     }
 
     public void setCurrentMethodName(String currentMethodName) {
@@ -161,23 +108,7 @@ public abstract class SemanticVisitor extends Visitor {
     }
 
     public Hashtable<String, ClassTreeNode> getClassMap() {
-        return classMap;
+        return this.classMap;
     }
-//
-//    public void enterCurrentVarScope(){
-//        getCurrentVarSymbolTable().enterScope();
-//    }
-//
-//    public void exitCurrentVarScope(){
-//        getCurrentVarSymbolTable().exitScope();
-//    }
-//
-//    public void enterCurrentMethodScope(){
-//        getCurrentMethodSymbolTable().enterScope();
-//    }
-//
-//    public void exitCurrentMethodScope(){
-//        getCurrentMethodSymbolTable().exitScope();
-//    }
 
 }
