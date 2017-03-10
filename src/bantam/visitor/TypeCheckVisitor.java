@@ -30,20 +30,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
     @Override
     public Object visit(Class_ node){
-//        System.out.println(this.getCurrentMethodSymbolTable().getCurrScopeLevel());
-//        System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         this.setCurrentClassName(node.getName());
-//        System.out.println(this.getCurrentVarSymbolTable());
-        System.out.println(this.getCurrentMethodSymbolTable());
-//        this.enterCurrentVarScope();
-        //this.getCurrentVarSymbolTable().enterScope();
-//        this.enterCurrentMethodScope();
-        //this.getCurrentMethodSymbolTable().enterScope();
         super.visit(node);
-//        this.exitCurrentVarScope();
-//        this.exitCurrentMethodScope();
-        //this.getCurrentVarSymbolTable().exitScope();
-        //this.getCurrentMethodSymbolTable().exitScope();
         return null;
     }
 
@@ -131,8 +119,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(Method node){
         this.setCurrentMethodName(node.getName());
         this.getCurrentVarSymbolTable().enterScope();
-
-        System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         super.visit(node);
 
         if(!VOID.equals(node.getReturnType())){
@@ -259,8 +245,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
     @Override
     public Object visit(NewExpr node) {
-        //// TODO: 3/2/2017 array expr must be int
-        // TODO: 3/7/2017 by Larry - must make sure new object based on class is correct
+        if(!this.getClassMap().containsKey(node.getType())){
+            this.registerError(node,
+                    "Object type " + node.getType() + " does not exist.");
+        }
+        node.setExprType(node.getType());
         return super.visit(node);
     }
 

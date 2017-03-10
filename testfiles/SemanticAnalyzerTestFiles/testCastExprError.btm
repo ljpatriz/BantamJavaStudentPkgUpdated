@@ -1,5 +1,11 @@
+class Animal {}
+class Dog {}
 class Main{
     void main(){
-        int x = (String) 5;
+        Dog CP = new Dog();
+        Animal CP2 = (Animal) (CP);
+
+        Animal Jake = new Animal();
+        Dog Jake2 = (Dog) (Jake);
     }
 }
