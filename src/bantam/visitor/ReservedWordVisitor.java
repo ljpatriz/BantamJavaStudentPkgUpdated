@@ -33,7 +33,7 @@ public class ReservedWordVisitor extends SemanticVisitor {
     @Override
     public Object visit(Class_ node) {
         if(isReservedWord(node.getName()))
-            registerError(node, node.getName()+"is not a legal identifier");
+            registerError(node, node.getName()+" is not a legal identifier");
         return super.visit(node);
     }
 
@@ -45,7 +45,7 @@ public class ReservedWordVisitor extends SemanticVisitor {
     @Override
     public Object visit(Field node) {
         if(isReservedWord(node.getName()))
-            registerError(node, node.getName()+"is not a legal identifier");
+            registerError(node, node.getName()+" is not a legal identifier");
         return super.visit(node);
     }
 
@@ -57,7 +57,7 @@ public class ReservedWordVisitor extends SemanticVisitor {
     @Override
     public Object visit(Method node) {
         if(isReservedWord(node.getName()))
-            registerError(node, node.getName()+"is not a legal identifier");
+            registerError(node, node.getName()+" is not a legal identifier");
         return super.visit(node);
     }
 
@@ -69,14 +69,9 @@ public class ReservedWordVisitor extends SemanticVisitor {
     @Override
     public Object visit(Formal node) {
         if(isReservedWord(node.getName()))
-            registerError(node, node.getName()+"is not a legal identifier");
-
-        if(isReservedWord(node.getType())){
-            if(!node.getType().equals(this.INT)|| !node.getType().equals(this.BOOLEAN)){
-                registerError(node, node.getType()+"is not a legal type");
-            }
-        }
-
+            registerError(node, node.getName()+" is not a legal identifier");
+        if(!isLegalType(node.getType()))
+            registerError(node, node.getType()+" is not a legal type");
         return super.visit(node);
     }
 
@@ -88,12 +83,9 @@ public class ReservedWordVisitor extends SemanticVisitor {
     @Override
     public Object visit(DeclStmt node) {
         if(isReservedWord(node.getName()))
-            registerError(node, node.getName()+"is not a legal identifier");
-        if(isReservedWord(node.getType())){
-            if(!node.getType().equals(this.INT)|| !node.getType().equals(this.BOOLEAN)){
-                registerError(node, node.getType()+"is not a legal type");
-            }
-        }
+            registerError(node, node.getName()+" is not a legal identifier");
+        if(!isLegalType(node.getType()))
+            registerError(node, node.getType()+" is not a legal type");
         return super.visit(node);
     }
 
@@ -104,11 +96,8 @@ public class ReservedWordVisitor extends SemanticVisitor {
      */
     @Override
     public Object visit(CastExpr node) {
-        if(isReservedWord(node.getType())){
-            if(!node.getType().equals(this.INT)|| !node.getType().equals(this.BOOLEAN)){
-                registerError(node, node.getType()+"is not a legal identifier");
-            }
-        }
+        if(!isLegalType(node.getType()))
+            registerError(node, node.getType()+" is not a legal identifier");
         return super.visit(node);
     }
 
@@ -119,10 +108,8 @@ public class ReservedWordVisitor extends SemanticVisitor {
      */
     @Override
     public Object visit(NewExpr node) {
-        if(isReservedWord(node.getType())){
-            if(!node.getType().equals(this.INT)|| !node.getType().equals(this.BOOLEAN)){
-                registerError(node, node.getType()+"is not a legal identifier");
-            }
+        if(!isLegalType(node.getType())){
+            registerError(node, node.getType()+" is not a legal type");
         }
         return super.visit(node);
     }
@@ -135,7 +122,8 @@ public class ReservedWordVisitor extends SemanticVisitor {
     @Override
     public Object visit(VarExpr node) {
         if(isReservedWord(node.getName())){
-            registerError(node, node.getName()+"is not a legal identifier");
+            if(!(node.getName().equals(this.THIS) || node.getName().equals(this.SUPER)))
+                registerError(node, node.getName()+" is not a legal identifier");
         }
         return super.visit(node);
     }
@@ -151,5 +139,15 @@ public class ReservedWordVisitor extends SemanticVisitor {
             registerError(node, node.getName()+"is not a legal identifier");
         }
         return super.visit(node);
+    }
+
+    public boolean isLegalType(String name){
+        if(isReservedWord(name))
+            if(name.equals(this.INT) || name.equals(this.BOOLEAN)) {
+                return true;
+            }
+            else
+                return false;
+        return true;
     }
 }
