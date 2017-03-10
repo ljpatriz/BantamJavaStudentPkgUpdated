@@ -112,12 +112,16 @@ public class TypeCheckVisitor extends SemanticVisitor {
         }
         return null;
     }
-    
+
+    /**
+     * Visits a while statement node and
+     * @param node the while statement node
+     * @return
+     */
     @Override
     public Object visit(WhileStmt node) {
         //// TODO: 3/2/2017 expr must be boolean
         node.getPredExpr().accept(this);
-        System.out.println(node.getPredExpr().getExprType());
         if(!node.getPredExpr().getExprType().equals(this.BOOLEAN)) {
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
