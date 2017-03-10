@@ -93,14 +93,17 @@ public class SymbolTable {
      * Enter a new scope
      */
     public void enterScope() {
+        System.out.println("Entering scope:");
         hash = new Hashtable<String, Object>();
         scopes.add(hash);
+        System.out.println(scopes);
     }
 
     /**
      * Exit a scope
      */
     public void exitScope() {
+        System.out.println("Exiting scope:");
         if (scopes.size() == 0) {
             throw new RuntimeException("No scope to exit");
         }
@@ -111,6 +114,8 @@ public class SymbolTable {
         else {
             hash = null;
         }
+
+        System.out.println(scopes);
     }
 
     /**
@@ -121,10 +126,12 @@ public class SymbolTable {
      * @param value value of symbol (i.e., type)
      */
     public void add(String s, Object value) {
+        System.out.println(scopes);
         if (scopes.size() == 0) {
             throw new RuntimeException("Must enter a scope before adding to table");
         }
         hash.put(s, value);
+        System.out.println("hash " + hash.toString());
     }
 
     /**
@@ -134,6 +141,9 @@ public class SymbolTable {
      * @return value of symbol (i.e., type), null if not found
      */
     public Object lookup(String s) {
+        System.out.println("Attempting to lookup " + s);
+        System.out.println(scopes);
+        System.out.println("hhhh" + hash);
         if (scopes.size() == 0) {
             throw new RuntimeException("Must enter a scope before looking up in table");
         }
