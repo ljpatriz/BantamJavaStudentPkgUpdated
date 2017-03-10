@@ -17,61 +17,77 @@ public class ReservedWordVisitor extends SemanticVisitor {
 
     @Override
     public void check(Program ast) {
-
+        ast.accept(this);
     }
 
     @Override
     public Object visit(Class_ node) {
+        if(isReservedWord(node.getName()))
+            registerError(node, node.getName()+"is not a legal identifier");
         return super.visit(node);
     }
 
     @Override
     public Object visit(Field node) {
+        if(isReservedWord(node.getName()))
+            registerError(node, node.getName()+"is not a legal identifier");
         return super.visit(node);
     }
 
     @Override
     public Object visit(Method node) {
+        if(isReservedWord(node.getName()))
+            registerError(node, node.getName()+"is not a legal identifier");
         return super.visit(node);
     }
 
     @Override
     public Object visit(Formal node) {
+        if(isReservedWord(node.getName()))
+            registerError(node, node.getName()+"is not a legal identifier");
         return super.visit(node);
     }
 
     @Override
     public Object visit(DeclStmt node) {
-        return super.visit(node);
-    }
-
-    @Override
-    public Object visit(NewExpr node) {
-        return super.visit(node);
-    }
-
-    @Override
-    public Object visit(NewArrayExpr node) {
-        return super.visit(node);
-    }
-
-    @Override
-    public Object visit(InstanceofExpr node) {
+        if(isReservedWord(node.getName()))
+            registerError(node, node.getName()+"is not a legal identifier");
         return super.visit(node);
     }
 
     @Override
     public Object visit(CastExpr node) {
+        if(isReservedWord(node.getType())){
+            if(!node.getType().equals(this.INT)|| !node.getType().equals(this.BOOLEAN)){
+                registerError(node, node.getType()+"is not a legal identifier");
+            }
+        }
+        return super.visit(node);
+    }
+
+    @Override
+    public Object visit(NewExpr node) {
+        if(isReservedWord(node.getType())){
+            if(!node.getType().equals(this.INT)|| !node.getType().equals(this.BOOLEAN)){
+                registerError(node, node.getType()+"is not a legal identifier");
+            }
+        }
         return super.visit(node);
     }
 
     @Override
     public Object visit(VarExpr node) {
+        if(isReservedWord(node.getName())){
+            registerError(node, node.getName()+"is not a legal identifier");
+        }
         return super.visit(node);
     }
 
     @Override
     public Object visit(ArrayExpr node) {
+        if(isReservedWord(node.getName())){
+            registerError(node, node.getName()+"is not a legal identifier");
+        }
         return super.visit(node);
     }
 }
