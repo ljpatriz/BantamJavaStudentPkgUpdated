@@ -47,8 +47,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
         super.visit(node);
         Expr refVarExpr = node.getRefName() == null ?
                 null :
-                new VarExpr(-1, null, node.getRefName());
-        VarExpr varExpr = new VarExpr(-1, refVarExpr, node.getName());
+                new VarExpr(node.getLineNum(), null, node.getRefName());
+        System.out.println(node.getRefName() + "***************");
+        VarExpr varExpr = new VarExpr(node.getLineNum(), refVarExpr, node.getName());
         varExpr.accept(this);
         node.setExprType(varExpr.getExprType());
 
