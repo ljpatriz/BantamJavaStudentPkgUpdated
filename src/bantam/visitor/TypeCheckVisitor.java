@@ -258,14 +258,14 @@ public class TypeCheckVisitor extends SemanticVisitor {
         }
         else{
             //if left expr not an int, register error
-            if(node.getLeftExpr().equals(this.INT) ){
+            if(!node.getLeftExpr().getExprType().equals(this.INT) ){
                 this.registerError(node, "Left element of the BinaryCompExpr \""+
                         node.getOpName()+"\" at line number " +node.getLineNum()+
                         " must be of type int, it is of type " +
                         node.getLeftExpr().getExprType());
             }
             //if right expr not an int, register error
-            if(node.getRightExpr().equals(this.INT) ){
+            if(!node.getRightExpr().getExprType().equals(this.INT) ){
                 this.registerError(node, "Right element of the BinaryCompExpr \""+
                         node.getOpName()+"\" at line number " +node.getLineNum()+
                         " must be of type int, it is of type " +
@@ -379,8 +379,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(VarExpr node) {
         super.visit(node);
-        String type = ((Field)getClassMap().get(getCurrentClassName()).getVarSymbolTable().lookup(node.getName())).getType();
-        node.setExprType(type);
+        ////TODO: need to fix this after scoping get fixed...needs to check
+        //String type = ((Field)(getClassMap().get(getCurrentClassName()).getVarSymbolTable().lookup(node.getName())).getType());
+//        node.setExprType(type);
         //// TODO: 3/2/2017 path must be legal...
 
         return null;
