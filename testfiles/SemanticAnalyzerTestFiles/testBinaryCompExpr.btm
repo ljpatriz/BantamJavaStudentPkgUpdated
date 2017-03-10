@@ -1,5 +1,6 @@
 class Main{
+    boolean math;
     void main(){
-        1>2;
+        this.math = 1>2;
     }
 }

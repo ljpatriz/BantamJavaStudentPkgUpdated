@@ -6,22 +6,39 @@ import bantam.util.ErrorHandler;
 import bantam.util.SymbolTable;
 
 import java.util.Hashtable;
+import java.util.Objects;
 
 /**
  * Created by ncameron on 3/2/2017.
  */
 public class TypeCheckVisitor extends SemanticVisitor {
 
+    /**
+     * Constructor for the TypeCheckVisitor. It based on the SemanticVisitor super class.
+     * The TypeCheckVisitor is in charge on both annotating node types and locating and
+     * reporting errors.
+     * @param classMap - HashMap of the classMap created by the our class visitors
+     * @param errorHandler - ErrorHandler object to register errors
+     */
     public TypeCheckVisitor (Hashtable<String, ClassTreeNode> classMap,
                              ErrorHandler errorHandler){
         super(classMap, errorHandler);
     }
 
+    /**
+     * Recieves the program AST to start the visitor down the tree of nodes.
+     * @param ast - AST of the program
+     */
     @Override
     public void check(Program ast) {
         ast.accept(this);
     }
 
+    /**
+     * Visits a class node and sets the current class name variable to this node's name.
+     * @param node the class node
+     * @return - null
+     */
     @Override
     public Object visit(Class_ node){
         this.setCurrentClassName(node.getName());
@@ -29,6 +46,12 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return null;
     }
 
+    /**
+     * Visits a declaration statement node and returns a error if it is not a valid
+     * declaration (the type of the node doesn't match the init expressions node type).
+     * @param node the declaration statement node
+     * @return - false
+     */
     @Override
     public Object visit(DeclStmt node){
         super.visit(node);
@@ -41,6 +64,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     *
+     * @param node the assignment expression node
+     * @return
+     */
     @Override
     public Object visit(AssignExpr node) {
         //// TODO: 3/2/2017 must be valid assignment type
@@ -441,7 +469,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(UnaryIncrExpr node) {
         //// TODO: 3/2/2017 must be VarExpr
         super.visit(node);
-        if(node.getExpr().getExprType() != this.INT)
+        if(!(node.getExpr().getExprType().equals("int")))
             this.registerError(node,
                     "UnaryIncrExpr must be of type int, is of type " + node.getExpr().getExprType());
         node.setExprType(this.INT);
@@ -452,12 +480,12 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(UnaryDecrExpr node) {
         //// TODO: 3/2/2017 must be VarExpr
         super.visit(node);
-        if(node.getExpr().getExprType() != this.INT)
+        if(!(node.getExpr().getExprType().equals("int")))
             this.registerError(node,
                     "UnaryDecrExpr must be of type int, is of type " +
                             node.getExpr().getExprType());
         node.setExprType(this.INT);
-        return false;
+        return true;
     }
 
     @Override

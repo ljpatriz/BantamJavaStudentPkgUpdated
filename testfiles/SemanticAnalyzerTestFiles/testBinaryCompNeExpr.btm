@@ -1,5 +1,8 @@
 class Main{
+    int one = 1;
+    int two = 2;
+    boolean result = true;
     void main(){
-        5!=5;
+        this.result = (this.one!=this.two);
     }
 }

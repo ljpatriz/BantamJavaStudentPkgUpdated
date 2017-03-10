@@ -1,5 +1,5 @@
 class Main{
     void main(){
-        !true;
+        boolean moo = !true;
     }
 }
