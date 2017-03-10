@@ -101,6 +101,8 @@ public class ErrorHandler { //TODO use consistent error handling
     public void checkErrors() {
         // if errors have been registered then throw an exception to end compilation
         if (numErrors > 0) {
+            System.out.println(errorList.get(0).getLineNum());
+            System.out.println(errorList.get(0).getMessage());
             String parserOrChecker = errorList.get(0).getType()==PARSE_ERROR ?
                                        "parser" : "semantic analyzer";
             throw new RuntimeException("Bantam " + parserOrChecker + " found errors.");
