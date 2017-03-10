@@ -9,10 +9,6 @@ import bantam.util.SymbolTable;
 
 import java.util.Hashtable;
 
-/**
- * Created by CarlPhilipMajgaard on 07/3/17.
- */
-
 public abstract class SemanticVisitor extends Visitor {
 
     /** Declares a set of constants, for cleaner code */
@@ -27,7 +23,7 @@ public abstract class SemanticVisitor extends Visitor {
     public static final String IF = "if";
     public static final String ELSE = "else";
     public static final String NEW = "new";
-    public static final String TRUE = "TRUE";
+    public static final String TRUE = "true";
     public static final String FALSE = "false";
     public static final String FOR = "for";
     public static final String WHILE = "while";
