@@ -182,6 +182,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(ExprStmt node){
         //TODO must be a legal expr
+        System.out.println((Boolean) node.getExpr().accept(this));
         super.visit(node);
         return null;
     }
@@ -204,8 +205,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
     @Override
     public Object visit(NewExpr node) {
-        //// TODO: 3/2/2017 array expr must be int
-        // TODO: 3/7/2017 by Larry - must make sure new object based on class is correct
+        if(!this.getClassMap().containsKey(node.getType())){
+            this.registerError(node,
+                    "Object type " + node.getType() + " does not exist.");
+        }
+        node.setExprType(node.getType());
         return super.visit(node);
     }
 
