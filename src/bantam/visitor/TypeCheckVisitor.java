@@ -125,7 +125,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
                 if(!(lastStmt instanceof ReturnStmt)) {
                     registerError(node, "Last statement of the method must be a return statement");
                 } else {
-                    ReturnStmt returnStmt = (ReturnStmt) lastStmt;
+                    ReturnStmt returnStmt = (ReturnStmt) lastStmt;//TODO change to inherit stuff idiot
                     if(!returnStmt.getExpr().getExprType().equals(node.getReturnType())){
                         registerError(node, "Return type "+node.getReturnType() +
                                 " does not match given return type "+returnStmt.getExpr().getExprType());
@@ -146,12 +146,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
     }
     @Override
     public Object visit(ReturnStmt node) {
-        ////TODO: fix filename
+        ////TODO: what does this have to do now?
         super.visit(node);
-        Method methodNode = (Method)this.getCurrentMethodSymbolTable().lookup(this.getCurrentMethodName());
-        if(!isSuperType(methodNode.getReturnType(), node.getExpr().getExprType()))
-            this.registerError(node, "invalid return type, must be of type:"
-                    + methodNode.getReturnType() + "but was of type" + node.getExpr().getExprType());
         return null;
     }
 
