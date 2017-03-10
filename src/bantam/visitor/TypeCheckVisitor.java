@@ -513,7 +513,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(UnaryNotExpr node) {
         //// TODO: 3/2/2017 must be boolean
         super.visit(node);
-        if(node.getExpr().getExprType() != this.BOOLEAN)
+        if(this.BOOLEAN.equals(node.getExpr().getExprType()))
             this.registerError(node, "UnaryNotExpr must be of type boolean, is of type " + node.getExpr().getExprType());
         node.setExprType(this.BOOLEAN);
         return false;
@@ -523,18 +523,23 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(UnaryIncrExpr node) {
         //// TODO: 3/2/2017 must be VarExpr
         super.visit(node);
-        if(!(node.getExpr().getExprType().equals("int")))
+        if(!(this.INT.equals(node.getExpr().getExprType())))
             this.registerError(node,
                     "UnaryIncrExpr must be of type int, is of type " + node.getExpr().getExprType());
         node.setExprType(this.INT);
         return true;
     }
 
+    /**
+     * Sets the expression type to int, verifies that the expressiontype is int
+     * @param node the unary decrement expression node
+     * @return true because this is acceptable exprstmt
+     */
     @Override
     public Object visit(UnaryDecrExpr node) {
         //// TODO: 3/2/2017 must be VarExpr
         super.visit(node);
-        if(!(node.getExpr().getExprType().equals("int")))
+        if(!(this.INT.equals(node.getExpr().getExprType())))
             this.registerError(node,
                     "UnaryDecrExpr must be of type int, is of type " +
                             node.getExpr().getExprType());
@@ -542,6 +547,12 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return true;
     }
 
+    /**
+     * Implements the var expression visit. Assures the var expression is proper type
+     * Sets its exprtype properly
+     * @param node the variable expression node
+     * @return
+     */
     @Override
     public Object visit(VarExpr node) {
         super.visit(node);
@@ -614,6 +625,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * sets the const int expr to type int
+     * @param node the int constant expression node
+     * @return
+     */
     @Override
     public Object visit(ConstIntExpr node) {
         super.visit(node);
@@ -621,6 +637,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Sets the const boolean to type boolean
+     * @param node the boolean constant expression node
+     * @return
+     */
     @Override
     public Object visit(ConstBooleanExpr node) {
         super.visit(node);
@@ -628,6 +649,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Sets the string const expr to exprestion type string
+     * @param node the string constant expression node
+     * @return
+     */
     @Override
     public Object visit(ConstStringExpr node) {
         super.visit(node);
