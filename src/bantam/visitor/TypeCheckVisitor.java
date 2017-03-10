@@ -71,19 +71,24 @@ public class TypeCheckVisitor extends SemanticVisitor {
      */
     @Override
     public Object visit(AssignExpr node) {
-        //// TODO: 3/2/2017 must be valid assignment type
+
         super.visit(node);
+
         Expr refVarExpr = node.getRefName() == null ?
                 null :
                 new VarExpr(node.getLineNum(), null, node.getRefName());
         System.out.println(node.getRefName() + "***************");
+
         VarExpr varExpr = new VarExpr(node.getLineNum(), refVarExpr, node.getName());
+
         varExpr.accept(this);
+
         node.setExprType(varExpr.getExprType());
 
         String varType = (String)this.getCurrentVarSymbolTable().lookup(node.getName());
+
         if(varType == null){
-            this.registerError(node, "variable "+node.getName()+"was not declared");
+            this.registerError(node, " variable " + node.getName() + "was not declared");
         } else if(!isSuperType(varType, node.getExpr().getExprType())) {
             this.registerError(node, "Invalid Assignment the left-hand expression type " +
                     varType + " does not match the right-hand expression type " + node.getExpr().getExprType());
@@ -107,12 +112,16 @@ public class TypeCheckVisitor extends SemanticVisitor {
         }
         return null;
     }
-    
+
+    /**
+     * Visits a while statement node and
+     * @param node the while statement node
+     * @return
+     */
     @Override
     public Object visit(WhileStmt node) {
         //// TODO: 3/2/2017 expr must be boolean
         node.getPredExpr().accept(this);
-        System.out.println(node.getPredExpr().getExprType());
         if(!node.getPredExpr().getExprType().equals(this.BOOLEAN)) {
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
@@ -494,7 +503,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         String type = null;
         if(node.getRef() != null) {
             String ref = ((VarExpr) node.getRef()).getName();
-            System.out.println("ref is reached");
+            System.out.println("ref: " + ref + " is reached");
             if(THIS.equals(ref)){
                 int scopeLevel = this.getClassMap()
                         .get(this.getCurrentClassName())
@@ -519,9 +528,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
                     type = INT;
                 }
                 else{
+                    System.out.println("Error is registered");
                     this.registerError(node, "Variable may only have 'this' or 'super' as " +
                             "its reference. Reference: "+ ref + " not permitted.");
-                    return null;
+                    node.setExprType(NULL);
+                    return false;
                 }
             }
         }
@@ -541,7 +552,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
                 }
                 else {
                     this.registerError(node, "Illegal use of keyword: " + node.getName());
-                    node.setExprType(null);
+                    node.setExprType(NULL);
                 }
                 return null;
             }

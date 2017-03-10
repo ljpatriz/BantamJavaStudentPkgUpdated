@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ncameron on 3/1/2017.
+ * This class is an experiment and undocumented. Enter at your own risk.
+ *
+ * Currently unused.
  */
 public class VisitorBuilderFactory {
 
