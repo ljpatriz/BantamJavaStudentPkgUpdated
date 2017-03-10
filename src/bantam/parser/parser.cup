@@ -234,7 +234,6 @@ class
 				   parent.getAttribute(), ml); :}
 	;
 
-/*Larry's Section*/
 /* Non-provided material */
 /* member list */
 
@@ -624,18 +623,25 @@ dispatchExpr
 
         ::=
 
-        ID:methodName LPAREN expr_list:el RPAREN
-            {: RESULT = new DispatchExpr(methodName.getLineNum(),
-                                          null,
-                                          methodName.getAttribute(),
-                                          el); :}
 
-        |expr:e DOT ID:methodName LPAREN expr_list:el RPAREN
+        ID:methodName LPAREN expr_list:el RPAREN
+             {: RESULT = new DispatchExpr(methodName.getLineNum(),
+                                           null,
+                                           methodName.getAttribute(),
+                                           el); :}
+
+        | expr:e DOT ID:methodName LPAREN expr_list:el RPAREN
             {: RESULT = new DispatchExpr(e.getLineNum(),
                                           e,
                                           methodName.getAttribute(),
                                           el); :}
-    ;
+
+        | ID:ref DOT ID:methodName LPAREN expr_list:el RPAREN
+            {: RESULT = new DispatchExpr(ref.getLineNum(),
+                                          new VarExpr(ref.getLineNum(), null,
+                                          ref.getAttribute()),
+                                          methodName.getAttribute(),
+                                          el); :}    ;
 
 newExpr
 
