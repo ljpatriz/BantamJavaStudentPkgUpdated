@@ -114,7 +114,6 @@ public class SymbolTable {
         else {
             hash = null;
         }
-
         System.out.println(scopes);
     }
 
