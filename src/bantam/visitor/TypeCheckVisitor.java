@@ -5,6 +5,8 @@ import bantam.util.ClassTreeNode;
 import bantam.util.ErrorHandler;
 import bantam.util.SymbolTable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Objects;
 
@@ -193,6 +195,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(ExprStmt node){
         //TODO must be a legal expr
         super.visit(node);
+
         return null;
     }
 
@@ -250,7 +253,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
                     "Object type " + node.getType() + " does not exist.");
         }
         node.setExprType(node.getType());
-        return super.visit(node);
+        super.visit(node);
+        return null;
     }
 
     @Override
