@@ -114,8 +114,8 @@ public class ClassHierarchyVisitor extends Visitor {
      * @return
      */
     public Object visit(Method methodNode){
-        new MethodOverrideVisitor(classMap, errorHandler).visit(methodNode);
         currentClassTreeNode.getMethodSymbolTable().add(methodNode.getName(),methodNode);
+//        new MethodOverrideVisitor(classMap, errorHandler).visit(methodNode);
         return null;
     }
 
