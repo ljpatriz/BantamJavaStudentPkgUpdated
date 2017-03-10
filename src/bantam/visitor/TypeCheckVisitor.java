@@ -417,10 +417,39 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(VarExpr node) {
         super.visit(node);
-        ////TODO: need to fix this after scoping get fixed...needs to check
-        //String type = ((Field)(getClassMap().get(getCurrentClassName()).getVarSymbolTable().lookup(node.getName())).getType());
-//        node.setExprType(type);
-        //// TODO: 3/2/2017 path must be legal...
+        String type = null;
+        if(node.getRef() != null){
+            String ref = ((VarExpr) node.getRef()).getName();
+            if(THIS.equals(ref) || SUPER.equals(ref)){
+                type = (String) this.getClassMap().get(node.getRef().getExprType())
+                        .getVarSymbolTable().lookup(node.getName());
+            }
+            else if (node.getName().equals("length")){
+                String refType;
+                refType = (String) this.getCurrentVarSymbolTable().lookup(ref);
+                if(!refType.endsWith("[]")){
+                    this.registerError(node, "length field can only be invoked on an " +
+                            "array type");
+                }
+                else {
+                    type = INT;
+                }
+            }
+            else {
+                this.registerError(node, "Invalid reference: " + ref + "! Variable may " +
+                        "only have 'this' or 'super' reference.");
+            }
+        }
+        else{
+            type = (String) this.getCurrentVarSymbolTable().lookup(node.getName());
+        }
+
+        if (type != null){
+            node.setExprType(type);
+        }
+        else {
+            this.registerError(node, "Variable" + node.getName() + " not declared/found");
+        }
 
         return null;
     }
