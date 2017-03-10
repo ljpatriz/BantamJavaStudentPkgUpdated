@@ -65,7 +65,6 @@ public class BreakVisitor extends SemanticVisitor{
         return null;
     }
 
-
     /**
      * checks that the break statement is in a legal location i.e. in a loop
      * @param node the break statement node
@@ -78,6 +77,4 @@ public class BreakVisitor extends SemanticVisitor{
         }
         return null;
     }
-
-
 }
