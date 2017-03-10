@@ -86,7 +86,7 @@ public class SemanticAnalyzer {
 		// 1 - add built in classes to class tree
 		updateBuiltins();
 		buildClassHiearchyTree();
-		buildClassesInTree();
+//		buildClassesInTree();
 		//Add visitors
 		MainMainVisitor mainMainVisitor = new MainMainVisitor(this.errorHandler);
 		mainMainVisitor.check(this.program);
@@ -95,11 +95,11 @@ public class SemanticAnalyzer {
                                                                  this.errorHandler);
 		typeCheckVisitor.check(this.program);
 
-		BreakVisitor breakVisitor = new BreakVisitor(classMap, this.errorHandler);
-		breakVisitor.check(this.program);
-		if(errorHandler.getErrorList().size() > 0){
-			throw new RuntimeException("Bantam semantic analyzer found errors.");
-		}
+		//BreakVisitor breakVisitor = new BreakVisitor(classMap, this.errorHandler);
+		//breakVisitor.check(this.program);
+		//if(errorHandler.getErrorList().size() > 0){
+		//	throw new RuntimeException("Bantam semantic analyzer found errors.");
+		//}
 		return root;
     }
 

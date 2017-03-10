@@ -29,12 +29,20 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
     @Override
     public Object visit(Class_ node){
+//        System.out.println(this.getCurrentMethodSymbolTable().getCurrScopeLevel());
+//        System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         this.setCurrentClassName(node.getName());
-        this.enterCurrentVarScope();
-        this.enterCurrentMethodScope();
+//        System.out.println(this.getCurrentVarSymbolTable());
+        System.out.println(this.getCurrentMethodSymbolTable());
+//        this.enterCurrentVarScope();
+        //this.getCurrentVarSymbolTable().enterScope();
+//        this.enterCurrentMethodScope();
+        //this.getCurrentMethodSymbolTable().enterScope();
         super.visit(node);
-        this.exitCurrentVarScope();
-        this.exitCurrentMethodScope();
+//        this.exitCurrentVarScope();
+//        this.exitCurrentMethodScope();
+        //this.getCurrentVarSymbolTable().exitScope();
+        //this.getCurrentMethodSymbolTable().exitScope();
         return null;
     }
 
@@ -76,6 +84,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         super.visit(node);
         if(!isSuperType(node.getType(), node.getInit().getExprType()))
             this.registerError(node, "Invalid Assignment Type");
+
         return null;
     }
     
@@ -86,9 +95,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
         if(!node.getPredExpr().getExprType().equals(this.BOOLEAN))
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
-        this.enterCurrentVarScope();
+        this.getCurrentVarSymbolTable().enterScope();
         node.getBodyStmt().accept(this);
-        this.exitCurrentVarScope();
+        this.getCurrentVarSymbolTable().exitScope();
         return null;
     }
 
@@ -98,13 +107,17 @@ public class TypeCheckVisitor extends SemanticVisitor {
         if(!node.getPredExpr().getExprType().equals(this.BOOLEAN))
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
-        this.enterCurrentVarScope();
+//        this.enterCurrentVarScope();
+        this.getCurrentVarSymbolTable().enterScope();
         node.getThenStmt().accept(this);
-        this.exitCurrentVarScope();
+//        this.exitCurrentVarScope();
+        this.getCurrentVarSymbolTable().exitScope();
         if(node.getElseStmt() != null){
-            this.enterCurrentVarScope();
+//            this.enterCurrentVarScope();
+            this.getCurrentVarSymbolTable().enterScope();
             node.getElseStmt().accept(this);
-            this.exitCurrentVarScope();
+//            this.exitCurrentVarScope();
+            this.getCurrentVarSymbolTable().exitScope();
         }
         return null;
     }
@@ -112,8 +125,12 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(Method node){
         this.setCurrentMethodName(node.getName());
-        this.enterCurrentVarScope();
+        this.getCurrentVarSymbolTable().enterScope();
+
+        System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         super.visit(node);
+
+
 
         if(!VOID.equals(node.getReturnType())){
             ////TODO this line is giving a "Must enter a scope before looking up in table" error
@@ -134,7 +151,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
             }
         }
-        this.exitCurrentVarScope();
+        this.getCurrentVarSymbolTable().exitScope();
         return null;
     }
 
@@ -390,10 +407,39 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(VarExpr node) {
         super.visit(node);
-        ////TODO: need to fix this after scoping get fixed...needs to check
-        //String type = ((Field)(getClassMap().get(getCurrentClassName()).getVarSymbolTable().lookup(node.getName())).getType());
-//        node.setExprType(type);
-        //// TODO: 3/2/2017 path must be legal...
+        String type = null;
+        if(node.getRef() != null){
+            String ref = ((VarExpr) node.getRef()).getName();
+            if(THIS.equals(ref) || SUPER.equals(ref)){
+                type = (String) this.getClassMap().get(node.getRef().getExprType())
+                        .getVarSymbolTable().lookup(node.getName());
+            }
+            else if (node.getName().equals("length")){
+                String refType;
+                refType = (String) this.getCurrentVarSymbolTable().lookup(ref);
+                if(!refType.endsWith("[]")){
+                    this.registerError(node, "length field can only be invoked on an " +
+                            "array type");
+                }
+                else {
+                    type = INT;
+                }
+            }
+            else {
+                this.registerError(node, "Invalid reference: " + ref + "! Variable may " +
+                        "only have 'this' or 'super' reference.");
+            }
+        }
+        else{
+            type = (String) this.getCurrentVarSymbolTable().lookup(node.getName());
+        }
+
+        if (type != null){
+            node.setExprType(type);
+        }
+        else {
+            this.registerError(node, "Variable" + node.getName() + " not declared/found");
+        }
 
         return null;
     }

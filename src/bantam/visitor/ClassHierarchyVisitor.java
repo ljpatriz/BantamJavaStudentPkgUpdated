@@ -87,15 +87,14 @@ public class ClassHierarchyVisitor extends Visitor {
 
     public Object visit(Method methodNode){
 
-        currentClassTreeNode.getMethodSymbolTable().enterScope();
+//        System.out.println("GET FUCKED ITS HAPPENING RIGHT HERE");
         currentClassTreeNode.getMethodSymbolTable().add(methodNode.getName(),methodNode);
-        currentClassTreeNode.getMethodSymbolTable().exitScope();
 
         return null;
     }
 
     public Object visit(Field field){
-        currentClassTreeNode.getVarSymbolTable().add(field.getName(),field);
+        currentClassTreeNode.getVarSymbolTable().add(field.getName(),field.getType());
         return null;
     }
 }
