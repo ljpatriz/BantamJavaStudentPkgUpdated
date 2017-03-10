@@ -3,7 +3,10 @@ package bantam.visitor;
 import bantam.ast.*;
 import bantam.util.ClassTreeNode;
 import bantam.util.ErrorHandler;
+import bantam.util.SymbolTable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Objects;
 
@@ -29,20 +32,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
     @Override
     public Object visit(Class_ node){
-//        System.out.println(this.getCurrentMethodSymbolTable().getCurrScopeLevel());
-//        System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         this.setCurrentClassName(node.getName());
-//        System.out.println(this.getCurrentVarSymbolTable());
-        System.out.println(this.getCurrentMethodSymbolTable());
-//        this.enterCurrentVarScope();
-        //this.getCurrentVarSymbolTable().enterScope();
-//        this.enterCurrentMethodScope();
-        //this.getCurrentMethodSymbolTable().enterScope();
         super.visit(node);
-//        this.exitCurrentVarScope();
-//        this.exitCurrentMethodScope();
-        //this.getCurrentVarSymbolTable().exitScope();
-        //this.getCurrentMethodSymbolTable().exitScope();
         return null;
     }
 
@@ -100,9 +91,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(WhileStmt node) {
         //// TODO: 3/2/2017 expr must be boolean
         node.getPredExpr().accept(this);
-        if(!node.getPredExpr().getExprType().equals(this.BOOLEAN))
+        System.out.println(node.getPredExpr().getExprType());
+        if(!node.getPredExpr().getExprType().equals(this.BOOLEAN)) {
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
+        }
         this.getCurrentVarSymbolTable().enterScope();
         node.getBodyStmt().accept(this);
         this.getCurrentVarSymbolTable().exitScope();
@@ -134,11 +127,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(Method node){
         this.setCurrentMethodName(node.getName());
         this.getCurrentVarSymbolTable().enterScope();
-
-        System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         super.visit(node);
-
-
 
         if(!VOID.equals(node.getReturnType())){
             ////TODO this line is giving a "Must enter a scope before looking up in table" error
@@ -150,7 +139,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
                 if(!(lastStmt instanceof ReturnStmt)) {
                     registerError(node, "Last statement of the method must be a return statement");
                 } else {
-                    ReturnStmt returnStmt = (ReturnStmt) lastStmt;
+                    ReturnStmt returnStmt = (ReturnStmt) lastStmt;//TODO change to inherit stuff idiot
                     if(!returnStmt.getExpr().getExprType().equals(node.getReturnType())){
                         registerError(node, "Return type "+node.getReturnType() +
                                 " does not match given return type "+returnStmt.getExpr().getExprType());
@@ -169,19 +158,42 @@ public class TypeCheckVisitor extends SemanticVisitor {
         super.visit(node);
         return null;
     }
+
+    /**
+     * Visit a return statement node
+     * @param node the return statement node
+     * @return null
+     */
     @Override
     public Object visit(ReturnStmt node) {
-        ////TODO: fix filename
+        Method method = (Method) this.getCurrentMethodSymbolTable(
+                            ).lookup(this.getCurrentMethodName());
+        String declaredReturnType = method.getReturnType();
+
+        if(VOID.equals(declaredReturnType)){
+            if(node.getExpr() != null){
+                node.getExpr().accept(this);
+                this.registerError(node, "Methods of declared type cannot return " + node.getExpr().getExprType());
+            }
+            //for all non null types
+            else{
+                if(node.getExpr() != null){
+                    node.getExpr().accept(this);
+                    if(!this.isSuperType(declaredReturnType, node.getExpr().getExprType())){
+                        this.registerError(node,
+                                "Method's declared type isn't compatible the return type. Declared as type: " +
+                                        declaredReturnType + " was of type " + node.getExpr().getExprType());
+                    }
+                }
+                else{//didn't return anything
+                    this.registerError(node, "Method of declared type "+declaredReturnType+"cannot return null");
+                }
+            }
+        }
+        else{
+
+        }
         super.visit(node);
-        System.out.println("In return");
-        System.out.println(this.getCurrentMethodSymbolTable().getCurrScopeLevel());
-        System.out.println(this.getCurrentMethodName());
-        System.out.println(this.getCurrentMethodSymbolTable().getSize());
-        System.out.println(this.getCurrentMethodSymbolTable().lookup(this.getCurrentMethodName()));
-        Method methodNode = (Method)this.getCurrentMethodSymbolTable().lookup(this.getCurrentMethodName());
-//        if(!isSuperType(methodNode.getReturnType(), node.getExpr().getExprType()))
-//            this.registerError(node, "invalid return type, must be of type:"
-//                    + methodNode.getReturnType() + "but was of type" + node.getExpr().getExprType());
         return null;
     }
 
@@ -189,30 +201,66 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(ExprStmt node){
         //TODO must be a legal expr
         super.visit(node);
+
         return null;
     }
 
     @Override
     public Object visit(DispatchExpr node) {
         //// TODO: 3/2/2017 method must exist and take any given params
-        String type = node.getRefExpr().getExprType();
-        ClassTreeNode classTreeNode = this.getClassMap().get(type);
-        //// TODO perform a more proper lookup of the method.
-        //Note: Still does not check if methods exists or takes those params
-        Method methodNode = (Method)classTreeNode.getMethodSymbolTable().lookup(node.getMethodName());
-        node.setExprType(methodNode.getReturnType());
-        return super.visit(node);
+        node.getActualList().accept(this);
+        String refRetType;
+        if(node.getRefExpr() != null){
+            node.getRefExpr().accept(this);
+            refRetType = node.getRefExpr().getExprType();
+        }
+        else{
+            refRetType = this.getCurrentClassName();
+        }
+
+        if(!this.getClassMap().containsKey(refRetType)){
+            registerError(node, "Reference of type "+refRetType+"does not exist");
+        }
+        else{//find method
+            SymbolTable methodSymbolTable =
+                    this.getClassMap().get(refRetType).getMethodSymbolTable();
+            Method method = (Method) methodSymbolTable.lookup(node.getMethodName());
+
+            if(method == null){//method does not exist
+                registerError(node, "Method "+node.getMethodName()+ "does not exist for type"+
+                refRetType);
+            } else {//unequal param numbers
+                if(method.getFormalList().getSize() != node.getActualList().getSize()){
+                    registerError(node, "Parameters given of size "+node.getActualList()+
+                    " does not match actual size of "+method.getFormalList().getSize());
+                } else{
+                    //unmatched params
+                    for(int i = 0; i < node.getActualList().getSize(); i++){
+                        Expr actualParam = (Expr) node.getActualList().get(0);
+                        Formal declaredFormal = (Formal) method.getFormalList().get(0);
+                        if(!this.isSuperType(declaredFormal.getType(),
+                                actualParam.getExprType())){
+                            registerError(node, "declared type of parameter"+i+
+                                    declaredFormal.getType()+
+                                    "does not match given type: " + actualParam.getExprType());
+                        }
+                    }
+
+                }
+            }
+        }
+        return null;
     }
-
-
-    // $$$$ TOP HALF IS NICK and Bottom HALF IS CP
-
 
     @Override
     public Object visit(NewExpr node) {
-        //// TODO: 3/2/2017 array expr must be int
-        // TODO: 3/7/2017 by Larry - must make sure new object based on class is correct
-        return super.visit(node);
+        if(!this.getClassMap().containsKey(node.getType())){
+            this.registerError(node,
+                    "Object type " + node.getType() + " does not exist.");
+        }
+        node.setExprType(node.getType());
+        super.visit(node);
+        return null;
     }
 
     @Override

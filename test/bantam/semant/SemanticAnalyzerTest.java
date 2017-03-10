@@ -78,9 +78,12 @@ public class SemanticAnalyzerTest
         } catch (RuntimeException e) {
             thrown = true;
             e.printStackTrace();
+            System.out.println("HELLO");
             assertEquals("Bantam semantic analyzer found errors.", e.getMessage());
+
             for (ErrorHandler.Error err : analyzer.getErrorHandler().getErrorList()) {
                 System.out.println(err);
+
             }
         }
         return thrown;
