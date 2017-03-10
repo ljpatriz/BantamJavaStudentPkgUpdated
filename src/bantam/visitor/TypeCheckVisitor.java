@@ -53,6 +53,13 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(AssignExpr node) {
         //// TODO: 3/2/2017 must be valid assignment type
         super.visit(node);
+        Expr refVarExpr = node.getRefName() == null ?
+                null :
+                new VarExpr(-1, null, node.getRefName());
+        VarExpr varExpr = new VarExpr(-1, refVarExpr, node.getName());
+        varExpr.accept(this);
+        node.setExprType(varExpr.getExprType());
+
         String varType = (String)this.getCurrentVarSymbolTable().lookup(node.getName());
         if(varType == null){
             this.registerError(node, "variable "+node.getName()+"was not declared");
@@ -466,39 +473,70 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(VarExpr node) {
         super.visit(node);
         String type = null;
-        if(node.getRef() != null){
+        if(node.getRef() != null) {
             String ref = ((VarExpr) node.getRef()).getName();
-            if(THIS.equals(ref) || SUPER.equals(ref)){
-                type = (String) this.getClassMap().get(node.getRef().getExprType())
-                        .getVarSymbolTable().lookup(node.getName());
+            System.out.println("ref is reached");
+            if(THIS.equals(ref)){
+                int scopeLevel = this.getClassMap()
+                        .get(this.getCurrentClassName())
+                        .getParent()
+                        .getVarSymbolTable()
+                        .getCurrScopeLevel() +1;
+                type = (String) this.getCurrentVarSymbolTable().lookup(node.getName(),
+                        scopeLevel);
             }
-            else if (node.getName().equals("length")){
-                String refType;
-                refType = (String) this.getCurrentVarSymbolTable().lookup(ref);
-                if(!refType.endsWith("[]")){
-                    this.registerError(node, "length field can only be invoked on an " +
-                            "array type");
-                }
-                else {
-                    type = INT;
-                }
+            else if(SUPER.equals(ref)){
+                type = (String) this.getClassMap()
+                        .get(this.getCurrentClassName())
+                        .getParent()
+                        .getVarSymbolTable()
+                        .lookup(node.getName());
             }
             else {
-                this.registerError(node, "Invalid reference: " + ref + "! Variable may " +
-                        "only have 'this' or 'super' reference.");
+                System.out.println("Else is reached");
+                String refType  = (String) this.getCurrentVarSymbolTable().lookup(ref);
+                if(refType != null && refType.endsWith("[]")
+                        && node.getName().equals("length")){
+                    type = INT;
+                }
+                else{
+                    this.registerError(node, "Variable may only have 'this' or 'super' as " +
+                            "its reference. Reference: "+ ref + " not permitted.");
+                    return null;
+                }
             }
         }
-        else{
-            type = (String) this.getCurrentVarSymbolTable().lookup(node.getName());
-        }
-
-        if (type != null){
-            node.setExprType(type);
-        }
         else {
-            this.registerError(node, "Variable" + node.getName() + " not declared/found");
+            if(node.getName().equals(THIS)){
+                type = this.getCurrentClassName();
+            }
+            else if (node.getName().equals(SUPER)){
+                type = this.getClassMap()
+                        .get(this.getCurrentClassName())
+                        .getParent()
+                        .getName();
+            }
+            else if(this.isKeyword(node.getName())){
+                if(node.getName().equals(NULL)){
+                    node.setExprType(NULL);
+                }
+                else {
+                    this.registerError(node, "Illegal use of keyword: " + node.getName());
+                    node.setExprType(null);
+                }
+                return null;
+            }
+            else{
+                type = (String) this.getCurrentVarSymbolTable().lookup(node.getName());
+            }
+        }
+        if (type == null){
+            this.registerError(node, "Variable " + node.getName() + " could not be " +
+                    "found in the current scope.");
+            return null;
         }
 
+        node.setExprType(type);
         return false;
     }
 

@@ -1,6 +1,16 @@
-class Main{
+class Mother {
+    boolean baz = false;
+    boolean boo = false;
+}
+
+class Main extends Mother {
     boolean boo = true;
+    boolean bar = false;
     void main(){
-        boo = 5 + 5;
+        int a = 5;
+        this.bar = this.boo;
+        this.boo = this.baz;
+        this.boo = super.boo;
     }
+
 }
