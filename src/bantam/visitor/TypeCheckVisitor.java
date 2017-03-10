@@ -567,6 +567,12 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Sets the UnaryNegExpression to type int
+     * Verifies is of type int
+     * @param node the unary negation expression node
+     * @return
+     */
     @Override
     public Object visit(UnaryNegExpr node) {
         //// TODO: 3/2/2017 must be number
@@ -577,16 +583,28 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Checks that the expression is of type node
+     * Sets the expression type to boolean
+     * @param node the unary NOT expression node
+     * @return
+     */
     @Override
     public Object visit(UnaryNotExpr node) {
         //// TODO: 3/2/2017 must be boolean
         super.visit(node);
-        if(this.BOOLEAN.equals(node.getExpr().getExprType()))
+        if(!this.BOOLEAN.equals(node.getExpr().getExprType()))
             this.registerError(node, "UnaryNotExpr must be of type boolean, is of type " + node.getExpr().getExprType());
         node.setExprType(this.BOOLEAN);
         return false;
     }
 
+    /**
+     * Sets the expression type to int
+     * Verifies that the expression is of type int
+     * @param node the unary increment expression node
+     * @return
+     */
     @Override
     public Object visit(UnaryIncrExpr node) {
         //// TODO: 3/2/2017 must be VarExpr
