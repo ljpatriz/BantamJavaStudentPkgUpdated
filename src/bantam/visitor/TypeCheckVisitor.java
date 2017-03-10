@@ -116,7 +116,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         super.visit(node);
         if(!VOID.equals(node.getReturnType())){
             ////TODO this line is giving a "Must enter a scope before looking up in table" error
-            node.getStmtList().get(0);
+            //node.getStmtList().get(0);
         }
         this.exitCurrentVarScope();
         //TODO check that the last statement is a return statment
@@ -244,68 +244,82 @@ public class TypeCheckVisitor extends SemanticVisitor {
             this.registerError(node, "Right element of BinaryArithExpr must be of type int, it is of type " +
                             node.getRightExpr().getExprType());
         node.setExprType(this.INT);
+
         return null;
     }
 
     public Object visitBinaryCompExpr(BinaryCompExpr node){
         //if node.opName() = "==" or "!="
         if(node.getOpName().equals("==") || node.getOpName().equals("!=")){
-            if(!node.getLeftExpr().equals(this.INT) || !node.getLeftExpr().equals(this.BOOLEAN)){
-                this.registerError(node, "Left element of BinaryArithExpr must be of type int or boolean, it is of type " +
+            //check they are same types
+            if(!node.getLeftExpr().getExprType().equals(node.getRightExpr().getExprType()))
+                this.registerError(node, "Both elements of the BinaryCompEqExpr must be of the same type, " +
+                        " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "+node.getRightExpr().getExprType());
+        }
+        else{
+            //if left expr not an int, register error
+            if(node.getLeftExpr().equals(this.INT) ){
+                this.registerError(node, "Left element of the BinaryCompExpr \""+
+                        node.getOpName()+"\" at line number " +node.getLineNum()+
+                        " must be of type int, it is of type " +
                         node.getLeftExpr().getExprType());
             }
-            if(!node.getLeftExpr().equals(this.INT) || !node.getLeftExpr().equals(this.BOOLEAN)){
-                this.registerError(node, "Left element of BinaryArithExpr must be of type int or boolean, it is of type " +
-                        node.getLeftExpr().getExprType());
+            //if right expr not an int, register error
+            if(node.getRightExpr().equals(this.INT) ){
+                this.registerError(node, "Right element of the BinaryCompExpr \""+
+                        node.getOpName()+"\" at line number " +node.getLineNum()+
+                        " must be of type int, it is of type " +
+                        node.getRightExpr().getExprType());
             }
         }
-
-        return null;
-
-    }
-
-
-    @Override
-    public Object visit(BinaryCompEqExpr node) {
-
-        super.visit(node);
-        visitBinaryCompExpr(node);
-//        if(!node.getLeftExpr().getExprType().equals(node.getRightExpr().getExprType()))
-//            this.registerError(node, "Both elements of the BinaryCompEqExpr must be of the same type, " +
-//                    " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "+node.getRightExpr().getExprType());
-//        node.setExprType(this.BOOLEAN);
-        return null;
-    }
-
-    @Override
-    public Object visit(BinaryCompNeExpr node) {
-        //// TODO: 3/2/2017 must be same types
-        super.visit(node);
-        if(!node.getLeftExpr().getExprType().equals(node.getRightExpr().getExprType()))
-            this.registerError(node,"Both elements of the BinaryCompNeExpr must be of the same type, " +
-                    " left is of type " + node.getLeftExpr().getExprType() + "right is of type, "+ node.getRightExpr().getExprType());
         node.setExprType(this.BOOLEAN);
         return null;
     }
 
     @Override
-    public Object visit(BinaryCompExpr node) {
-        ////TODO: must be expanded into subclasses BinaryCompExpr is abstract
-        //// TODO: 3/2/2017 must be numbers
+    public Object visit(BinaryCompEqExpr node) {
         super.visit(node);
-        if(!node.getLeftExpr().getExprType().equals(this.INT))
-            this.registerError(node,
-                    "Left element of BinaryCompExpr must be of type int, is of type " + node.getLeftExpr().getExprType());
-        if(!node.getRightExpr().getExprType().equals(this.INT))
-            this.registerError(node,
-                    "Right element of BinaryCompExpr must be of type int, is of type " + node.getRightExpr().getExprType());
-        node.setExprType(this.INT);
+        visitBinaryCompExpr(node);
+        return null;
+    }
+
+    @Override
+    public Object visit(BinaryCompNeExpr node) {
+        super.visit(node);
+        visitBinaryCompExpr(node);
+        return null;
+    }
+
+    @Override
+    public Object visit(BinaryCompGeqExpr node) {
+        super.visit(node);
+        visitBinaryCompExpr(node);
+        return null;
+    }
+
+    @Override
+    public Object visit(BinaryCompGtExpr node) {
+        super.visit(node);
+        visitBinaryCompExpr(node);
+        return null;
+    }
+
+    @Override
+    public Object visit(BinaryCompLeqExpr node) {
+        super.visit(node);
+        visitBinaryCompExpr(node);
+        return null;
+    }
+
+    @Override
+    public Object visit(BinaryCompLtExpr node) {
+        super.visit(node);
+        visitBinaryCompExpr(node);
         return null;
     }
 
     @Override
     public Object visit(BinaryLogicExpr node) {
-        //// TODO: 3/2/2017 must be booleans
         super.visit(node);
         if(!node.getLeftExpr().getExprType().equals(this.BOOLEAN))
             this.registerError(node,
