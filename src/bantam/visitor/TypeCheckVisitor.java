@@ -65,28 +65,24 @@ public class TypeCheckVisitor extends SemanticVisitor {
     }
 
     /**
-     *
+     * Visits an assign expr and makes sure that it is a proper assign expression
+     * type for both sides.
      * @param node the assignment expression node
-     * @return
+     * @return - true
      */
     @Override
     public Object visit(AssignExpr node) {
-
+        //// TODO: 3/2/2017 must be valid assignment type
         super.visit(node);
-
         Expr refVarExpr = node.getRefName() == null ?
                 null :
                 new VarExpr(node.getLineNum(), null, node.getRefName());
         System.out.println(node.getRefName() + "***************");
-
         VarExpr varExpr = new VarExpr(node.getLineNum(), refVarExpr, node.getName());
-
         varExpr.accept(this);
-
         node.setExprType(varExpr.getExprType());
 
         String varType = (String)this.getCurrentVarSymbolTable().lookup(node.getName());
-
         if(varType == null){
             this.registerError(node, " variable " + node.getName() + "was not declared");
         } else if(!isSuperType(varType, node.getExpr().getExprType())) {
@@ -105,7 +101,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
      */
     @Override
     public Object visit(Field node) {
-        //// TODO: 3/2/2017 if assigned must be correct type
         super.visit(node);
         if(node.getInit() != null && !isSuperType(node.getType(), node.getInit().getExprType())){
             this.registerError(node, "Invalid Assignment Type");
@@ -114,9 +109,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
     }
 
     /**
-     * Visits a while statement node and
+     * Visits a while statement node and makes sure that the pred expr is a boolean.
+     * Also enters and exits a scope properly.
      * @param node the while statement node
-     * @return
+     * @return - false
      */
     @Override
     public Object visit(WhileStmt node) {
@@ -132,6 +128,12 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits an if statement node and makes sure that the pred expr is a boolean.
+     * Alsoe enters and exits a scope properly
+     * @param node the if statement node
+     * @return - false
+     */
     @Override
     public Object visit(IfStmt node) {
         node.getPredExpr().accept(this);
@@ -149,6 +151,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits a method node and makes sure it is properly formatted (returns, etc)
+     * @param node the method node
+     * @return
+     */
     @Override
     public Object visit(Method node){
         this.setCurrentMethodName(node.getName());
@@ -177,6 +184,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return null;
     }
 
+    /**
+     * Adds the information in the formal node to the current variable symbol table.
+     * @param node the formal node
+     * @return
+     */
     @Override
     public Object visit(Formal node){
         this.getCurrentVarSymbolTable().add(node.getName(), node.getType());
@@ -185,9 +197,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
     }
 
     /**
-     * Visit a return statement node
+     * Visit a return statement node and makes sure it works
      * @param node the return statement node
-     * @return null
+     * @return - false
      */
     @Override
     public Object visit(ReturnStmt node) {
@@ -222,6 +234,12 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits an expression statement node and decends down the tree to see if the
+     * child is an acceptable expression statement
+     * @param node the expression statement node
+     * @return
+     */
     @Override
     public Object visit(ExprStmt node) {
         //TODO must be a legal expr
@@ -233,9 +251,15 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
         return null;
     }
+
+    /**
+     * Visits a Dispatch Expression and registers errors if it is not properly created.
+     * Follow the comments to see what errors are checked where.
+     * @param node the dispatch expression node
+     * @return - true
+     */
     @Override
     public Object visit(DispatchExpr node) {
-        //// TODO: 3/2/2017 method must exist and take any given params, params must match
         node.getActualList().accept(this);
         String refRetType;
         //if the reference exists, find the type
@@ -280,6 +304,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return true;
     }
 
+    /**
+     * Visits a New Expression and checks that the node type is within the class map.
+     * @param node the new expression node
+     * @return - true
+     */
     @Override
     public Object visit(NewExpr node) {
         if(!this.getClassMap().containsKey(node.getType())){
@@ -291,6 +320,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return true;
     }
 
+    /**
+     * Visits a New Array Expression and makes sure it is properly implemented.
+     * @param node the new array expression node
+     * @return - true
+     */
     @Override
     public Object visit(NewArrayExpr node) {
         super.visit(node);
@@ -304,6 +338,12 @@ public class TypeCheckVisitor extends SemanticVisitor {
     }
 
 
+    /**
+     * Visits a cast expression and makes sure that primitives cannot be involved in
+     * casts as well as the casting is between two compatible types
+     * @param node the cast expression node
+     * @return - false
+     */
     @Override
     public Object visit(CastExpr node) {
         super.visit(node);
@@ -320,11 +360,16 @@ public class TypeCheckVisitor extends SemanticVisitor {
             this.registerError(node, "The type "+ node.getExpr().getExprType() +
             "cannot be cast to " + node.getType());
         }
-        node.setExprType(node.getType()); //From Jake: Necessary?
-        //// TODO: 3/2/2017 must be a valid cast
+        node.setExprType(node.getType());
         return false;
     }
 
+    /**
+     *
+     * @param node the binary arithmetic divide expression node
+     * @return
+     */
+    @Override
     public Object visit(BinaryArithDivideExpr node){
         super.visit(node);
         visitBinaryArithExpr(node);
@@ -503,7 +548,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         String type = null;
         if(node.getRef() != null) {
             String ref = ((VarExpr) node.getRef()).getName();
-            System.out.println("ref: " + ref + " is reached");
+            System.out.println("ref is reached");
             if(THIS.equals(ref)){
                 int scopeLevel = this.getClassMap()
                         .get(this.getCurrentClassName())
@@ -528,7 +573,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
                     type = INT;
                 }
                 else{
-                    System.out.println("Error is registered");
                     this.registerError(node, "Variable may only have 'this' or 'super' as " +
                             "its reference. Reference: "+ ref + " not permitted.");
                     node.setExprType(NULL);
