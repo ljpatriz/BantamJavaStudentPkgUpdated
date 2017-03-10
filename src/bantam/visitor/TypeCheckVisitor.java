@@ -121,10 +121,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
             if(stmtList.getSize() == 0)
                 registerError(node, "Method must have a return statement");
             else{
-                Stmt lastStmt = stmtList.get(stmtList.getSize() - 1;
-                if(!(lastStmt instanceof ReturnStmt))
+                Stmt lastStmt = (Stmt)stmtList.get(stmtList.getSize() - 1);
+                if(!(lastStmt instanceof ReturnStmt)) {
                     registerError(node, "Last statement of the method must be a return statement");
-                else {
+                } else {
                     ReturnStmt returnStmt = (ReturnStmt) lastStmt;
                     if(!returnStmt.getExpr().getExprType().equals(node.getReturnType())){
                         registerError(node, "Return type "+node.getReturnType() +
