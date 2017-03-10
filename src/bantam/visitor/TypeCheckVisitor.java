@@ -3,6 +3,7 @@ package bantam.visitor;
 import bantam.ast.*;
 import bantam.util.ClassTreeNode;
 import bantam.util.ErrorHandler;
+import bantam.util.SymbolTable;
 
 import java.util.Hashtable;
 import java.util.Objects;
@@ -212,13 +213,48 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(DispatchExpr node) {
         //// TODO: 3/2/2017 method must exist and take any given params
-        String type = node.getRefExpr().getExprType();
-        ClassTreeNode classTreeNode = this.getClassMap().get(type);
-        //// TODO perform a more proper lookup of the method.
-        //Note: Still does not check if methods exists or takes those params
-        Method methodNode = (Method)classTreeNode.getMethodSymbolTable().lookup(node.getMethodName());
-        node.setExprType(methodNode.getReturnType());
-        return super.visit(node);
+        node.getActualList().accept(this);
+        String refRetType;
+        if(node.getRefExpr() != null){
+            node.getRefExpr().accept(this);
+            refRetType = node.getRefExpr().getExprType();
+        }
+        else{
+            refRetType = this.getCurrentClassName();
+        }
+
+        if(!this.getClassMap().containsKey(refRetType)){
+            registerError(node, "Reference of type "+refRetType+"does not exist");
+        }
+        else{//find method
+            SymbolTable methodSymbolTable =
+                    this.getClassMap().get(refRetType).getMethodSymbolTable();
+            Method method = (Method) methodSymbolTable.lookup(node.getMethodName());
+
+            if(method == null){//method does not exist
+                registerError(node, "Method "+node.getMethodName()+ "does not exist for type"+
+                refRetType);
+            } else {//unequal param numbers
+                if(method.getFormalList().getSize() != node.getActualList().getSize()){
+                    registerError(node, "Parameters given of size "+node.getActualList()+
+                    " does not match actual size of "+method.getFormalList().getSize());
+                } else{
+                    //unmatched params
+                    for(int i = 0; i < node.getActualList().getSize(); i++){
+                        Expr actualParam = (Expr) node.getActualList().get(0);
+                        Formal declaredFormal = (Formal) method.getFormalList().get(0);
+                        if(!this.isSuperType(declaredFormal.getType(),
+                                actualParam.getExprType())){
+                            registerError(node, "declared type of parameter"+i+
+                                    declaredFormal.getType()+
+                                    "does not match given type: " + actualParam.getExprType());
+                        }
+                    }
+
+                }
+            }
+        }
+        return null;
     }
 
     @Override
