@@ -41,14 +41,28 @@ public abstract class SemanticVisitor extends Visitor {
 
     private String currentMethodName;
 
+    /**
+     * Builds the semantic visitor
+     * @param classMap - class map from the other visits
+     * @param errorHandler - error handler to be registered to
+     */
     public SemanticVisitor(Hashtable<String, ClassTreeNode> classMap, ErrorHandler
             errorHandler){
         this.classMap = classMap;
         this.errorHandler = errorHandler;
     }
 
+    /**
+     * Abstract method that needs to be overrode.
+     * @param ast
+     */
     public abstract void check(Program ast);
 
+    /**
+     * Registers a detailed error based on a node and string
+     * @param node - node where error occurred
+     * @param message - detailed message about the error
+     */
     public void registerError(ASTNode node, String message) {
         this.getErrorHandler().register(
                 this.getErrorHandler().SEMANT_ERROR,
@@ -57,11 +71,18 @@ public abstract class SemanticVisitor extends Visitor {
                 message);
     }
 
+    /**
+     * Returns the error handler
+     * @return - the error handler
+     */
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
 
-
+    /**
+     * Returns the current file name
+     * @return - the current file name
+     */
     public String getCurrentFileName() {
         if(this.getCurrentClassName() != null){
             return this.getClassMap()
@@ -72,6 +93,11 @@ public abstract class SemanticVisitor extends Visitor {
         return "";
     }
 
+    /**
+     * Checks if the given string is a reserved word
+     * @param term
+     * @return
+     */
     public boolean isReservedWord(String term){
         for (String k : RESERVED_WORDS){
             if(k.equals(term)) return true;
@@ -79,30 +105,58 @@ public abstract class SemanticVisitor extends Visitor {
         return false;
     }
 
+    /**
+     * returns the current var symbol table
+     * @return
+     */
     public SymbolTable getCurrentVarSymbolTable(){
         return this.getClassMap().get(this.getCurrentClassName()).getVarSymbolTable();
     }
 
+    /**
+     * returns the current method symbol table
+     * @return
+     */
     public SymbolTable getCurrentMethodSymbolTable(){
         return this.getClassMap().get(this.getCurrentClassName()).getMethodSymbolTable();
     }
 
+    /**
+     * returns the current class name
+     * @return
+     */
     public String getCurrentClassName() {
         return this.currentClassName;
     }
 
+    /**
+     * sets the current class name
+     * @param currentClassName
+     */
     public void setCurrentClassName(String currentClassName) {
         this.currentClassName = currentClassName;
     }
 
+    /**
+     * gets the current method name
+     * @return
+     */
     public String getCurrentMethodName() {
         return this.currentMethodName;
     }
 
+    /**
+     * sets the current method name
+     * @param currentMethodName
+     */
     public void setCurrentMethodName(String currentMethodName) {
         this.currentMethodName = currentMethodName;
     }
 
+    /**
+     * returns the class map
+     * @return
+     */
     public Hashtable<String, ClassTreeNode> getClassMap() {
         return this.classMap;
     }
