@@ -97,6 +97,7 @@ public class SemanticAnalyzer {
 
 		BreakVisitor breakVisitor = new BreakVisitor(classMap, this.errorHandler);
 		breakVisitor.check(this.program);
+
 		if(errorHandler.getErrorList().size() > 0){
 			throw new RuntimeException("Bantam semantic analyzer found errors.");
 		}
