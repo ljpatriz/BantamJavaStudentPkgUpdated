@@ -96,7 +96,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
         node.getPredExpr().accept(this);
         System.out.println(node.getPredExpr().getExprType());
         if(!node.getPredExpr().getExprType().equals(this.BOOLEAN)) {
-            System.out.println("HEY!");
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
         }
@@ -135,8 +134,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
         System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         super.visit(node);
 
-
-
         if(!VOID.equals(node.getReturnType())){
             ////TODO this line is giving a "Must enter a scope before looking up in table" error
             StmtList stmtList = node.getStmtList();
@@ -166,9 +163,41 @@ public class TypeCheckVisitor extends SemanticVisitor {
         super.visit(node);
         return null;
     }
+
+    /**
+     * Visit a return statement node
+     * @param node the return statement node
+     * @return null
+     */
     @Override
     public Object visit(ReturnStmt node) {
-        ////TODO: what does this have to do now?
+        Method method = (Method) this.getCurrentMethodSymbolTable(
+                            ).lookup(this.getCurrentMethodName());
+        String declaredReturnType = method.getReturnType();
+
+        if(VOID.equals(declaredReturnType)){
+            if(node.getExpr() != null){
+                node.getExpr().accept(this);
+                this.registerError(node, "Methods of declared type cannot return " + node.getExpr().getExprType());
+            }
+            //for all non null types
+            else{
+                if(node.getExpr() != null){
+                    node.getExpr().accept(this);
+                    if(!this.isSuperType(declaredReturnType, node.getExpr().getExprType())){
+                        this.registerError(node,
+                                "Method's declared type isn't compatible the return type. Declared as type: " +
+                                        declaredReturnType + " was of type " + node.getExpr().getExprType());
+                    }
+                }
+                else{//didn't return anything
+                    this.registerError(node, "Method of declared type "+declaredReturnType+"cannot return null");
+                }
+            }
+        }
+        else{
+
+        }
         super.visit(node);
         return null;
     }
