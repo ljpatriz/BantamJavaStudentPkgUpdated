@@ -94,7 +94,7 @@ public class ClassHierarchyVisitor extends Visitor {
     }
 
     public Object visit(Field field){
-        currentClassTreeNode.getVarSymbolTable().add(field.getName(),field);
+        currentClassTreeNode.getVarSymbolTable().add(field.getName(),field.getType());
         return null;
     }
 }
