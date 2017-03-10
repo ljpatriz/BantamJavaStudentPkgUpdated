@@ -29,12 +29,20 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
     @Override
     public Object visit(Class_ node){
+//        System.out.println(this.getCurrentMethodSymbolTable().getCurrScopeLevel());
+//        System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         this.setCurrentClassName(node.getName());
-        this.enterCurrentVarScope();
-        this.enterCurrentMethodScope();
+//        System.out.println(this.getCurrentVarSymbolTable());
+        System.out.println(this.getCurrentMethodSymbolTable());
+//        this.enterCurrentVarScope();
+        this.getCurrentVarSymbolTable().enterScope();
+//        this.enterCurrentMethodScope();
+        this.getCurrentMethodSymbolTable().enterScope();
         super.visit(node);
-        this.exitCurrentVarScope();
-        this.exitCurrentMethodScope();
+//        this.exitCurrentVarScope();
+//        this.exitCurrentMethodScope();
+        this.getCurrentVarSymbolTable().exitScope();
+        this.getCurrentMethodSymbolTable().exitScope();
         return null;
     }
 
@@ -86,9 +94,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         if(!node.getPredExpr().getExprType().equals(this.BOOLEAN))
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
-        this.enterCurrentVarScope();
+//        this.enterCurrentVarScope();
+        this.getCurrentVarSymbolTable().enterScope();
         node.getBodyStmt().accept(this);
-        this.exitCurrentVarScope();
+//        this.exitCurrentVarScope();
+        this.getCurrentVarSymbolTable().exitScope();
         return null;
     }
 
@@ -98,13 +108,17 @@ public class TypeCheckVisitor extends SemanticVisitor {
         if(!node.getPredExpr().getExprType().equals(this.BOOLEAN))
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
-        this.enterCurrentVarScope();
+//        this.enterCurrentVarScope();
+        this.getCurrentVarSymbolTable().enterScope();
         node.getThenStmt().accept(this);
-        this.exitCurrentVarScope();
+//        this.exitCurrentVarScope();
+        this.getCurrentVarSymbolTable().exitScope();
         if(node.getElseStmt() != null){
-            this.enterCurrentVarScope();
+//            this.enterCurrentVarScope();
+            this.getCurrentVarSymbolTable().enterScope();
             node.getElseStmt().accept(this);
-            this.exitCurrentVarScope();
+//            this.exitCurrentVarScope();
+            this.getCurrentVarSymbolTable().exitScope();
         }
         return null;
     }
@@ -112,13 +126,18 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(Method node){
         this.setCurrentMethodName(node.getName());
-        this.enterCurrentVarScope();
+        this.getCurrentVarSymbolTable().enterScope();
+
+        System.out.println(this.getCurrentVarSymbolTable().getCurrScopeLevel());
         super.visit(node);
+        this.getCurrentVarSymbolTable().exitScope();
+
+
         if(!VOID.equals(node.getReturnType())){
             ////TODO this line is giving a "Must enter a scope before looking up in table" error
-            node.getStmtList().get(0);
+            //node.getStmtList().get(0);
+            System.out.println("hi");
         }
-        this.exitCurrentVarScope();
         //TODO check that the last statement is a return statment
         return null;
     }
@@ -133,10 +152,15 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(ReturnStmt node) {
         ////TODO: fix filename
         super.visit(node);
+        System.out.println("In return");
+        System.out.println(this.getCurrentMethodSymbolTable().getCurrScopeLevel());
+        System.out.println(this.getCurrentMethodName());
+        System.out.println(this.getCurrentMethodSymbolTable().getSize());
+        System.out.println(this.getCurrentMethodSymbolTable().lookup(this.getCurrentMethodName()));
         Method methodNode = (Method)this.getCurrentMethodSymbolTable().lookup(this.getCurrentMethodName());
-        if(!isSuperType(methodNode.getReturnType(), node.getExpr().getExprType()))
-            this.registerError(node, "invalid return type, must be of type:"
-                    + methodNode.getReturnType() + "but was of type" + node.getExpr().getExprType());
+//        if(!isSuperType(methodNode.getReturnType(), node.getExpr().getExprType()))
+//            this.registerError(node, "invalid return type, must be of type:"
+//                    + methodNode.getReturnType() + "but was of type" + node.getExpr().getExprType());
         return null;
     }
 

@@ -163,21 +163,21 @@ public abstract class SemanticVisitor extends Visitor {
     public Hashtable<String, ClassTreeNode> getClassMap() {
         return classMap;
     }
-
-    public void enterCurrentVarScope(){
-        getCurrentVarSymbolTable().enterScope();
-    }
-
-    public void exitCurrentVarScope(){
-        getCurrentVarSymbolTable().exitScope();
-    }
-
-    public void enterCurrentMethodScope(){
-        getCurrentMethodSymbolTable().enterScope();
-    }
-
-    public void exitCurrentMethodScope(){
-        getCurrentMethodSymbolTable().exitScope();
-    }
+//
+//    public void enterCurrentVarScope(){
+//        getCurrentVarSymbolTable().enterScope();
+//    }
+//
+//    public void exitCurrentVarScope(){
+//        getCurrentVarSymbolTable().exitScope();
+//    }
+//
+//    public void enterCurrentMethodScope(){
+//        getCurrentMethodSymbolTable().enterScope();
+//    }
+//
+//    public void exitCurrentMethodScope(){
+//        getCurrentMethodSymbolTable().exitScope();
+//    }
 
 }
