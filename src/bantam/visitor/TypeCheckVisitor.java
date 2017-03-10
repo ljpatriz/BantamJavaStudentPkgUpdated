@@ -4,6 +4,8 @@ import bantam.ast.*;
 import bantam.util.ClassTreeNode;
 import bantam.util.ErrorHandler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Objects;
 
@@ -182,8 +184,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(ExprStmt node){
         //TODO must be a legal expr
-        System.out.println((Boolean) node.getExpr().accept(this));
         super.visit(node);
+
         return null;
     }
 
@@ -196,7 +198,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
         //Note: Still does not check if methods exists or takes those params
         Method methodNode = (Method)classTreeNode.getMethodSymbolTable().lookup(node.getMethodName());
         node.setExprType(methodNode.getReturnType());
-        return super.visit(node);
+        super.visit(node);
+        return null;
     }
 
 
@@ -210,7 +213,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
                     "Object type " + node.getType() + " does not exist.");
         }
         node.setExprType(node.getType());
-        return super.visit(node);
+        super.visit(node);
+        return null;
     }
 
     @Override
