@@ -1,5 +1,6 @@
 class Main{
+    boolean test;
     void main(){
-        true == true;
+        this.test = (true == true);
     }
 }

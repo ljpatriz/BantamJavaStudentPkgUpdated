@@ -596,7 +596,7 @@ assignExpr
 
         varExpr:ve ASSIGN expr:e
             {:
-                String refName = "";
+                String refName = null;
                 if (ve.getRef() != null) {refName = ve.getRef().getExprType();}
                 RESULT = new AssignExpr(ve.getLineNum(),
                                         refName,

@@ -1,5 +1,6 @@
 class Main{
+    int num = 0;
     void main(){
-        3--;
+        this.num--;
     }
 }
