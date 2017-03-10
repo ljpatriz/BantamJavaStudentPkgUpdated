@@ -5,10 +5,7 @@ import bantam.util.ClassTreeNode;
 import bantam.util.ErrorHandler;
 import bantam.util.SymbolTable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.Objects;
 
 /**
  * Created by ncameron on 3/2/2017.
@@ -23,11 +20,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public void check(Program ast) {
         ast.accept(this);
-        this.afterVisit();
-    }
-
-    @Override
-    public void afterVisit(){
     }
 
     @Override
@@ -45,7 +37,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
                 this.registerError(node, "Invalid Declaration. Must be of type " +
                         node.getType() + "but was of type" + node.getInit().getExprType());
         }
-        this.putInCurrentVarSymbolTable(node.getName(), node.getType());
+        this.getCurrentVarSymbolTable().add(node.getName(), node.getType());
         return null;
     }
 
@@ -154,7 +146,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
 
     @Override
     public Object visit(Formal node){
-        this.putInCurrentVarSymbolTable(node.getName(), node.getType());
+        this.getCurrentVarSymbolTable().add(node.getName(), node.getType());
         super.visit(node);
         return null;
     }
@@ -515,7 +507,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
                         .getParent()
                         .getName();
             }
-            else if(this.isKeyword(node.getName())){
+            else if(this.isReservedWord(node.getName())){
                 if(node.getName().equals(NULL)){
                     node.setExprType(NULL);
                 }
