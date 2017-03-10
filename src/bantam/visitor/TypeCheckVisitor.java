@@ -92,9 +92,12 @@ public class TypeCheckVisitor extends SemanticVisitor {
     public Object visit(WhileStmt node) {
         //// TODO: 3/2/2017 expr must be boolean
         node.getPredExpr().accept(this);
-        if(!node.getPredExpr().getExprType().equals(this.BOOLEAN))
+        System.out.println(node.getPredExpr().getExprType());
+        if(!node.getPredExpr().getExprType().equals(this.BOOLEAN)) {
+            System.out.println("HEY!");
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
+        }
         this.getCurrentVarSymbolTable().enterScope();
         node.getBodyStmt().accept(this);
         this.getCurrentVarSymbolTable().exitScope();
@@ -186,10 +189,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
         node.setExprType(methodNode.getReturnType());
         return super.visit(node);
     }
-
-
-    // $$$$ TOP HALF IS NICK and Bottom HALF IS CP
-
 
     @Override
     public Object visit(NewExpr node) {
