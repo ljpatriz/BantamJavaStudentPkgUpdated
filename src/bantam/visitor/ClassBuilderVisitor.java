@@ -31,11 +31,7 @@ public class ClassBuilderVisitor extends Visitor {
             this.methodSymbolTable.setParent(classTreeNode.getParent().getMethodSymbolTable());
             this.varSymbolTable.setParent(classTreeNode.getParent().getVarSymbolTable());
         }
-        varSymbolTable.enterScope();
-
         classTreeNode.getASTNode().accept(this);
-//        varSymbolTable.exitScope();
-//        methodSymbolTable.exitScope();
     }
 
 

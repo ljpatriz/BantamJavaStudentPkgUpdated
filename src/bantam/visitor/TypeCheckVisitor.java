@@ -30,7 +30,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
     }
 
     @Override
-    public Object visit(DeclStmt node) {
+    public Object visit(DeclStmt node){
         super.visit(node);
         if(node.getInit() != null) {
             if (!isSuperType(node.getType(), node.getInit().getExprType()))
@@ -76,7 +76,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
         if(node.getInit() != null && !isSuperType(node.getType(), node.getInit().getExprType())){
             this.registerError(node, "Invalid Assignment Type");
         }
-
         return null;
     }
     
@@ -102,9 +101,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
             this.registerError(node, "PredExpression must be a boolean but was of type "
                     + node.getPredExpr().getExprType());
         this.getCurrentVarSymbolTable().enterScope();
-        node.getThenStmt().accept(this);
+        node.getThenStmt().accept(this);//must have a then stmt
         this.getCurrentVarSymbolTable().exitScope();
-        if(node.getElseStmt() != null){
+        if(node.getElseStmt() != null){//else is optional
             this.getCurrentVarSymbolTable().enterScope();
             node.getElseStmt().accept(this);
             this.getCurrentVarSymbolTable().exitScope();
@@ -118,8 +117,7 @@ public class TypeCheckVisitor extends SemanticVisitor {
         this.getCurrentVarSymbolTable().enterScope();
         super.visit(node);
 
-        if(!VOID.equals(node.getReturnType())){
-            ////TODO this line is giving a "Must enter a scope before looking up in table" error
+        if(!VOID.equals(node.getReturnType())){//if the type is void, dont worry about it!
             StmtList stmtList = node.getStmtList();
             if(stmtList.getSize() == 0)
                 registerError(node, "Method must have a return statement");
@@ -128,8 +126,8 @@ public class TypeCheckVisitor extends SemanticVisitor {
                 if(!(lastStmt instanceof ReturnStmt)) {
                     registerError(node, "Last statement of the method must be a return statement");
                 } else {
-                    ReturnStmt returnStmt = (ReturnStmt) lastStmt;//TODO change to inherit stuff idiot
-                    if(!returnStmt.getExpr().getExprType().equals(node.getReturnType())){
+                    ReturnStmt returnStmt = (ReturnStmt) lastStmt;
+                    if(!isSuperType(node.getReturnType(), returnStmt.getExpr().getExprType())){
                         registerError(node, "Return type "+node.getReturnType() +
                                 " does not match given return type "+returnStmt.getExpr().getExprType());
                     }
@@ -199,14 +197,15 @@ public class TypeCheckVisitor extends SemanticVisitor {
     }
     @Override
     public Object visit(DispatchExpr node) {
-        //// TODO: 3/2/2017 method must exist and take any given params
+        //// TODO: 3/2/2017 method must exist and take any given params, params must match
         node.getActualList().accept(this);
         String refRetType;
+        //if the reference exists, find the type
         if(node.getRefExpr() != null){
             node.getRefExpr().accept(this);
             refRetType = node.getRefExpr().getExprType();
         }
-        else{
+        else{//no reference, default is this class
             refRetType = this.getCurrentClassName();
         }
 
@@ -214,10 +213,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
             registerError(node, "Reference of type "+refRetType+"does not exist");
         }
         else{//find method
-            SymbolTable methodSymbolTable =
+            SymbolTable refMethodSymbolTable =
                     this.getClassMap().get(refRetType).getMethodSymbolTable();
-            Method method = (Method) methodSymbolTable.lookup(node.getMethodName());
-
+            Method method = (Method) refMethodSymbolTable.lookup(node.getMethodName());
             if(method == null){//method does not exist
                 registerError(node, "Method "+node.getMethodName()+ "does not exist for type"+
                 refRetType);

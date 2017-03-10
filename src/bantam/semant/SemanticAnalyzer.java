@@ -85,7 +85,9 @@ public class SemanticAnalyzer {
     public ClassTreeNode analyze() throws RuntimeException {
 		// 1 - add built in classes to class tree
 		updateBuiltins();
+		scopeClassesInMap();//just want to scope the defaults. Others done elsewhere
 		buildClassHiearchyTree();
+
 //		buildClassesInTree();
 		//Add visitors
 		MainMainVisitor mainMainVisitor = new MainMainVisitor(this.errorHandler);
@@ -259,6 +261,15 @@ public class SemanticAnalyzer {
 	classMap.put("Sys", new ClassTreeNode(astNode, /*built-in?*/true, /*extendable?*/false, classMap));
     }
 
+	/**
+	 * Scopes all the classes in the map
+	 */
+	private void scopeClassesInMap(){
+		for(Map.Entry<String, ClassTreeNode> entry: this.classMap.entrySet()){
+			entry.getValue().getMethodSymbolTable().enterScope();
+			entry.getValue().getVarSymbolTable().enterScope();
+		}
+	}
 	/**
 	 * Builds the Class Hiearchy Tree
 	 */
