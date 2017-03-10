@@ -365,9 +365,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
     }
 
     /**
-     *
+     * Visits a binary arithmetic node and passes it to the visitBinaryArithExpr()
      * @param node the binary arithmetic divide expression node
-     * @return
+     * @return - false
      */
     @Override
     public Object visit(BinaryArithDivideExpr node){
@@ -376,31 +376,59 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits a binary arithmetic node and passes it to the visitBinaryArithExpr()
+     * @param node the binary arithmetic minus expression node
+     * @return - false
+     */
+    @Override
     public Object visit(BinaryArithMinusExpr node){
         super.visit(node);
         visitBinaryArithExpr(node);
         return false;
     }
 
+    /**
+     * Visits a binary arithmetic node and passes it to the visitBinaryArithExpr()
+     * @param node the binary arithmetic modulus expression node
+     * @return - false
+     */
+    @Override
     public Object visit(BinaryArithModulusExpr node){
         super.visit(node);
         visitBinaryArithExpr(node);
         return false;
     }
 
+    /**
+     * Visits a binary arithmetic node and passes it to the visitBinaryArithExpr()
+     * @param node the binary arithmetic plus expression node
+     * @return - false
+     */
+    @Override
     public Object visit(BinaryArithPlusExpr node){
         super.visit(node);
         visitBinaryArithExpr(node);
         return false;
     }
 
+    /**
+     * Visits a binary arithmetic node and passes it to the visitBinaryArithExpr()
+     * @param node the binary arithmetic times expression node
+     * @return - false
+     */
+    @Override
     public Object visit(BinaryArithTimesExpr node){
         super.visit(node);
         visitBinaryArithExpr(node);
         return false;
     }
 
-
+    /**
+     * Visits a binary arithmetic node and correctly checks it
+     * @param node
+     * @return - false
+     */
     public Object visitBinaryArithExpr(BinaryArithExpr node) {
         //Both left and right must be numbers
         if(!node.getLeftExpr().getExprType().equals(this.INT))
@@ -414,6 +442,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits a binary comparision node and correctly checks it
+     * @param node
+     * @return - false
+     */
     public Object visitBinaryCompExpr(BinaryCompExpr node){
         //if node.opName() = "==" or "!="
         if(node.getOpName().equals("==") || node.getOpName().equals("!=")){
@@ -442,6 +475,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits a binary comparison expression and uses visitBinaryCompeExpr()
+     * @param node the binary comparison equals expression node
+     * @return - false
+     */
     @Override
     public Object visit(BinaryCompEqExpr node) {
         super.visit(node);
@@ -449,6 +487,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits a binary comparison expression and uses visitBinaryCompeExpr()
+     * @param node the binary comparison not equals expression node
+     * @return - false
+     */
     @Override
     public Object visit(BinaryCompNeExpr node) {
         super.visit(node);
@@ -456,6 +499,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits a binary comparison expression and uses visitBinaryCompeExpr()
+     * @param node the binary comparison greater to or equal to expression node
+     * @return - false
+     */
     @Override
     public Object visit(BinaryCompGeqExpr node) {
         super.visit(node);
@@ -463,6 +511,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits a binary comparison expression and uses visitBinaryCompeExpr()
+     * @param node the binary comparison greater than expression node
+     * @return - false
+     */
     @Override
     public Object visit(BinaryCompGtExpr node) {
         super.visit(node);
@@ -470,6 +523,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits a binary comparison expression and uses visitBinaryCompeExpr()
+     * @param node the binary comparison less than or equal to expression node
+     * @return - false
+     */
     @Override
     public Object visit(BinaryCompLeqExpr node) {
         super.visit(node);
@@ -477,6 +535,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits a binary comparison expression and uses visitBinaryCompeExpr()
+     * @param node the binary comparison less than expression node
+     * @return - false
+     */
     @Override
     public Object visit(BinaryCompLtExpr node) {
         super.visit(node);
@@ -484,6 +547,11 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+    /**
+     * Visits a binary logical expression and checks that the two sides are compatible types
+     * @param node the binary logical expression node
+     * @return
+     */
     @Override
     public Object visit(BinaryLogicExpr node) {
         super.visit(node);
