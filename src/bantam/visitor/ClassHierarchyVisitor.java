@@ -8,21 +8,37 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * Created by Jacob on 01/03/17.
+ * Visitor to set up the inheritance hierarchy.
  */
 public class ClassHierarchyVisitor extends Visitor {
 
+    // root node of the class tree
     private ClassTreeNode classTreeRootNode;
+    // class map from names to nodes
     private Hashtable<String, ClassTreeNode> classMap;
+    // error handler ?
     private ErrorHandler errorHandler;
+    // current node
     private ClassTreeNode currentClassTreeNode;
+    private MethodOverrideVisitor methodOverrideVisitor;
 
-
+    /**
+     * Creates a new instance with the given error handler and class map.
+     * @param errorHandler
+     * @param classMap
+     */
     public ClassHierarchyVisitor(ErrorHandler errorHandler, Hashtable<String, ClassTreeNode> classMap){
         this.errorHandler = errorHandler;
         this.classMap = classMap;
+        this.methodOverrideVisitor = new MethodOverrideVisitor(classMap, errorHandler);
     }
 
+    /**
+     * Builds the class tree for the given program and root class tree node.
+     * @param program
+     * @param classTreeRootNode
+     * @return  the root node
+     */
     public ClassTreeNode buildClassTree(Program program, ClassTreeNode classTreeRootNode){
         this.classTreeRootNode = classTreeRootNode;
         this.visit(program);
@@ -30,11 +46,19 @@ public class ClassHierarchyVisitor extends Visitor {
         return classTreeRootNode;
     }
 
+    /**
+     * If the tree is not well-formed, object to the error reporter
+     */
     private void hasCycles(){
         Set<ClassTreeNode> traversed = new HashSet<>();
         hasCycles(traversed, classTreeRootNode);
     }
 
+    /**
+     * If the tree is not well-formed, object to the error reporter
+     * @param traversed the set of ClassTreeNodes whom have already been traversed
+     * @param currentNode   the current node whom'st is undergoing traversal
+     */
     private void hasCycles(Set<ClassTreeNode> traversed, ClassTreeNode currentNode){
         Iterator<ClassTreeNode> childrenList = currentNode.getChildrenList();
         while(childrenList.hasNext()) {
@@ -63,7 +87,7 @@ public class ClassHierarchyVisitor extends Visitor {
      * @return
      */
     public Object visit(Class_ classNode){
-
+        this.methodOverrideVisitor.setCurrentClassName(classNode.getName());
         ClassTreeNode classTreeNode = new ClassTreeNode(classNode, false, true, classMap);
         if(classMap.containsKey(classNode.getName())){
 
@@ -85,11 +109,13 @@ public class ClassHierarchyVisitor extends Visitor {
         return super.visit(classNode);
     }
 
+    /**
+     * @param methodNode
+     * @return
+     */
     public Object visit(Method methodNode){
-
-//        System.out.println("GET FUCKED ITS HAPPENING RIGHT HERE");
+        new MethodOverrideVisitor(classMap, errorHandler).visit(methodNode);
         currentClassTreeNode.getMethodSymbolTable().add(methodNode.getName(),methodNode);
-
         return null;
     }
 

@@ -279,12 +279,6 @@ public class SemanticAnalyzer {
 		buildInheritanceWithinTree();
 	}
 
-	private void buildClassesInTree(){
-		ClassBuilderVisitor classBuilderVisitor = new ClassBuilderVisitor(this.errorHandler);
-		for(Map.Entry<String, ClassTreeNode> entry:classMap.entrySet()){
-			classBuilderVisitor.buildClass(entry.getValue());
-		}
-	}
 
 	/**
 	 * Builds the inheritance tree using the classMap that was already generated
