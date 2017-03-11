@@ -78,13 +78,11 @@ public class SemanticAnalyzerTest
         } catch (RuntimeException e) {
             thrown = true;
             e.printStackTrace();
-            System.out.println("HELLO");
-            assertEquals("Bantam semantic analyzer found errors.", e.getMessage());
-
             for (ErrorHandler.Error err : analyzer.getErrorHandler().getErrorList()) {
                 System.out.println(err);
 
             }
+            assertEquals("Bantam semantic analyzer found errors.", e.getMessage());
         }
         return thrown;
     }
@@ -183,6 +181,39 @@ public class SemanticAnalyzerTest
     @Test
     public void testAssignExprError() throws Exception{
         testErrorFile("testAssignExprError.btm");
+    }
+
+    /**
+     * Tests the case of a valid ArrayExpr
+     */
+    @Test
+    public void testArrayExpr() throws Exception{
+        expectNoError("testArrayExpr.btm");
+    }
+
+    /**
+     * Tests the case of an illegal ArrayExpr
+     */
+    @Test
+    public void testArrayExprError() throws Exception{
+        testErrorFile("testArrayExprError.btm");
+    }
+
+
+    /**
+     * Tests the case of a valid ArrayAssignExpr
+     */
+    @Test
+    public void testArrayAssignExpr() throws Exception{
+        expectNoError("testArrayAssignExpr.btm");
+    }
+
+    /**
+     * Tests the case of an illegal ArrayAssignExpr
+     */
+    @Test
+    public void testArrayAssignExprError() throws Exception{
+        testErrorFile("testArrayAssignExprError.btm");
     }
 
     /**
@@ -379,6 +410,8 @@ public class SemanticAnalyzerTest
 
     /**
      * Tests the case of a legal UnaryNegExpr
+     */
+
     @Test
     public void testUnaryNegExpr() throws Exception{
         expectNoError("testUnaryNegExpr.btm");

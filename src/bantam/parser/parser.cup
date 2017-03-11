@@ -403,7 +403,7 @@ declStmt
 
         |ID:type LSQBRACE RSQBRACE ID:name ASSIGN expr:e SEMI
             {: RESULT = new DeclStmt(type.getLineNum(),
-                                      type.getAttribute(),
+                                      type.getAttribute()+"[]",
                                       name.getAttribute(),
                                       e); :}
     ;
@@ -561,6 +561,9 @@ expr
         |newExpr:e
             {: RESULT = (NewExpr) e; :}
 
+        |newArrayExpr:e
+            {:RESULT = (NewArrayExpr)e;:}
+
         |instanceofExpr:e
             {: RESULT = (InstanceofExpr) e; :}
 
@@ -608,16 +611,14 @@ arrayAssignExpr
 
         ::=
 
-        arrayExpr:ae ASSIGN expr:e
-            {:
-                String refName = "";
-                if (ae.getRef() != null) {refName = ae.getRef().getExprType();}
-                RESULT = new ArrayAssignExpr(ae.getLineNum(),
-                                             refName,
-                                             ae.getName(),
-                                             ae,
-                                             e); :}
-    ;
+        ID:id LSQBRACE expr:index RSQBRACE ASSIGN expr:e
+            {: RESULT = new ArrayAssignExpr(id.getLineNum(), null, id.getAttribute(),
+            index, e); :}
+
+        | ID:ref DOT ID:id LSQBRACE expr:index RSQBRACE ASSIGN expr:e
+            {: RESULT = new ArrayAssignExpr(id.getLineNum(), ref.getAttribute(),
+            id.getAttribute(), index, e); :}
+        ;
 
 dispatchExpr
 
@@ -651,13 +652,16 @@ newExpr
             {: RESULT = new NewExpr(n.getLineNum(),
                                      type.getAttribute()); :}
 
-        |NEW:n ID:type LSQBRACE expr:e RSQBRACE
-            {: RESULT = new NewExpr(n.getLineNum(),
-                                     type.getAttribute()); :}
     ;
 
-instanceofExpr
+newArrayExpr
+        ::=
 
+        NEW:n ID:name LSQBRACE expr:e RSQBRACE
+            {:RESULT = new NewArrayExpr(n.getLineNum(), name.getAttribute(), e);:}
+;
+
+instanceofExpr
         ::=
 
         expr:e INSTANCEOF ID:type

@@ -64,6 +64,60 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return false;
     }
 
+
+    @Override
+    public Object visit(ArrayExpr node){
+        super.visit(node);
+        String type = null;
+        if(node.getRef() != null) {
+            String ref = ((VarExpr) node.getRef()).getName();
+            if(THIS.equals(ref)){
+                int scopeLevel = this.getClassMap()
+                        .get(this.getCurrentClassName())
+                        .getParent()
+                        .getVarSymbolTable()
+                        .getCurrScopeLevel() +1;
+                type = (String) this.getCurrentVarSymbolTable().lookup(node.getName(),
+                        scopeLevel);
+            }
+            else if(SUPER.equals(ref)){
+                type = (String) this.getClassMap()
+                        .get(this.getCurrentClassName())
+                        .getParent()
+                        .getVarSymbolTable()
+                        .lookup(node.getName());
+            }
+            else {
+                this.registerError(node, "Variable may only have 'this' or 'super' as " +
+                        "its reference. Reference: "+ ref + " not permitted.");
+            }
+        }
+        else {
+            type = (String) this.getCurrentVarSymbolTable().lookup(node.getName());
+        }
+
+        if (type == null){
+            this.registerError(node, "Variable " + node.getName() + " could not be " +
+                    "found in the current scope.");
+        }
+        else{
+            if(type.endsWith("[]")){
+                node.setExprType(type.replace("[]", ""));
+            }
+            else{
+                this.registerError(node, "Array expression invoked on non-array type " +
+                        "variable: " + node.getName());
+            }
+        }
+
+        if(!node.getIndex().getExprType().equals(INT)){
+            this.registerError(node, "Array Indexes must resolve to int! Type " +
+                    "supplied: " + node.getIndex().getExprType());
+        }
+
+        return null;
+    }
+
     /**
      * Visits an assign expr and makes sure that it is a proper assign expression
      * type for both sides.
@@ -72,12 +126,10 @@ public class TypeCheckVisitor extends SemanticVisitor {
      */
     @Override
     public Object visit(AssignExpr node) {
-        //// TODO: 3/2/2017 must be valid assignment type
         super.visit(node);
         Expr refVarExpr = node.getRefName() == null ?
                 null :
                 new VarExpr(node.getLineNum(), null, node.getRefName());
-        System.out.println(node.getRefName() + "***************");
         VarExpr varExpr = new VarExpr(node.getLineNum(), refVarExpr, node.getName());
         varExpr.accept(this);
         node.setExprType(varExpr.getExprType());
@@ -92,7 +144,37 @@ public class TypeCheckVisitor extends SemanticVisitor {
         return true;
     }
 
-    //TODO ArrayAssignExpr
+    public Object visit(ArrayAssignExpr node){
+        super.visit(node);
+
+        Expr refVarExpr = node.getRefName() == null ? null :
+                new VarExpr(node.getLineNum(), null, node.getRefName());
+
+        ArrayExpr arrExpr = new ArrayExpr(node.getLineNum(),
+                                          refVarExpr,
+                                          node.getName(),
+                                          node.getIndex());
+        arrExpr.accept(this);
+        node.setExprType(arrExpr.getExprType());
+
+        if(!node.getIndex().getExprType().equals(INT)){
+            this.registerError(node, "Invalid index. Index expression must resolve to " +
+                    "int.");
+        }
+
+        String type = node.getExprType();
+
+        if(type != null){
+            if(!this.isSuperType(type, node.getExpr().getExprType())){
+                this.registerError(node, "Illegal Assignment: The righthand expression " +
+                        "of type "
+                        + node.getExpr().getExprType() + " cannot be assigned to " +
+                        node.getName() + " of type " + type);
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Registers and error if the types for not match
@@ -328,6 +410,20 @@ public class TypeCheckVisitor extends SemanticVisitor {
     @Override
     public Object visit(NewArrayExpr node) {
         super.visit(node);
+        System.out.println("VISITED");
+        System.out.println(node.getType());
+        if(!this.getClassMap().containsKey(node.getType()) &&
+                (!node.getType().equals(INT)) &&
+                (!node.getType().equals(BOOLEAN))){
+
+            System.out.println("Problem");
+            this.registerError(node,
+                    "Object type " + node.getType() + " does not exist.");
+        }
+        else {
+            System.out.println(node.getType());
+            node.setExprType(node.getType());
+        }
 
         if(!node.getSize().getExprType().equals(INT)){
             this.registerError(node,
@@ -548,7 +644,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
         String type = null;
         if(node.getRef() != null) {
             String ref = ((VarExpr) node.getRef()).getName();
-            System.out.println("ref is reached");
             if(THIS.equals(ref)){
                 int scopeLevel = this.getClassMap()
                         .get(this.getCurrentClassName())
@@ -642,6 +737,21 @@ public class TypeCheckVisitor extends SemanticVisitor {
      * @return
      */
     public boolean isSuperType(String declaredType, String objectType){
+        if(declaredType == null || objectType == null  ||
+            declaredType.equals(NULL) || objectType.equals(NULL) ||
+            objectType.equals(NULL+"[]")){
+
+            return false;
+        }
+
+        if(declaredType.equals(objectType)){
+            return true;
+        }
+
+        if(isPrimitive(declaredType) && isPrimitive(objectType)){
+            return declaredType.equals(objectType);
+        }
+
         ClassTreeNode declaredClass = this.getClassMap().get(declaredType);
         ClassTreeNode objectClass = this.getClassMap().get(objectType);
 
@@ -651,5 +761,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
                 return false;
         }
         return true;
+    }
+
+    public boolean isPrimitive(String type){
+        return (type.equals(BOOLEAN) || type.equals(INT));
     }
 }

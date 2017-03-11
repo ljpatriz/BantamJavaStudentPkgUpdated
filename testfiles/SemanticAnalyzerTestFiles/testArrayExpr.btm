@@ -1,0 +1,6 @@
+class Main{
+    void main(){
+        int[] x = new int[5];
+        int a = x[3];
+    }
+}
