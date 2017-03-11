@@ -22,39 +22,37 @@ public class MethodOverrideVisitor extends SemanticVisitor {
         super(classMap, errHandler);
     }
 
-//    /**
-//     * Visit the program node
-//     * @param ast
-//     */
-//    @Override
-//    public void check(Program ast) {
-//        ast.accept(this);
-//    }
+    /**
+     * Visit the program node
+     * @param ast
+     */
+    @Override
+    public void check(Program ast) {
+        ast.accept(this);
+    }
 
-    public void check(Program ast) {}
+    /**
+     * Visit a class node
+     * @param node the class node
+     * @return
+     */
+    public Object visit(Class_ node) {
+        this.setCurrentClassName(node.getName());
+        return super.visit(node);
+    }
 
-//    /**
-//     * Visit a class node
-//     * @param node the class node
-//     * @return
-//     */
-//    public Object visit(Class_ node) {
-//        this.setCurrentClassName(node.getName());
-//        return super.visit(node);
-//    }
-//
-//    /**
-//     * Visit a member list node and skip fields!!
-//     * @param node the member list node
-//     * @return
-//     */
-//    public Object visit(MemberList node) {
-//        for (ASTNode child : node) {
-//            if (! (child instanceof Field))
-//                child.accept(this);
-//        }
-//        return null;
-//    }
+    /**
+     * Visit a member list node and skip fields!!
+     * @param node the member list node
+     * @return
+     */
+    public Object visit(MemberList node) {
+        for (ASTNode child : node) {
+            if (! (child instanceof Field))
+                child.accept(this);
+        }
+        return null;
+    }
 
     /**
      * Visit a method node

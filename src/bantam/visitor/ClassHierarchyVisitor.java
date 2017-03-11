@@ -106,19 +106,30 @@ public class ClassHierarchyVisitor extends Visitor {
             classTreeNode.getVarSymbolTable().setParent(classTreeNode.getParent().getVarSymbolTable());
             currentClassTreeNode = classTreeNode;
         }
-        return super.visit(classNode);
+        super.visit(classNode);
+        new MethodOverrideVisitor(classMap, errorHandler).visit(classNode);
+        return null;
     }
 
     /**
+     * Visit a method node and if method is overloaded object
      * @param methodNode
      * @return
      */
     public Object visit(Method methodNode){
+        if (currentClassTreeNode.getMethodSymbolTable().lookup(methodNode.getName()) !=
+                null) {
+            errorHandler.register(2, "Method overloading is verboten.");
+        }
         currentClassTreeNode.getMethodSymbolTable().add(methodNode.getName(),methodNode);
-//        new MethodOverrideVisitor(classMap, errorHandler).visit(methodNode);
         return null;
     }
 
+    /**
+     * Visit a field node
+     * @param field
+     * @return
+     */
     public Object visit(Field field){
         currentClassTreeNode.getVarSymbolTable().add(field.getName(),field.getType());
         return null;
