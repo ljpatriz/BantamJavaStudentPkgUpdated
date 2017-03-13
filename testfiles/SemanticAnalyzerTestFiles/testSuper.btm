@@ -1,0 +1,12 @@
+class Mother{
+    int a = 3;
+}
+
+class Main extends Mother{
+    boolean a = false;
+    void main(){
+        if(super.a == 3){
+            super.a = 4;
+        }
+    }
+}

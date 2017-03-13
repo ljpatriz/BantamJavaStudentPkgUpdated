@@ -522,4 +522,37 @@ public class SemanticAnalyzerTest
     }
 
 
+    /**
+     * Test super
+     */
+    @Test
+    public void testSuper() throws Exception{
+        expectNoError("testSuper.btm");
+    }
+
+    /**
+     * Test super illegal
+     */
+    @Test
+    public void testSuperError() throws Exception{
+        testErrorFile("testSuperError.btm");
+    }
+
+    /**
+     * Test this
+     */
+    @Test
+    public void testThis() throws Exception{
+        expectNoError("testThis.btm");
+    }
+
+    /**
+     * Test this illegal
+     */
+    @Test
+    public void testThisError() throws Exception{
+        testErrorFile("testThisError.btm");
+    }
+
+
 }
