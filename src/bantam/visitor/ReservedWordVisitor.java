@@ -1,3 +1,8 @@
+/**
+ * File: ParserTest.java
+ * Author: Jacob, Nick, Larry, Luis, CP
+ * Date: 2/23/17
+ */
 package bantam.visitor;
 
 import bantam.ast.*;
@@ -7,7 +12,7 @@ import bantam.util.ErrorHandler;
 import java.util.Hashtable;
 
 /**
- * Created by Jacob on 10/03/17.
+ * Tests that the program does not utilize reserved words
  */
 public class ReservedWordVisitor extends SemanticVisitor {
 

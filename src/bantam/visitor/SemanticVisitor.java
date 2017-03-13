@@ -1,3 +1,8 @@
+/**
+ * File: ParserTest.java
+ * Author: Jacob, Nick, Larry, Luis, CP
+ * Date: 2/23/17
+ */
 package bantam.visitor;
 
 import bantam.ast.ASTNode;
@@ -9,6 +14,10 @@ import bantam.util.SymbolTable;
 
 import java.util.Hashtable;
 
+/**
+ * Abstract class for the creation of visitors specifically entailed for the Semantic
+ * Analyzer.
+ */
 public abstract class SemanticVisitor extends Visitor {
 
     /** Declares a set of constants, for cleaner code */
