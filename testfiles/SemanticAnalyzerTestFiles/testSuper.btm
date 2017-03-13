@@ -6,7 +6,7 @@ class Main extends Mother{
     boolean a = false;
     void main(){
         if(super.a == 3){
-            super.a == 4;
+            super.a = 4;
         }
     }
 }
