@@ -94,7 +94,7 @@ public class ClassHierarchyVisitor extends Visitor {
         classTreeNode.getMethodSymbolTable().setParent(classTreeNode.getParent().getMethodSymbolTable());
         classTreeNode.getVarSymbolTable().setParent(classTreeNode.getParent().getVarSymbolTable());
         currentClassTreeNode = classTreeNode;
-
+        classTreeNode.getParent().addChild(classTreeNode);
         super.visit(classNode);
         this.methodOverrideVisitor.visit(classNode);
         return null;
