@@ -108,7 +108,7 @@ public class ClassHierarchyVisitor extends Visitor {
     public Object visit(Method methodNode){
         if (currentClassTreeNode.getMethodSymbolTable().lookup(methodNode.getName()) !=
                 null) {
-            errorHandler.register(2, "Method overloading is verboten.");
+//            errorHandler.register(2, "Method overloading is verboten.");
         }
         currentClassTreeNode.getMethodSymbolTable().add(methodNode.getName(),methodNode);
         return null;
