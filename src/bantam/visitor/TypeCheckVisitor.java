@@ -1,15 +1,18 @@
+/**
+ * File: ParserTest.java
+ * Author: Jacob, Nick, Larry, Luis, CP
+ * Date: 2/23/17
+ */
 package bantam.visitor;
 
 import bantam.ast.*;
 import bantam.util.ClassTreeNode;
 import bantam.util.ErrorHandler;
 import bantam.util.SymbolTable;
-
 import java.util.Hashtable;
-import java.util.Objects;
 
 /**
- * Created by ncameron on 3/2/2017.
+ * Annotates and tests that type are properly utilized in the program.
  */
 public class TypeCheckVisitor extends SemanticVisitor {
 

@@ -1,3 +1,9 @@
+/**
+ * File: ParserTest.java
+ * Author: Jacob, Nick, Larry, Luis, CP
+ * Date: 2/23/17
+ */
+
 package bantam.visitor;
 
 import bantam.ast.ConstStringExpr;
@@ -8,10 +14,8 @@ import bantam.ast.Program;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
- * File: ParserTest.java
- * Author: Jacob, Nick, Larry, Luis, CP
- * Date: 2/23/17
+/**
+ * Not used in the current project, old file
  */
 public class StringConstantsVisitor extends Visitor{
 

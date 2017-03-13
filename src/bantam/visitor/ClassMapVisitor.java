@@ -1,3 +1,9 @@
+/**
+ * File: ParserTest.java
+ * Author: Jacob, Nick, Larry, Luis, CP
+ * Date: 2/23/17
+ */
+
 package bantam.visitor;
 
 import bantam.ast.Class_;
@@ -8,7 +14,8 @@ import bantam.util.ErrorHandler;
 import java.util.Hashtable;
 
 /**
- * Created by Jacob on 12/03/17.
+ * Tests to make sure that classes are not created with the same name as previously
+ * created classes.
  */
 public class ClassMapVisitor extends SemanticVisitor {
 
