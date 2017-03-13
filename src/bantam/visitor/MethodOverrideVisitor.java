@@ -62,47 +62,38 @@ public class MethodOverrideVisitor extends SemanticVisitor {
     public Object visit(Method currentMethod) {
         ClassTreeNode currentClass = this.getClassMap().get(this.getCurrentClassName());
         ClassTreeNode parentClass = currentClass.getParent();
+        while(parentClass != null) {
+            Method parentMethod = (Method) parentClass.getMethodSymbolTable()
+                    .lookup(currentMethod.getName());
+            if (parentMethod != null) {
+                // Parent method actually exists, we're in trouble
 
-        if (parentClass == null) {
-            return null;    // everything is fine
-        }
+                // check return types
+                if (!currentMethod.getReturnType().equals(parentMethod.getReturnType())) {
+                    this.registerError(currentMethod, "Method: " + currentClass.getName() + "." +
+                            currentMethod.getName() + " has different return type than the method" +
+                            " it overrides.");
+                }
+                
+                // check parameters
+                if (currentMethod.getFormalList().getSize() !=
+                        parentMethod.getFormalList().getSize()) {
+                    this.registerError(currentMethod, "Method: " + currentClass.getName() + "." +
+                            currentMethod.getName() + "has a different number of arguments than" +
+                            " the method it overrides.");
+                }
 
-        Method parentMethod = (Method) parentClass.getMethodSymbolTable()
-                .lookup(currentMethod.getName());
-        System.out.println(parentClass.getMethodSymbolTable());
-        parentClass.getMethodSymbolTable().dump();
-        System.out.print(currentMethod.getName());
-        System.out.println(" overrides ");
-
-        if (parentMethod == null) {
-            return null;    // everything is fine
-        }
-        // Parent method actually exists, we're in trouble
-
-        // check return types
-        if (!currentMethod.getReturnType().equals(parentMethod.getReturnType())) {
-            this.registerError(currentMethod, "Method: " + currentClass.getName() + "." +
-                    currentMethod.getName() + " has different return type than the method" +
-                    " it overrides.");
-        }
-
-        // check parameters
-        if (currentMethod.getFormalList().getSize() !=
-                parentMethod.getFormalList().getSize()) {
-            this.registerError(currentMethod,"Method: " + currentClass.getName() + "." +
-                    currentMethod.getName() + "has a different number of arguments than" +
-                    " the method it overrides.");
-        }
-
-        for (int i = 0; i < currentMethod.getFormalList().getSize(); i++) {
-            if (((Formal)currentMethod.getFormalList().get(i)).getType() !=
-                    ((Formal)currentMethod.getFormalList().get(i)).getType()) {
-                this.registerError(currentMethod, "Method: " + currentClass.getName() +
-                        "." + currentMethod.getName() + " has a different param type at" +
-                        " index" + i);
+                for (int i = 0; i < currentMethod.getFormalList().getSize(); i++) {
+                    if (((Formal) currentMethod.getFormalList().get(i)).getType() !=
+                            ((Formal) currentMethod.getFormalList().get(i)).getType()) {
+                        this.registerError(currentMethod, "Method: " + currentClass.getName() +
+                                "." + currentMethod.getName() + " has a different param type at" +
+                                " index" + i);
+                    }
+                }
             }
+            parentClass = parentClass.getParent();
         }
-
         return null;    // everything is fine
     }
 
