@@ -1,0 +1,16 @@
+class Main{
+    void main(){
+        int whomst = 3;
+        whomst = -3;
+    }
+}
+class Dog extends Animal{
+    void whomst(){
+        whom = 4;
+    }
+}
+class Animal{
+    int whom;
+    void whomst(){
+    }
+}

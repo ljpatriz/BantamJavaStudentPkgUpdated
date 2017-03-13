@@ -505,5 +505,13 @@ public class SemanticAnalyzerTest
         testErrorFile("testBreakStmtError.btm");
     }
 
+    /**
+     * Test inheritance
+     */
+    @Test
+    public void testInheritance() throws Exception{
+        expectNoError("testInheritence.btm");
+    }
+
 
 }

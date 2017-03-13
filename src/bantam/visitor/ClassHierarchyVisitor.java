@@ -107,7 +107,7 @@ public class ClassHierarchyVisitor extends Visitor {
             currentClassTreeNode = classTreeNode;
         }
         super.visit(classNode);
-        new MethodOverrideVisitor(classMap, errorHandler).visit(classNode);
+        this.methodOverrideVisitor.visit(classNode);
         return null;
     }
 

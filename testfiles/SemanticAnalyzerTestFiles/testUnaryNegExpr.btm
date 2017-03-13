@@ -1,5 +1,6 @@
 class Main{
     void main(){
-        -3;
+        int whomst = 3;
+        whomst = -3;
     }
 }
