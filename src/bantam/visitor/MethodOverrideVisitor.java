@@ -69,11 +69,14 @@ public class MethodOverrideVisitor extends SemanticVisitor {
 
         Method parentMethod = (Method) parentClass.getMethodSymbolTable()
                 .lookup(currentMethod.getName());
+        System.out.println(parentClass.getMethodSymbolTable());
+        parentClass.getMethodSymbolTable().dump();
+        System.out.print(currentMethod.getName());
+        System.out.println(" overrides ");
 
         if (parentMethod == null) {
             return null;    // everything is fine
         }
-
         // Parent method actually exists, we're in trouble
 
         // check return types

@@ -43,6 +43,7 @@ public class ClassHierarchyVisitor extends Visitor {
         this.classTreeRootNode = classTreeRootNode;
         this.visit(program);
         hasCycles();
+        this.methodOverrideVisitor.visit(program);
         return classTreeRootNode;
     }
 
@@ -88,26 +89,14 @@ public class ClassHierarchyVisitor extends Visitor {
      */
     public Object visit(Class_ classNode){
         this.methodOverrideVisitor.setCurrentClassName(classNode.getName());
-        ClassTreeNode classTreeNode = new ClassTreeNode(classNode, false, true, classMap);
-        if(classMap.containsKey(classNode.getName())){
-
-            errorHandler.register(2, classNode.getFilename(),
-                    classNode.getLineNum(),
-                    "Class with the same name already exists");
-        }
-        else{
-            classMap.put(classNode.getName(),classTreeNode);
-            classTreeNode.setParent(classMap.get(classNode.getParent()));
-
-            classTreeNode.getMethodSymbolTable().enterScope();
-            classTreeNode.getMethodSymbolTable().setParent(classTreeNode.getParent().getMethodSymbolTable());
-
-            classTreeNode.getVarSymbolTable().enterScope();
-            classTreeNode.getVarSymbolTable().setParent(classTreeNode.getParent().getVarSymbolTable());
-            currentClassTreeNode = classTreeNode;
-        }
+        ClassTreeNode classTreeNode = classMap.get(classNode.getName());
+        classTreeNode.setParent(classMap.get(classNode.getParent()));
+        //TODO: remove
+        classTreeNode.getMethodSymbolTable().setParent(classTreeNode.getParent().getMethodSymbolTable());
+        classTreeNode.getVarSymbolTable().setParent(classTreeNode.getParent().getVarSymbolTable());
+        currentClassTreeNode = classTreeNode;
+        classTreeNode.getParent().addChild(classTreeNode);
         super.visit(classNode);
-        this.methodOverrideVisitor.visit(classNode);
         return null;
     }
 
@@ -119,7 +108,7 @@ public class ClassHierarchyVisitor extends Visitor {
     public Object visit(Method methodNode){
         if (currentClassTreeNode.getMethodSymbolTable().lookup(methodNode.getName()) !=
                 null) {
-            errorHandler.register(2, "Method overloading is verboten.");
+//            errorHandler.register(2, "Method overloading is verboten.");
         }
         currentClassTreeNode.getMethodSymbolTable().add(methodNode.getName(),methodNode);
         return null;
