@@ -43,6 +43,7 @@ public class ClassHierarchyVisitor extends Visitor {
         this.classTreeRootNode = classTreeRootNode;
         this.visit(program);
         hasCycles();
+        this.methodOverrideVisitor.visit(program);
         return classTreeRootNode;
     }
 
@@ -96,7 +97,6 @@ public class ClassHierarchyVisitor extends Visitor {
         currentClassTreeNode = classTreeNode;
         classTreeNode.getParent().addChild(classTreeNode);
         super.visit(classNode);
-        this.methodOverrideVisitor.visit(classNode);
         return null;
     }
 

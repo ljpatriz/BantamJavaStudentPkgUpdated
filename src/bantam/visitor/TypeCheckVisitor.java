@@ -758,7 +758,6 @@ public class TypeCheckVisitor extends SemanticVisitor {
                         .lookup(node.getName());
             }
             else {
-                System.out.println("Else is reached");
                 String refType  = (String) this.getCurrentVarSymbolTable().lookup(ref);
                 if(refType != null && refType.endsWith("[]")
                         && node.getName().equals("length")){
