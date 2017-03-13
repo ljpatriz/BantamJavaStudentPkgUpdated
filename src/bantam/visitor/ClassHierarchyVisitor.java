@@ -88,24 +88,13 @@ public class ClassHierarchyVisitor extends Visitor {
      */
     public Object visit(Class_ classNode){
         this.methodOverrideVisitor.setCurrentClassName(classNode.getName());
-        ClassTreeNode classTreeNode = new ClassTreeNode(classNode, false, true, classMap);
-        if(classMap.containsKey(classNode.getName())){
+        ClassTreeNode classTreeNode = classMap.get(classNode.getName());
+        classTreeNode.setParent(classMap.get(classNode.getParent()));
+        //TODO: remove
+        classTreeNode.getMethodSymbolTable().setParent(classTreeNode.getParent().getMethodSymbolTable());
+        classTreeNode.getVarSymbolTable().setParent(classTreeNode.getParent().getVarSymbolTable());
+        currentClassTreeNode = classTreeNode;
 
-            errorHandler.register(2, classNode.getFilename(),
-                    classNode.getLineNum(),
-                    "Class with the same name already exists");
-        }
-        else{
-            classMap.put(classNode.getName(),classTreeNode);
-            classTreeNode.setParent(classMap.get(classNode.getParent()));
-
-            classTreeNode.getMethodSymbolTable().enterScope();
-            classTreeNode.getMethodSymbolTable().setParent(classTreeNode.getParent().getMethodSymbolTable());
-
-            classTreeNode.getVarSymbolTable().enterScope();
-            classTreeNode.getVarSymbolTable().setParent(classTreeNode.getParent().getVarSymbolTable());
-            currentClassTreeNode = classTreeNode;
-        }
         super.visit(classNode);
         this.methodOverrideVisitor.visit(classNode);
         return null;
