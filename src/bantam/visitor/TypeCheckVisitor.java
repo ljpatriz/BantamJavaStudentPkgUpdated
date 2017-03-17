@@ -135,9 +135,9 @@ public class TypeCheckVisitor extends SemanticVisitor {
                 new VarExpr(node.getLineNum(), null, node.getRefName());
         VarExpr varExpr = new VarExpr(node.getLineNum(), refVarExpr, node.getName());
         varExpr.accept(this);
-        node.setExprType(varExpr.getExprType());
+        String varType = varExpr.getExprType();
+        node.setExprType(varType);
 
-        String varType = (String)this.getCurrentVarSymbolTable().lookup(node.getName());
         if(varType == null){
             this.registerError(node, " variable " + node.getName() + "was not declared");
         } else if(!isSuperType(varType, node.getExpr().getExprType())) {
