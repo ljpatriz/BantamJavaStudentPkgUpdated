@@ -115,7 +115,7 @@ public class MipsCodeGenerator {
         // comment out
         //throw new RuntimeException("MIPS code generator unimplemented");
 
-        assemblySupport.genTextStart();
+        assemblySupport.genDataStart();
         // add code below...
     }
 }
