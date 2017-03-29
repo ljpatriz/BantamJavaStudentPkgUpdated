@@ -113,8 +113,9 @@ public class MipsCodeGenerator {
      */
     public void generate() {
         // comment out
-        throw new RuntimeException("MIPS code generator unimplemented");
+        //throw new RuntimeException("MIPS code generator unimplemented");
 
+        assemblySupport.genTextStart();
         // add code below...
     }
 }
