@@ -10,6 +10,8 @@ import bantam.ast.ConstStringExpr;
 import bantam.ast.Formal;
 import bantam.ast.FormalList;
 import bantam.ast.Program;
+import bantam.ast.Class_;
+import bantam.util.ClassTreeNode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +24,7 @@ public class StringConstantsVisitor extends Visitor{
     /**
      * This map contains all the Strings and their assigned names
      */
-    private Map<String, String> stringConstantMap = new HashMap<>();
+    private Map<String, String> stringConstantMap;
 
     /**
      * This Builds the String Constants for the names
@@ -36,14 +38,22 @@ public class StringConstantsVisitor extends Visitor{
      * @return
      */
     public Map<String, String> getStringConstants(Program ast){
+        stringConstantMap = new HashMap<>();
         this.visit(ast);
         return stringConstantMap;
     }
 
     /**
-     * Retrieves the stringConstant Map
+     * Returns a map containing Map whose keys are the String constants from the program
+     * and whose values are names for the String constants.
+     * @param node Class Tree Node
+     * @return
      */
-    public Map<String, String> getStringConstantMap(){
+    public Map<String, String> getStringConstants(ClassTreeNode node){
+        stringConstantMap = new HashMap<>();
+        for(ClassTreeNode classNode: node.getClassMap().values()){
+            classNode.getASTNode().accept(this);
+        }
         return stringConstantMap;
     }
 

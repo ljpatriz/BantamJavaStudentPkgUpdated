@@ -128,8 +128,7 @@ public class MipsCodeGenerator {
 
     public void generateStringConstants(){
         StringConstantsVisitor stringConstantsVisitor = new StringConstantsVisitor();
-        generateStringConstants(this.root, stringConstantsVisitor);
-        Map<String, String> stringMap = stringConstantsVisitor.getStringConstantMap();
+        Map<String, String> stringMap = stringConstantsVisitor.getStringConstants(this.root);
         for(Map.Entry<String, String> stringConstant : stringMap.entrySet()){
             String stringLabel =  stringConstant.getValue();
             String string = stringConstant.getKey();
@@ -145,13 +144,4 @@ public class MipsCodeGenerator {
             assemblySupport.genAlign();
         }
     }
-
-    public void generateStringConstants(ClassTreeNode node, StringConstantsVisitor stringConstantsVisitor){
-        node.getASTNode().accept(stringConstantsVisitor);
-        Iterator<ClassTreeNode> childrenList = node.getChildrenList();
-        while(childrenList.hasNext()){
-            generateStringConstants(childrenList.next(), stringConstantsVisitor);
-        }
-    }
-
 }
