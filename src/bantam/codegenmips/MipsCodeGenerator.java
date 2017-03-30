@@ -116,32 +116,95 @@ public class MipsCodeGenerator {
      * See the lab manual for the details of each of these steps.
      */
     public void generate() {
-        // comment out
-        //throw new RuntimeException("MIPS code generator unimplemented");
-
+        //1 - start the data section
         assemblySupport.genDataStart();
+
+        //2 - generate data for the garbage collector
         assemblySupport.genLabel("gc_flag");
         assemblySupport.genWord("0");
+
+        //3 - generate string constants
         generateStringConstants();
-        // add code below...
+
+        //4 - generate class name table
+        generateClassNameTable();
+
+        generateTemplates();
+        //6 - generate dispatch tables
+        //7 - start the text section
+        //8 - generate initialization subroutines
+        //9 - generate user-defined methods
     }
 
     public void generateStringConstants(){
         StringConstantsVisitor stringConstantsVisitor = new StringConstantsVisitor();
+
+        //generate strings
         Map<String, String> stringMap = stringConstantsVisitor.getStringConstants(this.root);
         for(Map.Entry<String, String> stringConstant : stringMap.entrySet()){
             String stringLabel =  stringConstant.getValue();
             String string = stringConstant.getKey();
-            String stringLengthRounded = Integer.toString((int) Math.ceil((string.length()+1)/4.0)*4); //remember to look this line over with dale,
-                                                                        //add one or not to add one, that is the question
-            assemblySupport.genLabel(stringLabel);
-            assemblySupport.genWord("1"); //says its a string?
-            assemblySupport.genWord(Integer.toString(16) + stringLengthRounded); //size of all of this
-            assemblySupport.genWord("String_dispatch_table"); //pointer to VFT
-            assemblySupport.genWord(Integer.toString(string.length()));//this line is in example, but we should ask dale.
-            assemblySupport.genAscii(string); //the actual string
-            assemblySupport.genByte("0");
-            assemblySupport.genAlign();
+            generateStringConstant(stringLabel, string);
         }
+
+        //generate class name strings
+        int classNum = 0;
+        for(ClassTreeNode node: this.root.getClassMap().values()){
+            generateStringConstant(node.getName(), "class_name_"+classNum);
+            classNum++;
+        }
+    }
+
+    /**
+     * This methods generates the class name strings and the class name table
+     * It puts into the table all the class name string labels
+     *  as well as the template labels
+     */
+    public void generateClassNameTable(){
+        assemblySupport.genLabel("class_name_table");
+        //generate class name words
+        int numClasses = this.root.getClassMap().values().size();
+        for(int i = 0; i < numClasses; i++){
+            assemblySupport.genWord("class_name_"+i);
+        }
+        //generate globals in table
+        for(ClassTreeNode node: this.root.getClassMap().values()){
+            assemblySupport.genGlobal(node.getName()+"_template");
+        }
+    }
+
+    /**
+     * Generates the templates for all the classes
+     */
+    public void generateTemplates(){
+        for(ClassTreeNode node : this.root.getClassMap().values()){
+            generateClassTemplate(node);
+        }
+    }
+
+    /**
+     * Generates the template for the given class
+     * @param node
+     */
+    public void generateClassTemplate(ClassTreeNode node) {
+        //TODO create visitor to do this
+    }
+
+    /**
+     * This method creates the assmebly for a string constants
+     * @param label the label for the string
+     * @param string the string itself
+     */
+    public void generateStringConstant(String label, String string){
+        String stringLengthRounded = Integer.toString((int) Math.ceil((string.length()+1)/4.0)*4); //remember to look this line over with dale,
+        //add one or not to add one, that is the question
+        assemblySupport.genLabel(label);
+        assemblySupport.genWord("1"); //says its a string?
+        assemblySupport.genWord(Integer.toString(16) + stringLengthRounded); //size of all of this
+        assemblySupport.genWord("String_dispatch_table"); //pointer to VFT
+        assemblySupport.genWord(Integer.toString(string.length()));//this line is in example, but we should ask dale.
+        assemblySupport.genAscii(string); //the actual string
+        assemblySupport.genByte("0");
+        assemblySupport.genAlign();
     }
 }
