@@ -26,11 +26,15 @@
 
 package bantam.codegenmips;
 
+import bantam.ast.Program;
 import bantam.util.ClassTreeNode;
+import bantam.visitor.StringConstantsVisitor;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * The <tt>MipsCodeGenerator</tt> class generates mips assembly code
@@ -100,9 +104,9 @@ public class MipsCodeGenerator {
      * Generate assembly file
      * <p/>
      * In particular, will need to do the following:
-     * 1 - start the data section
-     * 2 - generate data for the garbage collector
-     * 3 - generate string constants
+     * 1 - start the data section ---- done on 3/29
+     * 2 - generate data for the garbage collector ---- done on 3/29
+     * 3 - generate string constants ---- done on 3/29
      * 4 - generate class name table
      * 5 - generate object templates
      * 6 - generate dispatch tables
@@ -116,6 +120,38 @@ public class MipsCodeGenerator {
         //throw new RuntimeException("MIPS code generator unimplemented");
 
         assemblySupport.genDataStart();
+        assemblySupport.genLabel("gc_flag");
+        assemblySupport.genWord("0");
+        generateStringConstants();
         // add code below...
     }
+
+    public void generateStringConstants(){
+        StringConstantsVisitor stringConstantsVisitor = new StringConstantsVisitor();
+        generateStringConstants(this.root, stringConstantsVisitor);
+        Map<String, String> stringMap = stringConstantsVisitor.getStringConstantMap();
+        for(Map.Entry<String, String> stringConstant : stringMap.entrySet()){
+            String stringLabel =  stringConstant.getValue();
+            String string = stringConstant.getKey();
+            String stringLengthRounded = Integer.toString((int) Math.ceil((string.length()+1)/4.0)*4); //remember to look this line over with dale,
+                                                                        //add one or not to add one, that is the question
+            assemblySupport.genLabel(stringLabel);
+            assemblySupport.genWord("1"); //says its a string?
+            assemblySupport.genWord(Integer.toString(16) + stringLengthRounded); //size of all of this
+            assemblySupport.genWord("String_dispatch_table"); //pointer to VFT
+            assemblySupport.genWord(Integer.toString(string.length()));//this line is in example, but we should ask dale.
+            assemblySupport.genAscii(string); //the actual string
+            assemblySupport.genByte("0");
+            assemblySupport.genAlign();
+        }
+    }
+
+    public void generateStringConstants(ClassTreeNode node, StringConstantsVisitor stringConstantsVisitor){
+        node.getASTNode().accept(stringConstantsVisitor);
+        Iterator<ClassTreeNode> childrenList = node.getChildrenList();
+        while(childrenList.hasNext()){
+            generateStringConstants(childrenList.next(), stringConstantsVisitor);
+        }
+    }
+
 }

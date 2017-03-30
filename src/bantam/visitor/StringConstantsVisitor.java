@@ -22,7 +22,7 @@ public class StringConstantsVisitor extends Visitor{
     /**
      * This map contains all the Strings and their assigned names
      */
-    private Map<String, String> stringConstantMap;
+    private Map<String, String> stringConstantMap = new HashMap<>();
 
     /**
      * This Builds the String Constants for the names
@@ -36,8 +36,14 @@ public class StringConstantsVisitor extends Visitor{
      * @return
      */
     public Map<String, String> getStringConstants(Program ast){
-        stringConstantMap = new HashMap<>();
         this.visit(ast);
+        return stringConstantMap;
+    }
+
+    /**
+     * Retrieves the stringConstant Map
+     */
+    public Map<String, String> getStringConstantMap(){
         return stringConstantMap;
     }
 
