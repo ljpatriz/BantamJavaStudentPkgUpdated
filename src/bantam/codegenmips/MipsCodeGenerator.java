@@ -28,6 +28,7 @@ package bantam.codegenmips;
 
 import bantam.ast.Program;
 import bantam.util.ClassTreeNode;
+import bantam.util.SymbolTable;
 import bantam.visitor.StringConstantsVisitor;
 
 import java.io.FileOutputStream;
@@ -177,8 +178,11 @@ public class MipsCodeGenerator {
      * Generates the templates for all the classes
      */
     public void generateTemplates(){
+        //TODO be more elegant than this
+        int classid = 0;
         for(ClassTreeNode node : this.root.getClassMap().values()){
-            generateClassTemplate(node);
+            generateClassTemplate(node, classid);
+            classid++;
         }
     }
 
@@ -186,9 +190,33 @@ public class MipsCodeGenerator {
      * Generates the template for the given class
      * @param node
      */
-    public void generateClassTemplate(ClassTreeNode node) {
-        //TODO create visitor to do this
+    public void generateClassTemplate(ClassTreeNode node, int id) {
+        SymbolTable varTable = node.getVarSymbolTable();
+        int numFields = varTable.getSize();
+        String dispatchTableName = node.getName()+"_dispatch_table";
+        assemblySupport.genWord(Integer.toString(id));
+        assemblySupport.genWord(Integer.toString(numFields * 4));//verify that this is the right number
+        assemblySupport.genWord(dispatchTableName);
+        //TODO figure out what the other things in the templates are
+        // some of them have words with 0 following them...
     }
+
+    /**
+     * Generates the dispatch tables for the given class
+     */
+    public void generateDispatchTables(){
+        for(ClassTreeNode node : this.root.getClassMap().values()){
+            generateClassTemplate(node);
+        }
+    }
+
+    /**
+     *
+     */
+    public void generateDispatchTable(){
+
+    }
+
 
     /**
      * This method creates the assmebly for a string constants
@@ -200,6 +228,7 @@ public class MipsCodeGenerator {
         //add one or not to add one, that is the question
         assemblySupport.genLabel(label);
         assemblySupport.genWord("1"); //says its a string?
+        //Won't this concat?, and isn't that bad?
         assemblySupport.genWord(Integer.toString(16) + stringLengthRounded); //size of all of this
         assemblySupport.genWord("String_dispatch_table"); //pointer to VFT
         assemblySupport.genWord(Integer.toString(string.length()));//this line is in example, but we should ask dale.
