@@ -43,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The <tt>MipsCodeGenerator</tt> class generates mips assembly code
@@ -83,6 +84,16 @@ public class MipsCodeGenerator {
     private boolean debug = false;
 
     /**
+     * Indices of the builtin classes mapped from their names.
+     */
+    Map<String, Integer> builtinClassIndices = new HashMap<>();
+
+    /**
+     * Indices of the methods in the dispatch tables.
+     */
+    Map<String, Integer> methodIndices = new HashMap<>();
+
+    /**
      * MipsCodeGenerator constructor
      *
      * @param root    root of the class hierarchy tree
@@ -98,6 +109,13 @@ public class MipsCodeGenerator {
         this.opt = opt;
         this.debug = debug;
 
+
+        builtinClassIndices.put("Object", 0);
+        builtinClassIndices.put("String", 1);
+        builtinClassIndices.put("Sys", 2);
+        builtinClassIndices.put("Main", 3);
+        builtinClassIndices.put("TextIO", 4);
+
         try {
             out = new PrintStream(new FileOutputStream(outFile));
             assemblySupport = new MipsSupport(out);
@@ -107,6 +125,7 @@ public class MipsCodeGenerator {
             System.exit(1);
         }
     }
+
 
     /**
      * Generate assembly file
@@ -124,10 +143,15 @@ public class MipsCodeGenerator {
      * See the lab manual for the details of each of these steps.
      */
     public void generate() {
-        assemblySupport.genComment(" Author:\tUnknown");    //// TODO: 3/31/2017
+        assemblySupport.genComment(" Author:\tJacob Adamson, Nicholas Cameron, Larry Patrizio");
         assemblySupport.genComment(" Date:\tMarch, 2017");
         assemblySupport.genComment(" Compiled from sources:");
         assemblySupport.genComment(" \t" + " Unknown");     //// TODO: 3/31/2017
+
+        // make sure they are distinct
+        // root.getClassMap().values().forEach(n -> n.getASTNode().getFilename());
+
+        out.println();
 
         //1 - start the data section
         assemblySupport.genDataStart();
@@ -157,7 +181,7 @@ public class MipsCodeGenerator {
      * This method generates the assembly code for all string constants, including both
      * string constants found in the code, and string constants for class names.
      */
-    public void generateStringConstants(){
+    private void generateStringConstants(){
         StringConstantsVisitor stringConstantsVisitor = new StringConstantsVisitor();
 
         //generate strings
@@ -168,13 +192,23 @@ public class MipsCodeGenerator {
             generateStringConstant(stringLabel, string);
         }
 
-        //generate class name strings
-        //// TODO: 3/30/2017 do we want it to be in the right order ?
-        int classNum = 0;
-        for(ClassTreeNode node: this.root.getClassMap().values()){
-            generateStringConstant("class_name_"+classNum, node.getName());
-            classNum++;
+        Set<String> filenames = new HashSet<>();
+        int fileId = 0;
+        for (Map.Entry<String, Integer> nameAndId : builtinClassIndices.entrySet()) {
+            int classId = nameAndId.getValue();
+            String className = nameAndId.getKey();
+            generateStringConstant("class_name_"+classId, className);
+
+            // does filenames
+            String filename = root.getClassMap().get(className).getName();
+            if (!filenames.contains(filename)) {
+                filenames.add(filename);
+                generateStringConstant("file_name_"+fileId, filename);
+                fileId++;
+            }
+
         }
+
     }
 
     /**
@@ -182,33 +216,29 @@ public class MipsCodeGenerator {
      * @param label the label for the string
      * @param string the string itself
      */
-    public void generateStringConstant(String label, String string){
+    private void generateStringConstant(String label, String string){
         int stringLengthRounded = (int) Math.ceil((string.length()+1)/4.0)*4; //remember
         // to look this line over with dale,
         //add one or not to add one, that is the question
         assemblySupport.genLabel(label);
-        assemblySupport.genWord("1"); //says its a string?
+        assemblySupport.genWord("1"); //says its a string
 
         assemblySupport.genWord(Integer.toString(16 + stringLengthRounded)); //size of
         // all of this
 
         assemblySupport.genWord("String_dispatch_table"); //pointer to VFT
         assemblySupport.genWord(Integer.toString(string.length()));
-        //// TODO: 3/31/2017 this line is in example, but we should ask dale. ^^^^
         assemblySupport.genAscii(string); //the actual string
-        assemblySupport.genByte("0"); // null terminator
-        assemblySupport.genAlign(); // align the bytes properly
     }
 
     /**
      * This methods generates the full class name table, containing the labels for the
      * class_name strings and the global declarations for the class templates.
      */
-    public void generateClassNameTable(){
+    private void generateClassNameTable(){
         assemblySupport.genLabel("class_name_table");
         //generate class name words
         int numClasses = this.root.getClassMap().values().size();
-        // note that order doesn't matter in the below iteration
         for(int i = 0; i < numClasses; i++){
             assemblySupport.genWord("class_name_"+i);
         }
@@ -221,23 +251,10 @@ public class MipsCodeGenerator {
     /**
      * Generates the templates for all the classes.
      */
-    public void generateTemplates(){
-        //TODO be more elegant than this
-        int classId = 0;
-        for(ClassTreeNode node : this.root.getClassMap().values()){
-            generateClassTemplate(node, classId);
-            classId++;
+    private void generateTemplates(){
+        for (Map.Entry<String, Integer> nameAndId : builtinClassIndices.entrySet()) {
+            generateClassTemplate(root.getClassMap().get(nameAndId.getKey()), nameAndId.getValue());
         }
-
-//        //// TODO: 3/31/2017 this is the only reasonable alternative Jacob -- Nick
-//        //   I think it looks much worse
-//
-//        ListIterator<ClassTreeNode> it = new ArrayList<>(
-//                this.root.getClassMap().values()).listIterator();
-//        while (it.hasNext()) {
-//            int classId = it.nextIndex();
-//            generateClassTemplate(it.next(), classId);
-//        }
     }
 
     /**
@@ -245,24 +262,37 @@ public class MipsCodeGenerator {
      * @param node the ClassTreeNode corresponding to the class
      * @param id the int id of the class that is having a template generated
      */
-    public void generateClassTemplate(ClassTreeNode node, int id) {
+    private void generateClassTemplate(ClassTreeNode node, int id) {
+        //// TODO: 3/31/17
+        //// TODO: 3/31/17
+        //// TODO: 3/31/17
+        assemblySupport.genLabel(node.getName()+"_template");
+
+        // filter this to only have fields
+        // node.getASTNode().getMemberList()
+        // and then count them
+        // parents must be included
+
         SymbolTable varTable = node.getVarSymbolTable();
         //// TODO: 3/31/2017 figure this out, if it should be 1 or 2 or 0 or what
         System.out.println(varTable.getCurrScopeLevel()); // should this be 1?
-        int numFields = varTable.getCurrScopeSize();
+//        varTable.enterScope();
+        int numFields = varTable.getSize();
+        System.out.println("numField: "+numFields);
         String dispatchTableName = node.getName()+"_dispatch_table";
         assemblySupport.genWord(Integer.toString(id));
         assemblySupport.genWord(Integer.toString(numFields * 4));
         //TODO verify that this is the right number ^^^
         assemblySupport.genWord(dispatchTableName);
-        //TODO figure out what the other things in the templates are
-        // some of them have words with 0 following them...
+//        varTable.exitScope();
+        //// TODO: 3/31/17 initialize each field to zero
+        //// TODO: 3/31/17 initialize each field to zero
     }
 
     /**
      * Generates the dispatch tables for all the classes in the class tree.
      */
-    public void generateDispatchTables(){
+    private void generateDispatchTables(){
         // order matters here, do parents first
         Map<Class_, List<String>> methodNameListMap = new HashMap<>();
         for(ClassTreeNode node : this.root.getClassMap().values()){
@@ -279,17 +309,13 @@ public class MipsCodeGenerator {
     private void generateDispatchTable(Class_ clazz,
                                        Map<Class_, List<String>> methodNameListMap) {
 
-        //// TODO: 3/30/2017 make sure order of methods is correct, it's very
-        //   important that it matches the example. It should as it's written
-        //   but I haven't tested it yet because I don't know how.
-
-        // if havent done parent yet, do parent first
-        Class_ parent = root.lookupClass(clazz.getParent()).getASTNode();
-        //// TODO: 3/31/2017 figure out if Object has null parent
-        System.out.println("Fix me if necessary, is this null? If so we're good");
-        System.out.println(root.getASTNode().getParent());
-        if (parent != null && !methodNameListMap.containsKey(parent)) {
-            generateDispatchTable(parent, methodNameListMap);
+        Class_ parent = null;
+        // if haven't done parent yet, do parent first
+        if (clazz.getParent() != null) {
+            parent = root.lookupClass(clazz.getParent()).getASTNode();
+            if (!methodNameListMap.containsKey(parent)) {
+                generateDispatchTable(parent, methodNameListMap);
+            }
         }
 
         List<String> currentTable;
@@ -311,15 +337,24 @@ public class MipsCodeGenerator {
                 Method m = (Method) n;
                 // checks if we are overriding a method and if so removes it
                 // from the dispatch table.
-                currentTable.stream()
-                        .filter(s -> s.substring(s.indexOf(".")) != m.getName());
+                currentTable.replaceAll(s -> {
+                    if (Objects.equals(s.substring(s.indexOf(".")+1), m.getName())) {
+                        return clazz.getName()+"."+m.getName();
+                    }
+                    return s;
+                });
+
                 // adds the method to the symbol table
                 String name = clazz.getName()+"."+m.getName();
                 currentTable.add(name);
+                currentTable.forEach(s -> methodIndices.putIfAbsent(
+                        s.substring(s.indexOf(".")+1),
+                        methodIndices.size()));
             }
         });
         // generate the methods
-        methodNameListMap.get(clazz).forEach(s -> assemblySupport.genWord(s));
-    }
 
+        currentTable.forEach(s -> assemblySupport.genWord(s));
+        methodNameListMap.put(clazz, currentTable);
+    }
 }

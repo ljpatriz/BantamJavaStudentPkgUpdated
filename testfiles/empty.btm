@@ -1,14 +1,1 @@
-class Main {
-    String Nick = "Nick";
-    String S;
-
-    void test(int x, int y) {
-        String Shits = "S";
-        String Giggles = "G";
-    }
-    void main() {
-        String Larry = "Larry";
-        int LP = 22;
-    }
-}
-
+class Main {void main(){}}
