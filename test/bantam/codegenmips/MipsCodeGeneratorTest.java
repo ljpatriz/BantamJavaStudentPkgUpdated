@@ -1,3 +1,9 @@
+/**
+ * File: MipsCodeGeneratorTest.java
+ * Author: Jacob, Nick, Larry
+ * Date: 3/31/17
+ */
+
 package bantam.codegenmips;
 
 import bantam.ast.Program;

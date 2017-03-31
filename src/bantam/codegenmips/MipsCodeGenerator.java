@@ -1,3 +1,9 @@
+/**
+ * File: MipsCodeGenerator.java
+ * Author: Jacob, Nick, Larry
+ * Date: 3/31/17
+ */
+
 /* Bantam Java Compiler and Language Toolset.
 
    Copyright (C) 2009 by Marc Corliss (corliss@hws.edu) and 
@@ -26,24 +32,15 @@
 
 package bantam.codegenmips;
 
-//// TODO: 3/30/2017 dale wants any new classes or changed classes to go in this package
-//// TODO: 3/31/2017 figure out how to test this
-//// TODO: 3/31/2017 test this
-//// TODO: 3/31/2017 other to-dos
-
-
 import bantam.ast.Class_;
 import bantam.ast.Method;
-import bantam.ast.Program;
 import bantam.util.ClassTreeNode;
-import bantam.util.SymbolTable;
 import bantam.visitor.StringConstantsVisitor;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The <tt>MipsCodeGenerator</tt> class generates mips assembly code
@@ -146,10 +143,12 @@ public class MipsCodeGenerator {
         assemblySupport.genComment(" Author:\tJacob Adamson, Nicholas Cameron, Larry Patrizio");
         assemblySupport.genComment(" Date:\tMarch, 2017");
         assemblySupport.genComment(" Compiled from sources:");
-        assemblySupport.genComment(" \t" + " Unknown");     //// TODO: 3/31/2017
+        assemblySupport.genComment(" \t" + " Unknown");     //// TODO: 3/31/2017 bottom to-do is in regards to this one
 
-        // make sure they are distinct
-        // root.getClassMap().values().forEach(n -> n.getASTNode().getFilename());
+        for (ClassTreeNode node : root.getClassMap().values()) {
+            //TODO: 3/31/2017 This is returning freaking "filename" or "<built-in class>"
+            System.out.println(node.getASTNode().getFilename());
+        }
 
         out.println();
 
@@ -206,6 +205,7 @@ public class MipsCodeGenerator {
                 generateStringConstant("file_name_"+fileId, filename);
                 fileId++;
             }
+            System.out.println(filename);
 
         }
 
@@ -252,8 +252,16 @@ public class MipsCodeGenerator {
      * Generates the templates for all the classes.
      */
     private void generateTemplates(){
-        for (Map.Entry<String, Integer> nameAndId : builtinClassIndices.entrySet()) {
-            generateClassTemplate(root.getClassMap().get(nameAndId.getKey()), nameAndId.getValue());
+        int nonBuiltinCount = builtinClassIndices.size();
+        // order matters here, do parents first
+        Map<ClassTreeNode, Integer> classFieldCountMap = new HashMap<>();
+        for (String name : root.getClassMap().keySet()) {
+            if (builtinClassIndices.keySet().contains(name)) {
+                generateClassTemplate(root.getClassMap().get(name), builtinClassIndices.get(name), classFieldCountMap);
+            } else {
+                generateClassTemplate(root.getClassMap().get(name), nonBuiltinCount, classFieldCountMap);
+                nonBuiltinCount++;
+            }
         }
     }
 
@@ -262,31 +270,30 @@ public class MipsCodeGenerator {
      * @param node the ClassTreeNode corresponding to the class
      * @param id the int id of the class that is having a template generated
      */
-    private void generateClassTemplate(ClassTreeNode node, int id) {
-        //// TODO: 3/31/17
-        //// TODO: 3/31/17
-        //// TODO: 3/31/17
+    private void generateClassTemplate(ClassTreeNode node, int id, Map<ClassTreeNode, Integer> classFieldCountMap) {
+        //This is a weird work around but lambda was being weird - Larry
+        int[] fieldCount = {0};
+        if(node.getParent()!=null){
+            if (!classFieldCountMap.containsKey(node.getParent())) {
+                generateClassTemplate(node.getParent(), id,classFieldCountMap);
+            }
+        }
+        else{
+            node.getASTNode().getMemberList().forEach(n -> {
+                if(n.toString().contains("Field"))
+                    fieldCount[0]++;
+            });
+        }
         assemblySupport.genLabel(node.getName()+"_template");
-
-        // filter this to only have fields
-        // node.getASTNode().getMemberList()
-        // and then count them
-        // parents must be included
-
-        SymbolTable varTable = node.getVarSymbolTable();
-        //// TODO: 3/31/2017 figure this out, if it should be 1 or 2 or 0 or what
-        System.out.println(varTable.getCurrScopeLevel()); // should this be 1?
-//        varTable.enterScope();
-        int numFields = varTable.getSize();
-        System.out.println("numField: "+numFields);
         String dispatchTableName = node.getName()+"_dispatch_table";
         assemblySupport.genWord(Integer.toString(id));
-        assemblySupport.genWord(Integer.toString(numFields * 4));
-        //TODO verify that this is the right number ^^^
+        assemblySupport.genWord(Integer.toString(fieldCount[0]*4+12));
         assemblySupport.genWord(dispatchTableName);
-//        varTable.exitScope();
-        //// TODO: 3/31/17 initialize each field to zero
-        //// TODO: 3/31/17 initialize each field to zero
+        for(int i =0; i<fieldCount[0]; i++)
+            assemblySupport.genWord("0");
+        classFieldCountMap.put(node,id);
+
+
     }
 
     /**
