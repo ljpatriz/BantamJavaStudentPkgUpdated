@@ -117,6 +117,7 @@ public class MipsCodeGenerator {
      * See the lab manual for the details of each of these steps.
      */
     public void generate() {
+        //// TODO: 3/30/2017 generate comment header - how do we get the author & date?
         //1 - start the data section
         assemblySupport.genDataStart();
 
@@ -224,12 +225,21 @@ public class MipsCodeGenerator {
      * @param string the string itself
      */
     public void generateStringConstant(String label, String string){
-        String stringLengthRounded = Integer.toString((int) Math.ceil((string.length()+1)/4.0)*4); //remember to look this line over with dale,
+        int stringLengthRounded = (int) Math.ceil((string.length()+1)/4.0)*4; //remember
+        // to look this line over with dale,
         //add one or not to add one, that is the question
         assemblySupport.genLabel(label);
         assemblySupport.genWord("1"); //says its a string?
         //Won't this concat?, and isn't that bad?
-        assemblySupport.genWord(Integer.toString(16) + stringLengthRounded); //size of all of this
+
+        // Yes it will lol, leaving the original line
+        // for now because it's hilarious -- Nick
+
+        // assemblySupport.genWord(Integer.toString(16) + stringLengthRounded); //size of
+        // all of this
+        assemblySupport.genWord(Integer.toString(16 + stringLengthRounded)); //size of
+        // all of this
+
         assemblySupport.genWord("String_dispatch_table"); //pointer to VFT
         assemblySupport.genWord(Integer.toString(string.length()));//this line is in example, but we should ask dale.
         assemblySupport.genAscii(string); //the actual string
