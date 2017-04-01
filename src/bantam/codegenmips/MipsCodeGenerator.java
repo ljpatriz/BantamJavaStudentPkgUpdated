@@ -36,12 +36,26 @@ import bantam.ast.Class_;
 import bantam.ast.Field;
 import bantam.ast.Method;
 import bantam.util.ClassTreeNode;
-import bantam.visitor.StringConstantsVisitor;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
+
+//// TODO: 3/31/2017 look at the other todos, some may be important
+//// TODO: 3/31/2017 look at part g. of the project in Dale's assignment
+////                 the wording makes it sound like something we have to do
+////                 I got started (i.e. did the easy part), but we need to finish that as well
+////                 before we hand it in. This does not mean that we can just copy his main
+////                 method exactly, we should have code in place that will generate methods for
+////                 every class (even though it's not necessary in this case, we will lose
+////                 points if we don't).
+////                 The code I added hardcoded is the prolog and epilog, everything else needs to
+////                 generate it automatically.
+////                 One of you should email Dale tomorrow morning about everything that's
+// missing because I have no idea how to do some of that stuff. Maybe check the handbook first.
+
+//// TODO: 3/31/2017 reformatting, there's a lot of duplicated code that I just added
 
 /**
  * The <tt>MipsCodeGenerator</tt> class generates mips assembly code
@@ -174,9 +188,87 @@ public class MipsCodeGenerator {
         generateDispatchTables();
 
         //7 - start the text section
+        assemblySupport.genTextStart();
+
         //8 - generate initialization subroutines
+        //// TODO: 3/31/2017 turns out we have to do this as well
+        assemblySupport.genLabel("Object_init");
+        assemblySupport.genMove("$v0", "a0");
+        assemblySupport.genRetn();
+
+        assemblySupport.genLabel("Sys_init");
+        assemblySupport.genComment(" call parent's init");
+        assemblySupport.genDirCall("Object_init");
+        assemblySupport.genRetn();
+
+        assemblySupport.genLabel("Main_init");
+        assemblySupport.genComment(" call parent's init");
+        assemblySupport.genDirCall("Object_init");
+        assemblySupport.genRetn();
+
+        assemblySupport.genLabel("String_init");
+        assemblySupport.genComment(" call parent's init");
+        assemblySupport.genDirCall("Object_init");
+        //// TODO: 3/31/2017 '... for you to write ...'
+        assemblySupport.genRetn();
+
+        assemblySupport.genLabel("TextIO_init");
+        assemblySupport.genComment(" call parent's init");
+        assemblySupport.genDirCall("Object_init");
+        //// TODO: 3/31/2017 '... for you to write ...'
+        assemblySupport.genRetn();
+
+        generateMethodStubs();
+
         //9 - generate user-defined methods
     }
+
+    /**
+     * This method generates stubs for all the user defined methods.
+     */
+    private void generateMethodStubs() {
+        root.getClassMap().values().stream()
+                .filter(v -> !builtinClassIndices.keySet().contains(v))
+                .forEach(n -> {
+                    NumLocalVarsVisitor varsVisitor = new NumLocalVarsVisitor();
+                    Map<String, Integer> localVarsMap = varsVisitor.getNumLocalVars(
+                        n.getASTNode());
+                    n.getASTNode().getMemberList().forEach(m -> {
+                    if (m instanceof Method) {
+                        String methodName = n.getName()+"."+((Method)m).getName();
+                        assemblySupport.genLabel(methodName);
+                        assemblySupport.genAdd("$sp", "$sp", -4);
+                        assemblySupport.genStoreWord("$ra", 0, "$sp");
+                        assemblySupport.genAdd("$sp", "$sp", -4);
+                        assemblySupport.genStoreWord("$fp", 0, "$sp");
+
+                        assemblySupport.genComment(" add space for "+localVarsMap.get(methodName)+
+                                " local vars in the stack frame");
+                        assemblySupport.genAdd("$fp", "$fp", localVarsMap.get(methodName));
+                        assemblySupport.genMove("$sp", "$fp");
+
+                        assemblySupport.genComment(" Begin body of "+((Method) m).getName());
+                        assemblySupport.genComment(" Epilog of " + ((Method) m).getName());
+
+                        assemblySupport.genComment(" Pop space for local vars");
+                        assemblySupport.genAdd("$sp", "$fp", localVarsMap.get(methodName));
+
+                        assemblySupport.genComment(" Pop the saved $s registers and $ra and $fp");
+                        //// TODO: 3/31/2017 how do you decide which s registers to pop???
+
+                        assemblySupport.genLoadWord("$fp", 0, "$sp");
+                        assemblySupport.genAdd("$sp", "$sp", 4);
+                        assemblySupport.genLoadWord("$ra", 0, "$sp");
+                        assemblySupport.genAdd("$sp", "$sp", 4);
+
+                        //// TODO: 3/31/2017 how to pop actual parameters??
+
+                        assemblySupport.genRetn();
+
+                    }});
+                });
+    }
+
 
     /**
      * This method generates the assembly code for all string constants, including both
