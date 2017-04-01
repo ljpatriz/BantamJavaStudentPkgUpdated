@@ -231,8 +231,8 @@ public class MipsCodeGenerator {
      * This method generates stubs for all the user defined methods.
      */
     private void generateMethodStubs() {
-        root.getClassMap().values().stream()
-                .filter(v -> !builtinClassIndices.keySet().contains(v))
+        root.getClassMap().values().stream() // the below is a hacky solution to remove builtins
+                .filter(node -> !node.getASTNode().getFilename().contains("<built-in class>"))
                 .forEach(n -> {
                     NumLocalVarsVisitor varsVisitor = new NumLocalVarsVisitor();
                     Map<String, Integer> localVarsMap = varsVisitor.getNumLocalVars(
