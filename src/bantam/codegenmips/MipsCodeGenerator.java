@@ -58,6 +58,8 @@ import java.util.stream.Collectors;
 
 //// TODO: 3/31/2017 reformatting, there's a lot of duplicated code that I just added
 
+// I stay committed
+
 /**
  * The <tt>MipsCodeGenerator</tt> class generates mips assembly code
  * targeted for the SPIM emulator.  Note: this code will only run
