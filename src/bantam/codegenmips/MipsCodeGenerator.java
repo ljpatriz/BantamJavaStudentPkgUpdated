@@ -33,6 +33,7 @@
 package bantam.codegenmips;
 
 import bantam.ast.Class_;
+import bantam.ast.Field;
 import bantam.ast.Method;
 import bantam.util.ClassTreeNode;
 import bantam.visitor.StringConstantsVisitor;
@@ -143,7 +144,8 @@ public class MipsCodeGenerator {
         assemblySupport.genComment(" Author:\tJacob Adamson, Nicholas Cameron, Larry Patrizio");
         assemblySupport.genComment(" Date:\tMarch, 2017");
         assemblySupport.genComment(" Compiled from sources:");
-        assemblySupport.genComment(" \t" + " Unknown");     //// TODO: 3/31/2017 bottom to-do is in regards to this one
+        assemblySupport.genComment(" \t" + " Unknown");
+        //// TODO: 3/31/2017 bottom to-do is in regards to this one
 
         for (ClassTreeNode node : root.getClassMap().values()) {
             //TODO: 3/31/2017 This is returning freaking "filename" or "<built-in class>"
@@ -270,28 +272,29 @@ public class MipsCodeGenerator {
      * @param node the ClassTreeNode corresponding to the class
      * @param id the int id of the class that is having a template generated
      */
-    private void generateClassTemplate(ClassTreeNode node, int id, Map<ClassTreeNode, Integer> classFieldCountMap) {
-        //This is a weird work around but lambda was being weird - Larry
+    private void generateClassTemplate(ClassTreeNode node, int id,
+                                       Map<ClassTreeNode, Integer> classFieldCountMap) {
+        // 'effectively final'
         int[] fieldCount = {0};
-        if(node.getParent()!=null){
-            if (!classFieldCountMap.containsKey(node.getParent())) {
-                generateClassTemplate(node.getParent(), id,classFieldCountMap);
-            }
-        }
-        else{
+
+        // do parent first
+        ClassTreeNode parent = node.getParent();
+        if(parent != null && !classFieldCountMap.containsKey(parent)){
+            generateClassTemplate(parent, id, classFieldCountMap);
+            fieldCount[0] += classFieldCountMap.get(parent);
+        } else {
             node.getASTNode().getMemberList().forEach(n -> {
-                if(n.toString().contains("Field"))
+                if(n instanceof Field)
                     fieldCount[0]++;
             });
         }
         assemblySupport.genLabel(node.getName()+"_template");
-        String dispatchTableName = node.getName()+"_dispatch_table";
         assemblySupport.genWord(Integer.toString(id));
         assemblySupport.genWord(Integer.toString(fieldCount[0]*4+12));
-        assemblySupport.genWord(dispatchTableName);
+        assemblySupport.genWord(node.getName()+"_dispatch_table");
         for(int i =0; i<fieldCount[0]; i++)
             assemblySupport.genWord("0");
-        classFieldCountMap.put(node,id);
+        classFieldCountMap.put(node,fieldCount[0]);
 
 
     }
