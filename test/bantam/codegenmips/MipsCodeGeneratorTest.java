@@ -67,8 +67,10 @@ public class MipsCodeGeneratorTest
     @Test
     public void testONE() throws Exception {
         String fileContents = "empty.btm";
-        Parser parser = new Parser(new Lexer(new StringReader(
-                readFile(testDirectory+fileContents))));
+        String[] filenames = {testDirectory+fileContents};
+//        Parser parser = new Parser(new Lexer(new StringReader(
+//                readFile(testDirectory+fileContents))));
+        Parser parser = new Parser(new Lexer(filenames, false));
         Program program = (Program) parser.parse().value;
         SemanticAnalyzer analyzer = new SemanticAnalyzer(program, true);
         ClassTreeNode root = analyzer.analyze();

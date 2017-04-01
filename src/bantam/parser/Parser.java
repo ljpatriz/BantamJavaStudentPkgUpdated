@@ -1022,7 +1022,8 @@ class CUP$Parser$actions {
 
     /* returns the current file name from the scanner */
     public String getCurrFilename() {
-	return "filename";//((Lexer)parser.getScanner()).getCurrFilename();
+      //return "filename";//((Lexer)parser.getScanner()).getCurrFilename();
+      return ((Lexer)parser.getScanner()).getCurrFilename();
     }
 
   private final Parser parser;

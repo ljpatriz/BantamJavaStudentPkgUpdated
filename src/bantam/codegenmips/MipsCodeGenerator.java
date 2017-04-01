@@ -41,6 +41,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 //// TODO: 3/31/2017 look at the other todos, some may be important
 //// TODO: 3/31/2017 look at part g. of the project in Dale's assignment
@@ -155,16 +156,17 @@ public class MipsCodeGenerator {
      * See the lab manual for the details of each of these steps.
      */
     public void generate() {
-        assemblySupport.genComment(" Author:\tJacob Adamson, Nicholas Cameron, Larry Patrizio");
-        assemblySupport.genComment(" Date:\tMarch, 2017");
+        //assemblySupport.genComment(" Author:\tJacob Adamson, Nicholas Cameron, Larry Patrizio");
+        assemblySupport.genComment(" Author:\t"+System.getProperty("user.name"));
+        assemblySupport.genComment(" Date:\t"+Calendar.getInstance().getTime().toString());
         assemblySupport.genComment(" Compiled from sources:");
-        assemblySupport.genComment(" \t" + " Unknown");
-        //// TODO: 3/31/2017 bottom to-do is in regards to this one
+        root.getClassMap().values().stream()
+                .map(node -> node.getASTNode().getFilename())
+                .map(path -> path.split("[/\\\\]")[path.split("[/\\\\]").length-1])
+                .filter(fn -> !fn.equals("<built-in class>"))
+                .collect(Collectors.toSet())
+                .forEach(fn -> assemblySupport.genComment(" \t"+fn));
 
-        for (ClassTreeNode node : root.getClassMap().values()) {
-            //TODO: 3/31/2017 This is returning freaking "filename" or "<built-in class>"
-            System.out.println(node.getASTNode().getFilename());
-        }
 
         out.println();
 
@@ -193,7 +195,7 @@ public class MipsCodeGenerator {
         //8 - generate initialization subroutines
         //// TODO: 3/31/2017 turns out we have to do this as well
         assemblySupport.genLabel("Object_init");
-        assemblySupport.genMove("$v0", "a0");
+        assemblySupport.genMove("$v0", "$a0");
         assemblySupport.genRetn();
 
         assemblySupport.genLabel("Sys_init");
@@ -299,7 +301,7 @@ public class MipsCodeGenerator {
                 generateStringConstant("file_name_"+fileId, filename);
                 fileId++;
             }
-            System.out.println(filename);
+//            System.out.println(filename);
 
         }
 
