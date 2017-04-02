@@ -195,33 +195,7 @@ public class MipsCodeGenerator {
         assemblySupport.genTextStart();
 
         //8 - generate initialization subroutines
-        //// TODO: 3/31/2017 turns out we have to do this as well
-        assemblySupport.genLabel("Object_init");
-        assemblySupport.genMove("$v0", "$a0");
-        assemblySupport.genRetn();
-
-        assemblySupport.genLabel("Sys_init");
-        assemblySupport.genComment(" call parent's init");
-        assemblySupport.genDirCall("Object_init");
-        assemblySupport.genRetn();
-
-        assemblySupport.genLabel("Main_init");
-        assemblySupport.genComment(" call parent's init");
-        assemblySupport.genDirCall("Object_init");
-        assemblySupport.genRetn();
-
-        assemblySupport.genLabel("String_init");
-        assemblySupport.genComment(" call parent's init");
-        assemblySupport.genDirCall("Object_init");
-        //// TODO: 3/31/2017 '... for you to write ...'
-        assemblySupport.genRetn();
-
-        assemblySupport.genLabel("TextIO_init");
-        assemblySupport.genComment(" call parent's init");
-        assemblySupport.genDirCall("Object_init");
-        //// TODO: 3/31/2017 '... for you to write ...'
-        assemblySupport.genRetn();
-
+        generateInitStubs();
         generateMethodStubs();
 
         //9 - generate user-defined methods
@@ -273,6 +247,16 @@ public class MipsCodeGenerator {
                 });
     }
 
+
+    /**
+     * This method generates stubs for all the user defined methods.
+     */
+    private void generateInitStubs(){
+        for(ClassTreeNode node : this.root.getClassMap().values()){
+            assemblySupport.genLabel(node.getName()+"_init");
+            assemblySupport.genComment(" call parent's init");
+        }
+    }
 
     /**
      * This method generates the assembly code for all string constants, including both
