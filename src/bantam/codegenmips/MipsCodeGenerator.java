@@ -255,6 +255,7 @@ public class MipsCodeGenerator {
         for(ClassTreeNode node : this.root.getClassMap().values()){
             assemblySupport.genLabel(node.getName()+"_init");
             assemblySupport.genComment(" call parent's init");
+            out.println("jr $ra");
         }
     }
 
