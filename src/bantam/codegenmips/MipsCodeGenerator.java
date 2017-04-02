@@ -253,10 +253,15 @@ public class MipsCodeGenerator {
      */
     private void generateInitStubs(){
         for(ClassTreeNode node : this.root.getClassMap().values()){
-            assemblySupport.genLabel(node.getName()+"_init");
-            assemblySupport.genComment(" call parent's init");
-            out.println("jr $ra");
+            assemblySupport.genLabel(node.getName() + "_init");
+            if(node.getParent()!=null) {
+                assemblySupport.genDirCall(node.getParent().getName() + "_init");
+                assemblySupport.genComment(" call parent's init");
+            }
+            out.println("     jr $ra");
+
         }
+
     }
 
     /**
@@ -276,6 +281,7 @@ public class MipsCodeGenerator {
 
         Set<String> filenames = new HashSet<>();
         int fileId = 0;
+
         for (Map.Entry<String, Integer> nameAndId : builtinClassIndices.entrySet()) {
             int classId = nameAndId.getValue();
             String className = nameAndId.getKey();
@@ -288,8 +294,6 @@ public class MipsCodeGenerator {
                 generateStringConstant("file_name_"+fileId, filename);
                 fileId++;
             }
-//            System.out.println(filename);
-
         }
 
     }
