@@ -44,21 +44,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 //// TODO: 3/31/2017 look at the other todos, some may be important
-//// TODO: 3/31/2017 look at part g. of the project in Dale's assignment
-////                 the wording makes it sound like something we have to do
-////                 I got started (i.e. did the easy part), but we need to finish that as well
-////                 before we hand it in. This does not mean that we can just copy his main
-////                 method exactly, we should have code in place that will generate methods for
-////                 every class (even though it's not necessary in this case, we will lose
-////                 points if we don't).
-////                 The code I added hardcoded is the prolog and epilog, everything else needs to
-////                 generate it automatically.
-////                 One of you should email Dale tomorrow morning about everything that's
-// missing because I have no idea how to do some of that stuff. Maybe check the handbook first.
 
 //// TODO: 3/31/2017 reformatting, there's a lot of duplicated code that I just added
-
-// I stay committed
 
 /**
  * The <tt>MipsCodeGenerator</tt> class generates mips assembly code
@@ -157,7 +144,8 @@ public class MipsCodeGenerator {
      * 9 - generate user-defined methods
      * See the lab manual for the details of each of these steps.
      */
-    public void generate() {
+    public void generate()
+    {
         //assemblySupport.genComment(" Author:\tJacob Adamson, Nicholas Cameron, Larry Patrizio");
         assemblySupport.genComment(" Author:\t"+System.getProperty("user.name"));
         assemblySupport.genComment(" Date:\t"+Calendar.getInstance().getTime().toString());
@@ -199,12 +187,18 @@ public class MipsCodeGenerator {
         generateMethodStubs();
 
         //9 - generate user-defined methods
+
+
+
     }
 
     /**
      * This method generates stubs for all the user defined methods.
      */
     private void generateMethodStubs() {
+
+
+
         root.getClassMap().values().stream() // the below is a hacky solution to remove builtins
                 .filter(node -> !node.getASTNode().getFilename().contains("<built-in class>"))
                 .forEach(n -> {
@@ -215,36 +209,56 @@ public class MipsCodeGenerator {
                     if (m instanceof Method) {
                         String methodName = n.getName()+"."+((Method)m).getName();
                         assemblySupport.genLabel(methodName);
-                        assemblySupport.genAdd("$sp", "$sp", -4);
-                        assemblySupport.genStoreWord("$ra", 0, "$sp");
-                        assemblySupport.genAdd("$sp", "$sp", -4);
-                        assemblySupport.genStoreWord("$fp", 0, "$sp");
 
-                        assemblySupport.genComment(" add space for "+localVarsMap.get(methodName)+
-                                " local vars in the stack frame");
-                        assemblySupport.genAdd("$fp", "$fp", localVarsMap.get(methodName));
-                        assemblySupport.genMove("$sp", "$fp");
+                        genProlog(localVarsMap.get(methodName));
 
                         assemblySupport.genComment(" Begin body of "+((Method) m).getName());
-                        assemblySupport.genComment(" Epilog of " + ((Method) m).getName());
-
-                        assemblySupport.genComment(" Pop space for local vars");
-                        assemblySupport.genAdd("$sp", "$fp", localVarsMap.get(methodName));
-
-                        assemblySupport.genComment(" Pop the saved $s registers and $ra and $fp");
-                        //// TODO: 3/31/2017 how do you decide which s registers to pop???
-
-                        assemblySupport.genLoadWord("$fp", 0, "$sp");
-                        assemblySupport.genAdd("$sp", "$sp", 4);
-                        assemblySupport.genLoadWord("$ra", 0, "$sp");
-                        assemblySupport.genAdd("$sp", "$sp", 4);
-
-                        //// TODO: 3/31/2017 how to pop actual parameters??
+                        //TODO: generate method caller shit
+                        assemblySupport.genComment(" Epilog of " + methodName);
+                        genEpilog(localVarsMap.get(methodName));
 
                         assemblySupport.genRetn();
 
                     }});
                 });
+    }
+
+    private void genProlog(int numVars){
+        assemblySupport.genComment(" Push the saved $s registers and $ra and $fp");
+        genPush("$ra");
+        genPush("$fp");
+        for (int i=0; i<8; i++)
+            genPush("$s"+i);
+
+        assemblySupport.genComment(" add space for "+numVars+
+                " local vars in the stack frame");
+        assemblySupport.genAdd("$fp", "$fp", numVars*4);
+        assemblySupport.genMove("$sp", "$fp");
+
+    }
+
+    private void genEpilog(int numVars){
+
+        assemblySupport.genComment(" Pop space for local vars");
+        assemblySupport.genAdd("$sp", "$fp", numVars*4);
+
+        assemblySupport.genComment(" Pop the saved $s registers and $ra and $fp");
+        for (int i=0; i<8; i++)
+            genPop("$s"+i);
+        genPop("$fp");
+        genPop("$ra");
+
+        //// TODO: 3/31/2017 how to pop actual parameters??
+    }
+
+    private void genPop(String destination){
+        assemblySupport.genLoadWord(destination, 0, "$sp");
+        assemblySupport.genAdd("$sp", "$sp", 4);
+    }
+
+    private void genPush(String source) {
+        assemblySupport.genAdd("$sp", "$sp", -4);
+        assemblySupport.genStoreWord(source, 0, "$sp");
     }
 
 
