@@ -16,18 +16,12 @@ public class CodeGenVisitor extends Visitor{
 
     private MipsSupport assemblySupport;
     private Map<String, String> stringMap;
-    private SymbolTable varSymbolTable;
-    private SymbolTable methodSymbolTable;
     private PrintStream out;
-    private boolean breakActive;
 
     //// TODO: 4/11/17 ask Dale if we can just put things in MipsSupport, instead of having to pass the PrintStream
-    public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap, ClassTreeNode root,
-                          PrintStream out){
+    public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap, PrintStream out){
         this.assemblySupport = assemblySupport;
         this.stringMap = stringMap;
-        this.varSymbolTable = root.getVarSymbolTable();
-        this.methodSymbolTable = root.getMethodSymbolTable();
         this.out = out;
     }
 
@@ -42,60 +36,63 @@ public class CodeGenVisitor extends Visitor{
         assemblySupport.genAdd("$sp", "$sp", -4);
         assemblySupport.genStoreWord(source, 0, "$sp");
     }
-//    /**
-//     * Visit a program node
-//     *
-//     * @param node the program node
-//     * @return result of the visit
-//     */
-//    public Object visit(Program node) {
-//        node.getClassList().accept(this);
-//        return null;
-//    }
-//
-//    /**
-//     * Visit a list node of classes
-//     *
-//     * @param node the class list node
-//     * @return result of the visit
-//     */
-//    public Object visit(ClassList node) {
-//        for (ASTNode aNode : node)
-//            aNode.accept(this);
-//        return null;
-//    }
-//
-//    /**
-//     * Visit a class node
-//     *
-//     * @param node the class node
-//     * @return result of the visit
-//     */
-//    public Object visit(Class_ node) {
-//        node.getMemberList().accept(this);
-//        return null;
-//    }
-//
-//    /**
-//     * Visit a list node of members
-//     *
-//     * @param node the member list node
-//     * @return result of the visit
-//     */
-//    public Object visit(MemberList node) {
-//        for (ASTNode child : node)
-//            child.accept(this);
-//        return null;
-//    }
-//
-//    /**
-//     * Visit a field node
-//     *
-//     * @param node the field node
-//     * @return result of the visit
-//     */
-    public Object visit(Field node) {
+    
+    
+    //// TODO: 4/11/17 Nick - Make memory address symbol tables
+    /**
+     * Visit a program node
+     *
+     * @param node the program node
+     * @return result of the visit
+     */
+    public Object visit(Program node) {
+        node.getClassList().accept(this);
+        return null;
+    }
 
+    /**
+     * Visit a list node of classes
+     *
+     * @param node the class list node
+     * @return result of the visit
+     */
+    public Object visit(ClassList node) {
+        for (ASTNode aNode : node)
+            aNode.accept(this);
+        return null;
+    }
+
+    /**
+     * Visit a class node
+     *
+     * @param node the class node
+     * @return result of the visit
+     */
+    public Object visit(Class_ node) {
+        node.getMemberList().accept(this);
+        return null;
+    }
+
+    /**
+     * Visit a list node of members
+     *
+     * @param node the member list node
+     * @return result of the visit
+     */
+    public Object visit(MemberList node) {
+        for (ASTNode child : node)
+            child.accept(this);
+        return null;
+    }
+
+    /**
+     * Visit a field node
+     *
+     * @param node the field node
+     * @return result of the visit
+     */
+    public Object visit(Field node) {
+        //// TODO: 4/11/17 Larry - use location class here 
         if (node.getInit() != null) {
             node.getInit().accept(this);
         }
@@ -109,6 +106,7 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(Method node) {
+        //// TODO: 4/11/17 Larry - use location class here 
         node.getFormalList().accept(this);
         node.getStmtList().accept(this);
         return null;
@@ -121,6 +119,7 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(FormalList node) {
+        //// TODO: 4/11/17 Larry - use location class here 
         for (Iterator it = node.iterator(); it.hasNext(); )
             ((Formal) it.next()).accept(this);
         return null;
@@ -133,6 +132,7 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(Formal node) {
+        //// TODO: 4/11/17 Larry - use location class here 
         return null;
     }
 
@@ -156,6 +156,7 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(DeclStmt node) {
+        //// TODO: 4/11/17 Larry - use location class here 
         node.getInit().accept(this);
         return null;
     }
@@ -375,7 +376,8 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(AssignExpr node) {
         node.getExpr().accept(this);
-        //// TODO: 4/11/17 Larry - assuming that we got the proper 
+        //// TODO: 4/11/17 Larry - assuming that we got the proper $v0
+        //// TODO: 4/11/17 Larry - use location class here 
         return null;
     }
 
@@ -664,6 +666,7 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(UnaryIncrExpr node) {
+        //// TODO: 4/11/17 Larry - use location class here 
         node.getExpr().accept(this);
         return null;
     }
@@ -675,6 +678,7 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(UnaryDecrExpr node) {
+        //// TODO: 4/11/17 Larry - use location class here 
         node.getExpr().accept(this);
         //TODO worry about pre/postfix as well
         if(node.isPostfix()) {
@@ -697,14 +701,10 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(VarExpr node) {
+        //// TODO: 4/11/17 Larry - use location class here 
         if (node.getRef() != null) {
             node.getRef().accept(this);
         }
-
-        //// TODO: 4/11/17 this isn't done you jerks
-        varSymbolTable.lookup(node.getName());
-
-
         return null;
     }
 
