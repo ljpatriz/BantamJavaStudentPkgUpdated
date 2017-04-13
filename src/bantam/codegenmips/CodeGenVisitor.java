@@ -416,7 +416,22 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(CastExpr node) {
         node.getExpr().accept(this);
-        //this should be very similar to the instanceof expression
+        //stored in v0
+        assemblySupport.genLoadByte("$T0",0,"$V0"); //$T0 is the object value for the instance
+        int classNumber = classIndicies.get(node.getType());
+        int classSubtypes = classMap.get(node.getType()).getNumDescendants();
+        assemblySupport.genLoadImm("$T1",classNumber); //$T1 is the type
+        
+        String escape = assemblySupport.getLabel();
+        assemblySupport.genComment("Verify that instance class number is greater than the class number, otherwise escape");
+        assemblySupport.genCondBgt("$T0", "$T1", escape);
+        assemblySupport.genComment("Verify that instance class number is less than the class number plus the number of children");
+        assemblySupport.genLoadImm("$T1",classNumber+classSubtypes);
+        assemblySupport.genCondBlt("$T0", "$T1",escape);
+        assemblySupport.genComment("Error, illegal case case");
+        assemblySupport.genUncondBr("_class_cast_error");
+        //Out
+        assemblySupport.genLabel(escape);
         return null;
     }
 
