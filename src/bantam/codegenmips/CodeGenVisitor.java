@@ -7,6 +7,7 @@ import bantam.util.SymbolTable;
 import bantam.visitor.Visitor;
 
 import java.io.PrintStream;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -19,13 +20,17 @@ public class CodeGenVisitor extends Visitor{
     private Map<String, String> stringMap;
     private PrintStream out;
     private SymbolTable varSymbolTable;
-
+    private Map<String, Integer> classIndicies;
+    Hashtable<String, ClassTreeNode> classMap;
     //// TODO: 4/11/17 ask Dale if we can just put things in MipsSupport, instead of having to pass the PrintStream (Talked to Dale its good to do)
-    public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap, PrintStream out){
+    public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap, PrintStream out,
+                          Hashtable<String, ClassTreeNode> classMap, Map<String, Integer> classIndicies){
         this.assemblySupport = assemblySupport;
         this.stringMap = stringMap;
         this.out = out;
         this.varSymbolTable = new SymbolTable();
+        this.classIndicies = classIndicies;
+        this.classMap = classMap;
     }
 
     //// TODO: 4/11/17 Larry - So basically the structure is stupid and we would have to pass MipsCodeGenerator.java (Talked to Dale its good to do)
@@ -39,9 +44,6 @@ public class CodeGenVisitor extends Visitor{
         assemblySupport.genAdd("$sp", "$sp", -4);
         assemblySupport.genStoreWord(source, 0, "$sp");
     }
-
-
-    
     
     //// TODO: 4/11/17 Nick - Make memory address symbol tables
     /**
@@ -344,7 +346,6 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(DispatchExpr node) {
-
         if(node.getRefExpr() != null)
             node.getRefExpr().accept(this);
         node.getActualList().accept(this);
@@ -369,9 +370,41 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(InstanceofExpr node) {
+        //Visit the expression
         node.getExpr().accept(this);
-        node.getType();
+        //stored in v0
+        //go to that location in memory, plus one
+        assemblySupport.genLoadByte("$T0",0,"$V0"); //$T0 is the object value for the instance
+        //this number is the class identifier for the object
+        //verify that T0 number is greater than
+        //the class number, but less than the class number
+        //plus the number of children that class has
+        int classNumber = classIndicies.get(node.getType());
+        int classSubtypes = classMap.get(node.getType()).getNumDescendants();
+        String setValueToZero = assemblySupport.getLabel();
+        String setValueToOne = assemblySupport.getLabel();
+        assemblySupport.genLoadImm("$T1",classNumber); //$T1 is the type
+        String escape = assemblySupport.getLabel();
 
+        assemblySupport.genComment("Verify that instance class number is greater than the class number");
+        assemblySupport.genCondBgt("$T0", "$T1", setValueToZero);
+        assemblySupport.genComment("Verify that instance class number is less than the class number plus the number of children");
+        assemblySupport.genLoadImm("$T1",classNumber+classSubtypes);
+        assemblySupport.genCondBlt("$T0", "$T1",setValueToOne);
+        assemblySupport.genUncondBr(setValueToZero);
+        //True
+        assemblySupport.genLabel(setValueToOne);
+        assemblySupport.genLoadImm("$V0",1);
+        assemblySupport.genUncondBr(escape);
+
+        //False
+        assemblySupport.genLabel(setValueToZero);
+        assemblySupport.genLoadImm("$V0",0);
+
+        //Out
+        assemblySupport.genLabel(escape);
+        //TODO insert less than calls
+        //if true, store 1 in v0 otherwise store 0
         return null;
     }
 
@@ -383,6 +416,7 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(CastExpr node) {
         node.getExpr().accept(this);
+        //this should be very similar to the instanceof expression
         return null;
     }
 
