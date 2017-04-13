@@ -2,6 +2,7 @@ package bantam.codegenmips;
 
 import bantam.ast.*;
 import bantam.util.ClassTreeNode;
+import bantam.util.Location;
 import bantam.util.SymbolTable;
 import bantam.visitor.Visitor;
 
@@ -17,12 +18,14 @@ public class CodeGenVisitor extends Visitor{
     private MipsSupport assemblySupport;
     private Map<String, String> stringMap;
     private PrintStream out;
+    private SymbolTable varSymbolTable;
 
     //// TODO: 4/11/17 ask Dale if we can just put things in MipsSupport, instead of having to pass the PrintStream
     public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap, PrintStream out){
         this.assemblySupport = assemblySupport;
         this.stringMap = stringMap;
         this.out = out;
+        this.varSymbolTable = new SymbolTable();
     }
 
     //// TODO: 4/11/17 Larry - So basically the structure is stupid and we would have to pass MipsCodeGenerator.java
@@ -69,7 +72,9 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(Class_ node) {
+        varSymbolTable.enterScope();
         node.getMemberList().accept(this);
+        varSymbolTable.exitScope();
         return null;
     }
 
@@ -92,7 +97,8 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(Field node) {
-        //// TODO: 4/11/17 Larry - use location class here 
+        //// TODO: 4/11/17 Larry - use location class here
+        //TODO This belongs in the class initialization subroutine you dingus!
         if (node.getInit() != null) {
             node.getInit().accept(this);
         }
@@ -106,9 +112,11 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(Method node) {
-        //// TODO: 4/11/17 Larry - use location class here 
+        //// TODO: 4/11/17 Larry - use location class here
+        varSymbolTable.enterScope();
         node.getFormalList().accept(this);
         node.getStmtList().accept(this);
+        varSymbolTable.exitScope();
         return null;
     }
 
@@ -120,8 +128,9 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(FormalList node) {
         //// TODO: 4/11/17 Larry - use location class here 
-        for (Iterator it = node.iterator(); it.hasNext(); )
+        for (Iterator it = node.iterator(); it.hasNext(); ) {
             ((Formal) it.next()).accept(this);
+        }
         return null;
     }
 
@@ -132,7 +141,8 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(Formal node) {
-        //// TODO: 4/11/17 Larry - use location class here 
+        //// TODO: 4/11/17 Larry - use location class here
+        varSymbolTable.add(node.getName(),assemblySupport.getSPReg());
         return null;
     }
 
@@ -158,6 +168,9 @@ public class CodeGenVisitor extends Visitor{
     public Object visit(DeclStmt node) {
         //// TODO: 4/11/17 Larry - use location class here 
         node.getInit().accept(this);
+        Location location = new Location(assemblySupport.getS0Reg());
+        this.genPush(location.getReg());
+        location.
         return null;
     }
 
@@ -352,6 +365,8 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(InstanceofExpr node) {
         node.getExpr().accept(this);
+        node.getType();
+
         return null;
     }
 
