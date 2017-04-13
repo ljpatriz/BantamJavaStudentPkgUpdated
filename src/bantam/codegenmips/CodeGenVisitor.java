@@ -20,7 +20,7 @@ public class CodeGenVisitor extends Visitor{
     private PrintStream out;
     private SymbolTable varSymbolTable;
 
-    //// TODO: 4/11/17 ask Dale if we can just put things in MipsSupport, instead of having to pass the PrintStream
+    //// TODO: 4/11/17 ask Dale if we can just put things in MipsSupport, instead of having to pass the PrintStream (Talked to Dale its good to do)
     public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap, PrintStream out){
         this.assemblySupport = assemblySupport;
         this.stringMap = stringMap;
@@ -28,7 +28,7 @@ public class CodeGenVisitor extends Visitor{
         this.varSymbolTable = new SymbolTable();
     }
 
-    //// TODO: 4/11/17 Larry - So basically the structure is stupid and we would have to pass MipsCodeGenerator.java
+    //// TODO: 4/11/17 Larry - So basically the structure is stupid and we would have to pass MipsCodeGenerator.java (Talked to Dale its good to do)
     //// just for these two methods......
     private void genPop(String destination){
         assemblySupport.genLoadWord(destination, 0, "$sp");
@@ -39,6 +39,8 @@ public class CodeGenVisitor extends Visitor{
         assemblySupport.genAdd("$sp", "$sp", -4);
         assemblySupport.genStoreWord(source, 0, "$sp");
     }
+
+
     
     
     //// TODO: 4/11/17 Nick - Make memory address symbol tables
@@ -196,6 +198,7 @@ public class CodeGenVisitor extends Visitor{
         String elseLabel = assemblySupport.getLabel();
         node.getPredExpr().accept(this);
 
+        assemblySupport.genComment("Execute an If Statement: ");
         assemblySupport.genCondBeq("$v0","$zero", elseLabel);
         node.getThenStmt().accept(this);
 
@@ -328,8 +331,9 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(ExprList node) {
-        for (Iterator it = node.iterator(); it.hasNext(); )
+        for (Iterator it = node.iterator(); it.hasNext(); ) {
             ((Expr) it.next()).accept(this);
+        }
         return null;
     }
 
@@ -344,6 +348,8 @@ public class CodeGenVisitor extends Visitor{
         if(node.getRefExpr() != null)
             node.getRefExpr().accept(this);
         node.getActualList().accept(this);
+
+        //// TODO: 4/12/17 Larry and Jacob- This uses the location thing??
         return null;
     }
 
@@ -378,8 +384,6 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(CastExpr node) {
         node.getExpr().accept(this);
-
-
         return null;
     }
 
@@ -544,6 +548,10 @@ public class CodeGenVisitor extends Visitor{
         // pop stack into $v1
         assemblySupport.genComment("Does a Binary Arithmetic Minus Expression: ");
         genPop("$v1");
+
+        // checks for divide by zero error, branches to the error register if it does
+        assemblySupport.genCondBeq("$v0", "$zero", "_divide_zero");
+
         // do an SUB of $v1 and $v0 into $v0
         assemblySupport.genSub("$v0","$v0","v1");
 
@@ -604,6 +612,11 @@ public class CodeGenVisitor extends Visitor{
         // pop stack into $v1
         assemblySupport.genComment("Does a Binary Arithmetic Modulus Expression: ");
         genPop("$v1");
+
+        // checks for divide by zero error, branches to the error register if it does
+        assemblySupport.genCondBeq("$v0", "$zero", "_divide_zero");
+
+
         // do an MOD of $v1 and $v0 into $v0
         assemblySupport.genMod("$v0","$v0","v1");
 
@@ -674,6 +687,7 @@ public class CodeGenVisitor extends Visitor{
         return null;
     }
 
+
     /**
      * Visit a unary increment expression node
      *
@@ -698,6 +712,7 @@ public class CodeGenVisitor extends Visitor{
         //TODO worry about pre/postfix as well
         if(node.isPostfix()) {
             //TODO: Only changes value of variable
+
             node.getExpr();
 
         }
@@ -716,7 +731,6 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(VarExpr node) {
-        //// TODO: 4/11/17 Larry - use location class here 
         if (node.getRef() != null) {
             node.getRef().accept(this);
         }
