@@ -32,6 +32,7 @@
 
 package bantam.codegenmips;
 
+import bantam.ast.ASTNode;
 import bantam.ast.Class_;
 import bantam.ast.Field;
 import bantam.ast.Method;
@@ -94,6 +95,8 @@ public class MipsCodeGenerator {
      * Indices of the methods in the dispatch tables.
      */
     Map<String, Integer> methodIndices = new HashMap<>();
+
+
 
     /**
      * MipsCodeGenerator constructor
@@ -166,9 +169,10 @@ public class MipsCodeGenerator {
         //2 - generate data for the garbage collector
         assemblySupport.genLabel("gc_flag");
         assemblySupport.genWord(this.gc ? "1": "0");
+        Map<String, String> stringMap = new HashMap<>();
 
         //3 - generate string constants, including class names
-        generateStringConstants();
+        generateStringConstants(stringMap);
 
         //4 - generate class name table
         generateClassNameTable();
@@ -184,7 +188,10 @@ public class MipsCodeGenerator {
 
         //8 - generate initialization subroutines
         generateInitStubs();
-        generateMethodStubs();
+        CodeGenVisitor codeGenVisitor = new CodeGenVisitor(assemblySupport,stringMap,out);
+
+        generateCode(root, codeGenVisitor);
+//        generateMethodStubs();
 
         //9 - generate user-defined methods
 
@@ -192,36 +199,44 @@ public class MipsCodeGenerator {
 
     }
 
-    /**
-     * This method generates stubs for all the user defined methods.
-     */
-    private void generateMethodStubs() {
-
-
-
-        root.getClassMap().values().stream() // the below is a hacky solution to remove builtins
-                .filter(node -> !node.getASTNode().getFilename().contains("<built-in class>"))
-                .forEach(n -> {
-                    NumLocalVarsVisitor varsVisitor = new NumLocalVarsVisitor();
-                    Map<String, Integer> localVarsMap = varsVisitor.getNumLocalVars(
-                        n.getASTNode());
-                    n.getASTNode().getMemberList().forEach(m -> {
-                    if (m instanceof Method) {
-                        String methodName = n.getName()+"."+((Method)m).getName();
-                        assemblySupport.genLabel(methodName);
-
-                        genProlog(localVarsMap.get(methodName));
-
-                        assemblySupport.genComment(" Begin body of "+((Method) m).getName());
-                        //TODO: generate method caller shit
-                        assemblySupport.genComment(" Epilog of " + methodName);
-                        genEpilog(localVarsMap.get(methodName));
-
-                        assemblySupport.genRetn();
-
-                    }});
-                });
+    private void generateCode(ClassTreeNode node, CodeGenVisitor codeGenVisitor) {
+        codeGenVisitor.visit(node.getASTNode());
+        Iterator<ClassTreeNode> it = node.getChildrenList();
+        while (it.hasNext()) {
+            generateCode(it.next(), codeGenVisitor);
+        }
     }
+
+//    /**
+//     * This method generates stubs for all the user defined methods.
+//     */
+//    private void generateMethodStubs() {
+//
+//
+//
+//        root.getClassMap().values().stream() // the below is a hacky solution to remove builtins
+//                .filter(node -> !node.getASTNode().getFilename().contains("<built-in class>"))
+//                .forEach(n -> {
+//                    NumLocalVarsVisitor varsVisitor = new NumLocalVarsVisitor();
+//                    Map<String, Integer> localVarsMap = varsVisitor.getNumLocalVars(
+//                        n.getASTNode());
+//                    n.getASTNode().getMemberList().forEach(m -> {
+//                    if (m instanceof Method) {
+//                        String methodName = n.getName()+"."+((Method)m).getName();
+//                        assemblySupport.genLabel(methodName);
+//
+//                        genProlog(localVarsMap.get(methodName));
+//
+//                        assemblySupport.genComment(" Begin body of "+((Method) m).getName());
+//                        //TODO: generate method caller shit
+//                        assemblySupport.genComment(" Epilog of " + methodName);
+//                        genEpilog(localVarsMap.get(methodName));
+//
+//                        assemblySupport.genRetn();
+//
+//                    }});
+//                });
+//    }
 
     private void genProlog(int numVars){
         assemblySupport.genComment(" Push the saved $s registers and $ra and $fp");
@@ -282,11 +297,11 @@ public class MipsCodeGenerator {
      * This method generates the assembly code for all string constants, including both
      * string constants found in the code, and string constants for class names.
      */
-    private void generateStringConstants(){
+    private void generateStringConstants(Map<String, String> stringMap){
         StringConstantsVisitor stringConstantsVisitor = new StringConstantsVisitor();
+        stringMap = stringConstantsVisitor.getStringConstants(this.root);
 
         //generate strings
-        Map<String, String> stringMap = stringConstantsVisitor.getStringConstants(this.root);
         for(Map.Entry<String, String> stringConstant : stringMap.entrySet()){
             String stringLabel =  stringConstant.getValue();
             String string = stringConstant.getKey();

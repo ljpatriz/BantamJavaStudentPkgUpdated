@@ -33,7 +33,7 @@ public class MipsCodeGeneratorTest
      * String of the directory path to the semantic analyzer test files
      */
     private String testDirectory = System.getProperty("user.dir") +
-            "/testfiles/";
+            "/testfiles/ASM_Test_Files/";
 
     /**
      * Receives a filename and directory (constructed by using the above
@@ -64,24 +64,33 @@ public class MipsCodeGeneratorTest
     }
 
 
-    @Test
-    public void testONE() throws Exception {
-        String fileContents = "empty.btm";
+    private void generateCodeFromBTM(String test)throws Exception {
+        String fileContents = test + ".btm";
         String[] filenames = {testDirectory+fileContents};
-//        Parser parser = new Parser(new Lexer(new StringReader(
-//                readFile(testDirectory+fileContents))));
         Parser parser = new Parser(new Lexer(filenames, false));
         Program program = (Program) parser.parse().value;
         SemanticAnalyzer analyzer = new SemanticAnalyzer(program, true);
         ClassTreeNode root = analyzer.analyze();
-        MipsCodeGenerator mipsCodeGenerator = new MipsCodeGenerator(root,"MIPS_TEST_$.asm",false,false,false);
+        MipsCodeGenerator mipsCodeGenerator = new MipsCodeGenerator(root, testDirectory + test + "_TEST_$.asm",false,false,false);
         mipsCodeGenerator.generate();
-
     }
 
     @Test
-    public void ha(){
-        for(int i =0; i<1; ++i)
-            System.out.println(i);
+    public void emptyTest() throws Exception {
+        String test = "empty";
+        generateCodeFromBTM(test);
     }
+
+    @Test
+    public void ifStmtTest() throws Exception {
+        String test = "ifStmt";
+        generateCodeFromBTM(test);
+    }
+
+    @Test
+    public void whileStmtTest() throws Exception {
+        String test = "whileStmt";
+        generateCodeFromBTM(test);
+    }
+
 }

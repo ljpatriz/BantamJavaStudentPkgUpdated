@@ -172,7 +172,6 @@ public class CodeGenVisitor extends Visitor{
         node.getInit().accept(this);
         Location location = new Location(assemblySupport.getS0Reg());
         this.genPush(location.getReg());
-        location.
         return null;
     }
 
@@ -345,10 +344,10 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(DispatchExpr node) {
+
         if(node.getRefExpr() != null)
             node.getRefExpr().accept(this);
         node.getActualList().accept(this);
-
         //// TODO: 4/12/17 Larry and Jacob- This uses the location thing??
         return null;
     }
@@ -707,8 +706,10 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(UnaryDecrExpr node) {
-        //// TODO: 4/11/17 Larry - use location class here 
+        //// TODO: 4/11/17 Larry - use location class here
+        if(node.getExpr().getExprType() == "var")
         node.getExpr().accept(this);
+        node.getExpr().getExprType();
         //TODO worry about pre/postfix as well
         if(node.isPostfix()) {
             //TODO: Only changes value of variable
@@ -730,11 +731,11 @@ public class CodeGenVisitor extends Visitor{
      * @param node the variable expression node
      * @return result of the visit
      */
-    public Object visit(VarExpr node) {
+    public String visit(VarExpr node) {
         if (node.getRef() != null) {
             node.getRef().accept(this);
         }
-        return null;
+        return node.getName();
     }
 
     /**

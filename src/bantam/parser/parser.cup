@@ -732,7 +732,7 @@ constExpr
 
         |BOOLEAN_CONST:b
             {: RESULT = new ConstBooleanExpr(b.getLineNum(),
-                                       b.getAttribute()); :}
+                                       b.getName()); :}
 
         |STRING_CONST:s
             {: RESULT = new ConstStringExpr(s.getLineNum(),

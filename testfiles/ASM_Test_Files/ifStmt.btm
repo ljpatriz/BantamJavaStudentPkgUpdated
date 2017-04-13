@@ -1,0 +1,14 @@
+class Main {
+    String foo(){
+        if("yes"=="yes"){
+            return "yes";
+        }
+        else{
+            return "no";
+        }
+        return "maybe";
+    }
+    void main(){
+        foo();
+    }
+}

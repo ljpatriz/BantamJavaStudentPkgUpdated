@@ -1,0 +1,11 @@
+class Main {
+    boolean foo(){
+        while(true == true){
+            return true;
+        }
+        return false;
+    }
+    void main(){
+        foo();
+    }
+}
