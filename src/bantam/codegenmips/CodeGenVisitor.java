@@ -16,20 +16,22 @@ import java.util.Map;
  */
 public class CodeGenVisitor extends Visitor{
 
+    //// TODO: 4/14/2017 Nick - We have to add the syscall to exit at the end of main()
+
     private MipsSupport assemblySupport;
     private Map<String, String> stringMap;
     private PrintStream out;
     private SymbolTable varSymbolTable;
-    private Map<String, Integer> classIndicies;
+    private Map<String, Integer> classIndices;
     Hashtable<String, ClassTreeNode> classMap;
     //// TODO: 4/11/17 ask Dale if we can just put things in MipsSupport, instead of having to pass the PrintStream (Talked to Dale its good to do)
     public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap, PrintStream out,
-                          Hashtable<String, ClassTreeNode> classMap, Map<String, Integer> classIndicies){
+                          Hashtable<String, ClassTreeNode> classMap, Map<String, Integer> classIndices){
         this.assemblySupport = assemblySupport;
         this.stringMap = stringMap;
         this.out = out;
         this.varSymbolTable = new SymbolTable();
-        this.classIndicies = classIndicies;
+        this.classIndices = classIndices;
         this.classMap = classMap;
     }
 
@@ -360,6 +362,14 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(NewExpr node) {
+        String templateLabel = node.getType() + "_template";
+        assemblySupport.genLoadAddr("$a0", templateLabel);
+        //// TODO: 4/14/2017 prelude
+        assemblySupport.genDirCall("Object.clone");
+        //// TODO: 4/14/2017 postlude
+        assemblySupport.genMove();
+        //// TODO: 4/14/2017 where tf is it stored? Reading exceptions.s makes it seem like it's in $t1 but that makes no sense. It should be in $v0
+
         return null;
     }
 
@@ -379,7 +389,7 @@ public class CodeGenVisitor extends Visitor{
         //verify that T0 number is greater than
         //the class number, but less than the class number
         //plus the number of children that class has
-        int classNumber = classIndicies.get(node.getType());
+        int classNumber = classIndices.get(node.getType());
         int classSubtypes = classMap.get(node.getType()).getNumDescendants();
         String setValueToZero = assemblySupport.getLabel();
         String setValueToOne = assemblySupport.getLabel();
@@ -418,7 +428,7 @@ public class CodeGenVisitor extends Visitor{
         node.getExpr().accept(this);
         //stored in v0
         assemblySupport.genLoadByte("$T0",0,"$V0"); //$T0 is the object value for the instance
-        int classNumber = classIndicies.get(node.getType());
+        int classNumber = classIndices.get(node.getType());
         int classSubtypes = classMap.get(node.getType()).getNumDescendants();
         assemblySupport.genLoadImm("$T1",classNumber); //$T1 is the type
         
