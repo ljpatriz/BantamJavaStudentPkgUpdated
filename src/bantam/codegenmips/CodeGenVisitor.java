@@ -362,13 +362,12 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(NewExpr node) {
-        String templateLabel = node.getType() + "_template";
-        assemblySupport.genLoadAddr("$a0", templateLabel);
+        assemblySupport.genLoadAddr("$a0", node.getType() + "_template");
         //// TODO: 4/14/2017 prelude
         assemblySupport.genDirCall("Object.clone");
         //// TODO: 4/14/2017 postlude
-        assemblySupport.genMove();
-        //// TODO: 4/14/2017 where tf is it stored? Reading exceptions.s makes it seem like it's in $t1 but that makes no sense. It should be in $v0
+        assemblySupport.genMove("$a0", "$v0");
+        assemblySupport.genDirCall(node.getType() + "_init");
 
         return null;
     }
