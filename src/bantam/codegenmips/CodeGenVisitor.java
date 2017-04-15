@@ -133,37 +133,14 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(FormalList node) {
-        //// TODO: 4/11/17 Larry - use location class here 
+        //// TODO: 4/11/17 Larry - use location class here
         for (Iterator it = node.iterator(); it.hasNext(); ) {
-            ((Formal) it.next()).accept(this);
+            Formal param = (Formal) it.next();
+            Location location = new Location("$fp", varSymbolTable.getCurrScopeSize()*4);
+            varSymbolTable.add(param.getName(), location);
         }
         return null;
     }
-
-    /**
-     * Visit a formal node
-     *
-     * @param node the formal node
-     * @return result of the visit
-     */
-    public Object visit(Formal node) {
-        //// TODO: 4/11/17 Larry - use location class here
-        varSymbolTable.add(node.getName(),assemblySupport.getSPReg());
-        return null;
-    }
-
-    /**
-     * Visit a list node of statements
-     *
-     * @param node the statement list node
-     * @return result of the visit
-     */
-    public Object visit(StmtList node) {
-        for (Iterator it = node.iterator(); it.hasNext(); )
-            ((Stmt) it.next()).accept(this);
-        return null;
-    }
-
 
     /**
      * Visit a declaration statement node
@@ -172,21 +149,15 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(DeclStmt node) {
-        //// TODO: 4/11/17 Larry - use location class here 
+        //// TODO: 4/11/17 Larry - use location class here
         node.getInit().accept(this);
-        Location location = new Location(assemblySupport.getS0Reg());
-        this.genPush(location.getReg());
-        return null;
-    }
+        Location location = new Location("$fp", varSymbolTable.getCurrScopeSize()*4);
+        varSymbolTable.add(node.getName(), location);
 
-    /**
-     * Visit an expression statement node
-     *
-     * @param node the expression statement node
-     * @return result of the visit
-     */
-    public Object visit(ExprStmt node) {
-        node.getExpr().accept(this);
+        //// TODO: 4/15/2017 Nick - larry wtf is this
+//        node.getInit().accept(this);
+//        Location location = new Location(assemblySupport.getS0Reg());
+//        this.genPush(location.getReg());
         return null;
     }
 
@@ -197,6 +168,7 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(IfStmt node) {
+        varSymbolTable.enterScope();
         String afterLabel = assemblySupport.getLabel();
         String elseLabel = assemblySupport.getLabel();
         node.getPredExpr().accept(this);
@@ -212,6 +184,7 @@ public class CodeGenVisitor extends Visitor{
             node.getElseStmt().accept(this);
         }
         assemblySupport.genLabel(afterLabel);
+        varSymbolTable.exitScope();
         return null;
     }
 
@@ -222,6 +195,7 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(WhileStmt node) {
+        varSymbolTable.enterScope();
         String afterLabel = assemblySupport.getLabel();
         String predLabel = assemblySupport.getLabel();
 
@@ -246,6 +220,7 @@ public class CodeGenVisitor extends Visitor{
 
         assemblySupport.genLabel(afterLabel);
         genPop("$ra");
+        varSymbolTable.exitScope();
         return null;
     }
 
@@ -256,6 +231,7 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(ForStmt node) {
+        varSymbolTable.enterScope();
         String afterLabel = assemblySupport.getLabel();
         String predLabel = assemblySupport.getLabel();
         assemblySupport.genComment("Initializing expression of for loop:");
@@ -287,6 +263,7 @@ public class CodeGenVisitor extends Visitor{
 
         assemblySupport.genLabel(afterLabel);
         genPop("$ra");
+        varSymbolTable.exitScope();
         return null;
     }
 
@@ -308,7 +285,9 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(BlockStmt node) {
+        varSymbolTable.enterScope();
         node.getStmtList().accept(this);
+        varSymbolTable.exitScope();
         return null;
     }
 
@@ -326,20 +305,6 @@ public class CodeGenVisitor extends Visitor{
         assemblySupport.genRetn();
         return null;
     }
-
-    /**
-     * Visit a list node of expressions
-     *
-     * @param node the expression list node
-     * @return result of the visit
-     */
-    public Object visit(ExprList node) {
-        for (Iterator it = node.iterator(); it.hasNext(); ) {
-            ((Expr) it.next()).accept(this);
-        }
-        return null;
-    }
-
 
     /**
      * Visit a dispatch expression node
@@ -790,10 +755,16 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public String visit(VarExpr node) {
+        //// TODO: 4/15/2017 Nick - not sure how to do field references
         if (node.getRef() != null) {
             node.getRef().accept(this);
         }
+        Location location = (Location)varSymbolTable.lookup(node.getName());
+        String baseReg = location.getBaseReg();
+        int offset = location.getOffset();
+        assemblySupport.genLoadWord("$v0", offset, baseReg);
         return node.getName();
+        //// TODO: 4/15/2017 why are we returning the name here? - Nick
     }
 
     /**
