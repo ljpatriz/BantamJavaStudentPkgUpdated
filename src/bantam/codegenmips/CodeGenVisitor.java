@@ -1,3 +1,9 @@
+/**
+ * File: MipsCodeGenerator.java
+ * Author: Jacob, Nick, Larry
+ * Date: 3/31/17
+ */
+
 package bantam.codegenmips;
 
 import bantam.ast.*;
@@ -13,11 +19,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Created by larrypatrizio on 4/4/17.
+ * CodeGenVisitor class that is responsible for the creation of the MIPS Code
  */
 public class CodeGenVisitor extends Visitor{
-
-    //// TODO: 4/14/2017 Nick - We have to add the syscall to exit at the end of main()
 
     private MipsSupport assemblySupport;
     private Map<String, String> stringMap;
@@ -28,7 +32,6 @@ public class CodeGenVisitor extends Visitor{
     private String currentClassName;
     private Hashtable<String, ClassTreeNode> classMap;
 
-    //// TODO: 4/11/17 ask Dale if we can just put things in MipsSupport, instead of having to pass the PrintStream (Talked to Dale its good to do)
     public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap,
                           PrintStream out, Hashtable<String, ClassTreeNode> classMap,
                           Map<String, Integer> classIndices){
@@ -40,7 +43,6 @@ public class CodeGenVisitor extends Visitor{
         this.classMap = classMap;
     }
 
-    //// TODO: 4/11/17 Larry - So basically the structure is stupid and we would have to pass MipsCodeGenerator.java (Talked to Dale its good to do)
     //// just for these two methods......
     private void genPop(String destination){
         assemblySupport.genLoadWord(destination, 0, "$sp");
@@ -122,7 +124,6 @@ public class CodeGenVisitor extends Visitor{
         genPop("$ra");
     }
 
-    //// TODO: 4/11/17 Nick - Make memory address symbol tables
     /**
      * Visit a program node
      *
@@ -154,6 +155,7 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(Class_ node) {
         varSymbolTable.enterScope();
+        this.currentClassName = node.getName();
         this.numLocalVarsMap = new NumLocalVarsVisitor().getNumLocalVars(node);
         node.getMemberList().accept(this);
         varSymbolTable.exitScope();
@@ -179,8 +181,6 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(Field node) {
-        //// TODO: 4/11/17 Larry - use location class here
-        //TODO This belongs in the class initialization subroutine you dingus!
         if (node.getInit() != null) {
             node.getInit().accept(this);
         }
@@ -194,7 +194,6 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(Method node) {
-        //// TODO: 4/11/17 Larry - use location class here
         varSymbolTable.enterScope();
         genProlog(numLocalVarsMap.get(currentClassName+"."+node.getName()));
         node.getFormalList().accept(this);
@@ -211,7 +210,6 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(FormalList node) {
-        //// TODO: 4/11/17 Larry - use location class here
         for (Iterator it = node.iterator(); it.hasNext(); ) {
             Formal param = (Formal) it.next();
             Location location = new Location("$fp", varSymbolTable.getCurrScopeSize()*4);
@@ -373,7 +371,6 @@ public class CodeGenVisitor extends Visitor{
         if (node.getExpr() != null) {
             node.getExpr().accept(this);
         }
-        //// TODO: 4/11/17 Larry - Seems too easy, but looks right
         assemblySupport.genRetn();
         return null;
     }
@@ -389,7 +386,6 @@ public class CodeGenVisitor extends Visitor{
         if(node.getRefExpr() != null)
             node.getRefExpr().accept(this);
         node.getActualList().accept(this);
-        //// TODO: 4/12/17 Larry and Jacob- This uses the location thing??
         genPostamble();
         return null;
     }
@@ -838,10 +834,13 @@ public class CodeGenVisitor extends Visitor{
         if (node.getRef() != null) {
             node.getRef().accept(this);
         }
+        System.out.println(node.getName() + node.getLineNum() + node.getRef());
         Location location = (Location)varSymbolTable.lookup(node.getName());
-        String baseReg = location.getBaseReg();
-        int offset = location.getOffset();
-        assemblySupport.genLoadWord("$v0", offset, baseReg);
+        if(location!=null) {
+            String baseReg = location.getBaseReg();
+            int offset = location.getOffset();
+            assemblySupport.genLoadWord("$v0", offset, baseReg);
+        }
         return null;
     }
 
