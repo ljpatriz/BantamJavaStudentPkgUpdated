@@ -718,7 +718,16 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(UnaryIncrExpr node) {
         //// TODO: 4/11/17 Larry - use location class here 
-        node.getExpr().accept(this);
+        Location location = (Location)varSymbolTable.lookup(((VarExpr) node.getExpr()).getName());
+        String baseReg = location.getBaseReg();
+        int offset = location.getOffset();
+        assemblySupport.genLoadWord("$v0", offset, baseReg);
+
+        assemblySupport.genAdd("$v0", "$v0", 1);
+        assemblySupport.genStoreWord("$v0", offset, baseReg);
+        if(node.isPostfix()) {
+            assemblySupport.genAdd("$v0", "$v0", -1);
+        }
         return null;
     }
 
@@ -730,19 +739,16 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(UnaryDecrExpr node) {
         //// TODO: 4/11/17 Larry - use location class here
-        if(node.getExpr().getExprType() == "var")
-        node.getExpr().accept(this);
-        node.getExpr().getExprType();
-        //TODO worry about pre/postfix as well
+        Location location = (Location)varSymbolTable.lookup(((VarExpr) node.getExpr()).getName());
+        String baseReg = location.getBaseReg();
+        int offset = location.getOffset();
+        assemblySupport.genLoadWord("$v0", offset, baseReg);
+
+
+        assemblySupport.genAdd("$v0", "$v0", -1);
+        assemblySupport.genStoreWord("$v0", offset, baseReg);
         if(node.isPostfix()) {
-            //TODO: Only changes value of variable
-
-            node.getExpr();
-
-        }
-        else{
-            //TODO: Changes return output as well as changes value of variable
-            assemblySupport.genAdd("$v0", "$v0", -1);
+            assemblySupport.genAdd("$v0", "$v0", 1);
         }
 
         return null;
@@ -754,8 +760,7 @@ public class CodeGenVisitor extends Visitor{
      * @param node the variable expression node
      * @return result of the visit
      */
-    public String visit(VarExpr node) {
-        //// TODO: 4/15/2017 Nick - not sure how to do field references
+    public Object visit(VarExpr node) {
         if (node.getRef() != null) {
             node.getRef().accept(this);
         }
@@ -763,8 +768,7 @@ public class CodeGenVisitor extends Visitor{
         String baseReg = location.getBaseReg();
         int offset = location.getOffset();
         assemblySupport.genLoadWord("$v0", offset, baseReg);
-        return node.getName();
-        //// TODO: 4/15/2017 why are we returning the name here? - Nick
+        return null;
     }
 
     /**
