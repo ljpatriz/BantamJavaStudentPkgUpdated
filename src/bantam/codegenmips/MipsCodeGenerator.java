@@ -186,7 +186,7 @@ public class MipsCodeGenerator {
         assemblySupport.genTextStart();
 
         //8 - generate initialization subroutines
-        generateInitStubs(); //TODO fix built in class indicies to be for all classes!
+        generateInitStubs();
         CodeGenVisitor codeGenVisitor = new CodeGenVisitor(assemblySupport,stringMap,out,root.getClassMap(),builtinClassIndices);
 
         generateCode(root, codeGenVisitor);
@@ -237,34 +237,6 @@ public class MipsCodeGenerator {
 //                });
 //    }
 
-    private void genProlog(int numVars){
-        assemblySupport.genComment(" Push the saved $s registers and $ra and $fp");
-        genPush("$ra");
-        genPush("$fp");
-        for (int i=0; i<8; i++)
-            genPush("$s"+i);
-
-        assemblySupport.genComment(" add space for "+numVars+
-                " local vars in the stack frame");
-        assemblySupport.genAdd("$fp", "$fp", numVars*4);
-        assemblySupport.genMove("$sp", "$fp");
-
-    }
-
-    private void genEpilog(int numVars){
-
-        assemblySupport.genComment(" Pop space for local vars");
-        assemblySupport.genAdd("$sp", "$fp", numVars*4);
-
-        assemblySupport.genComment(" Pop the saved $s registers and $ra and $fp");
-        for (int i=0; i<8; i++)
-            genPop("$s"+i);
-        genPop("$fp");
-        genPop("$ra");
-
-        //// TODO: 3/31/2017 how to pop actual parameters??
-    }
-
     private void genPop(String destination){
         assemblySupport.genLoadWord(destination, 0, "$sp");
         assemblySupport.genAdd("$sp", "$sp", 4);
@@ -273,6 +245,76 @@ public class MipsCodeGenerator {
     private void genPush(String source) {
         assemblySupport.genAdd("$sp", "$sp", -4);
         assemblySupport.genStoreWord(source, 0, "$sp");
+    }
+
+    private void genPreamble() {
+        genPush("$a0");
+        genPush("$a1");
+        genPush("$a2");
+        genPush("$a3");
+
+        genPush("$t0");
+        genPush("$t1");
+        genPush("$t2");
+        genPush("$t3");
+        genPush("$t4");
+        genPush("$t5");
+        genPush("$t6");
+        genPush("$t7");
+
+        genPush("$v0");
+        genPush("$v1");
+    }
+
+    private void genPostamble() {
+        genPop("$v1");
+        genPop("$v0");
+
+        genPop("$t7");
+        genPop("$t6");
+        genPop("$t5");
+        genPop("$t4");
+        genPop("$t3");
+        genPop("$t2");
+        genPop("$t1");
+        genPop("$t0");
+
+        genPop("$a3");
+        genPop("$a2");
+        genPop("$a1");
+        genPop("$a0");
+    }
+
+    private void genProlog(int numLocalVars) {
+        genPush("$ra");
+        genPush("$fp");
+
+        genPush("$s0");
+        genPush("$s1");
+        genPush("$s2");
+        genPush("$s3");
+        genPush("$s4");
+        genPush("$s5");
+        genPush("$s6");
+        genPush("$s7");
+
+        assemblySupport.genAdd("$fp", "$sp", -4*numLocalVars);
+    }
+
+    private void genEpilog(int numLocalVars) {
+        assemblySupport.genAdd("$sp", "$sp", 4*numLocalVars);
+
+        genPop("$s7");
+        genPop("$s6");
+        genPop("$s5");
+        genPop("$s4");
+        genPop("$s3");
+        genPop("$s2");
+        genPop("$s1");
+        genPop("$s0");
+
+        genPop("$fp");
+        genPop("$ra");
     }
 
 
@@ -287,9 +329,9 @@ public class MipsCodeGenerator {
                 assemblySupport.genComment(" call parent's init");
                 //Is this right...? I feel like there shouldn't be both
                 assemblySupport.genLoadAddr("$a0",node.getName()+ "_template");
-                //// TODO: 4/14/2017 prelude
+                genPreamble();
                 assemblySupport.genDirCall("Object.clone");
-                //// TODO: 4/14/2017 postlude
+                genPostamble();
             }
             out.println("     jr $ra");
 

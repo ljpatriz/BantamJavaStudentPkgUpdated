@@ -446,7 +446,6 @@ public class CodeGenVisitor extends Visitor{
         //Out
         assemblySupport.genLabel(escape);
         genPostamble();
-        //TODO insert less than calls
 
         //if true, store 1 in v0 otherwise store 0
         return null;
