@@ -23,7 +23,7 @@ public class CodeGenVisitor extends Visitor{
     private PrintStream out;
     private SymbolTable varSymbolTable;
     private Map<String, Integer> classIndices;
-    Hashtable<String, ClassTreeNode> classMap;
+    private Hashtable<String, ClassTreeNode> classMap;
     //// TODO: 4/11/17 ask Dale if we can just put things in MipsSupport, instead of having to pass the PrintStream (Talked to Dale its good to do)
     public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap, PrintStream out,
                           Hashtable<String, ClassTreeNode> classMap, Map<String, Integer> classIndices){
