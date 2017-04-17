@@ -417,8 +417,8 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(AssignExpr node) {
         node.getExpr().accept(this);
-        //// TODO: 4/11/17 Larry - assuming that we got the proper $v0
-        //// TODO: 4/11/17 Larry - use location class here 
+        Location l = (Location)varSymbolTable.lookup(node.getName());
+        assemblySupport.genStoreWord("$v0", l.getOffset(), l.getBaseReg());
         return null;
     }
 
