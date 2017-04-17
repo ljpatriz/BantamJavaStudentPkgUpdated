@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by larrypatrizio on 4/4/17.
@@ -23,7 +24,7 @@ public class CodeGenVisitor extends Visitor{
     private PrintStream out;
     private SymbolTable varSymbolTable;
     private Map<String, Integer> classIndices;
-    Hashtable<String, ClassTreeNode> classMap;
+    private Hashtable<String, ClassTreeNode> classMap;
     //// TODO: 4/11/17 ask Dale if we can just put things in MipsSupport, instead of having to pass the PrintStream (Talked to Dale its good to do)
     public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap, PrintStream out,
                           Hashtable<String, ClassTreeNode> classMap, Map<String, Integer> classIndices){
@@ -149,15 +150,9 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(DeclStmt node) {
-        //// TODO: 4/11/17 Larry - use location class here
         node.getInit().accept(this);
         Location location = new Location("$fp", varSymbolTable.getCurrScopeSize()*4);
         varSymbolTable.add(node.getName(), location);
-
-        //// TODO: 4/15/2017 Nick - larry wtf is this
-//        node.getInit().accept(this);
-//        Location location = new Location(assemblySupport.getS0Reg());
-//        this.genPush(location.getReg());
         return null;
     }
 
@@ -348,7 +343,7 @@ public class CodeGenVisitor extends Visitor{
         node.getExpr().accept(this);
         //stored in v0
         //go to that location in memory, plus one
-        assemblySupport.genLoadByte("$T0",0,"$V0"); //$T0 is the object value for the instance
+        assemblySupport.genLoadByte("$t0",0,"$v0"); //$t0 is the object value for the instance
         //this number is the class identifier for the object
         //verify that T0 number is greater than
         //the class number, but less than the class number
@@ -357,23 +352,23 @@ public class CodeGenVisitor extends Visitor{
         int classSubtypes = classMap.get(node.getType()).getNumDescendants();
         String setValueToZero = assemblySupport.getLabel();
         String setValueToOne = assemblySupport.getLabel();
-        assemblySupport.genLoadImm("$T1",classNumber); //$T1 is the type
+        assemblySupport.genLoadImm("$t1",classNumber); //$t1 is the type
         String escape = assemblySupport.getLabel();
 
         assemblySupport.genComment("Verify that instance class number is greater than the class number");
-        assemblySupport.genCondBgt("$T0", "$T1", setValueToZero);
+        assemblySupport.genCondBgt("$t0", "$t1", setValueToZero);
         assemblySupport.genComment("Verify that instance class number is less than the class number plus the number of children");
-        assemblySupport.genLoadImm("$T1",classNumber+classSubtypes);
-        assemblySupport.genCondBlt("$T0", "$T1",setValueToOne);
+        assemblySupport.genLoadImm("$t1",classNumber+classSubtypes);
+        assemblySupport.genCondBlt("$t0", "$t1",setValueToOne);
         assemblySupport.genUncondBr(setValueToZero);
         //True
         assemblySupport.genLabel(setValueToOne);
-        assemblySupport.genLoadImm("$V0",1);
+        assemblySupport.genLoadImm("$v0",1);
         assemblySupport.genUncondBr(escape);
 
         //False
         assemblySupport.genLabel(setValueToZero);
-        assemblySupport.genLoadImm("$V0",0);
+        assemblySupport.genLoadImm("$v0",0);
 
         //Out
         assemblySupport.genLabel(escape);
@@ -391,17 +386,17 @@ public class CodeGenVisitor extends Visitor{
     public Object visit(CastExpr node) {
         node.getExpr().accept(this);
         //stored in v0
-        assemblySupport.genLoadByte("$T0",0,"$V0"); //$T0 is the object value for the instance
+        assemblySupport.genLoadByte("$t0",0,"$v0"); //$t0 is the object value for the instance
         int classNumber = classIndices.get(node.getType());
         int classSubtypes = classMap.get(node.getType()).getNumDescendants();
-        assemblySupport.genLoadImm("$T1",classNumber); //$T1 is the type
+        assemblySupport.genLoadImm("$t1",classNumber); //$t1 is the type
         
         String escape = assemblySupport.getLabel();
         assemblySupport.genComment("Verify that instance class number is greater than the class number, otherwise escape");
-        assemblySupport.genCondBgt("$T0", "$T1", escape);
+        assemblySupport.genCondBgt("$t0", "$t1", escape);
         assemblySupport.genComment("Verify that instance class number is less than the class number plus the number of children");
-        assemblySupport.genLoadImm("$T1",classNumber+classSubtypes);
-        assemblySupport.genCondBlt("$T0", "$T1",escape);
+        assemblySupport.genLoadImm("$t1",classNumber+classSubtypes);
+        assemblySupport.genCondBlt("$t0", "$t1",escape);
         assemblySupport.genComment("Error, illegal case case");
         assemblySupport.genUncondBr("_class_cast_error");
         //Out
@@ -417,8 +412,8 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(AssignExpr node) {
         node.getExpr().accept(this);
-        //// TODO: 4/11/17 Larry - assuming that we got the proper $v0
-        //// TODO: 4/11/17 Larry - use location class here 
+        Location l = (Location)varSymbolTable.lookup(node.getName());
+        assemblySupport.genStoreWord("$v0", l.getOffset(), l.getBaseReg());
         return null;
     }
 
@@ -718,16 +713,7 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(UnaryIncrExpr node) {
         //// TODO: 4/11/17 Larry - use location class here 
-        Location location = (Location)varSymbolTable.lookup(((VarExpr) node.getExpr()).getName());
-        String baseReg = location.getBaseReg();
-        int offset = location.getOffset();
-        assemblySupport.genLoadWord("$v0", offset, baseReg);
-
-        assemblySupport.genAdd("$v0", "$v0", 1);
-        assemblySupport.genStoreWord("$v0", offset, baseReg);
-        if(node.isPostfix()) {
-            assemblySupport.genAdd("$v0", "$v0", -1);
-        }
+        node.getExpr().accept(this);
         return null;
     }
 
@@ -744,6 +730,7 @@ public class CodeGenVisitor extends Visitor{
         int offset = location.getOffset();
         assemblySupport.genLoadWord("$v0", offset, baseReg);
 
+            node.getExpr();
 
         assemblySupport.genAdd("$v0", "$v0", -1);
         assemblySupport.genStoreWord("$v0", offset, baseReg);

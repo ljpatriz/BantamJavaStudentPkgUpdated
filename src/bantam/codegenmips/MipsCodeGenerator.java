@@ -187,8 +187,8 @@ public class MipsCodeGenerator {
         assemblySupport.genTextStart();
 
         //8 - generate initialization subroutines
-        generateInitStubs();
-        CodeGenVisitor codeGenVisitor = new CodeGenVisitor(assemblySupport,stringMap,out);
+        generateInitStubs(); //TODO fix built in class indicies to be for all classes!
+        CodeGenVisitor codeGenVisitor = new CodeGenVisitor(assemblySupport,stringMap,out,root.getClassMap(),builtinClassIndices);
 
         generateCode(root, codeGenVisitor);
 //        generateMethodStubs();
