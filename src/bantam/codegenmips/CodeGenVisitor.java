@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by larrypatrizio on 4/4/17.
@@ -149,15 +150,9 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(DeclStmt node) {
-        //// TODO: 4/11/17 Larry - use location class here
         node.getInit().accept(this);
         Location location = new Location("$fp", varSymbolTable.getCurrScopeSize()*4);
         varSymbolTable.add(node.getName(), location);
-
-        //// TODO: 4/15/2017 Nick - larry wtf is this
-//        node.getInit().accept(this);
-//        Location location = new Location(assemblySupport.getS0Reg());
-//        this.genPush(location.getReg());
         return null;
     }
 
@@ -348,7 +343,7 @@ public class CodeGenVisitor extends Visitor{
         node.getExpr().accept(this);
         //stored in v0
         //go to that location in memory, plus one
-        assemblySupport.genLoadByte("$T0",0,"$V0"); //$T0 is the object value for the instance
+        assemblySupport.genLoadByte("$t0",0,"$v0"); //$t0 is the object value for the instance
         //this number is the class identifier for the object
         //verify that T0 number is greater than
         //the class number, but less than the class number
@@ -357,23 +352,23 @@ public class CodeGenVisitor extends Visitor{
         int classSubtypes = classMap.get(node.getType()).getNumDescendants();
         String setValueToZero = assemblySupport.getLabel();
         String setValueToOne = assemblySupport.getLabel();
-        assemblySupport.genLoadImm("$T1",classNumber); //$T1 is the type
+        assemblySupport.genLoadImm("$t1",classNumber); //$t1 is the type
         String escape = assemblySupport.getLabel();
 
         assemblySupport.genComment("Verify that instance class number is greater than the class number");
-        assemblySupport.genCondBgt("$T0", "$T1", setValueToZero);
+        assemblySupport.genCondBgt("$t0", "$t1", setValueToZero);
         assemblySupport.genComment("Verify that instance class number is less than the class number plus the number of children");
-        assemblySupport.genLoadImm("$T1",classNumber+classSubtypes);
-        assemblySupport.genCondBlt("$T0", "$T1",setValueToOne);
+        assemblySupport.genLoadImm("$t1",classNumber+classSubtypes);
+        assemblySupport.genCondBlt("$t0", "$t1",setValueToOne);
         assemblySupport.genUncondBr(setValueToZero);
         //True
         assemblySupport.genLabel(setValueToOne);
-        assemblySupport.genLoadImm("$V0",1);
+        assemblySupport.genLoadImm("$v0",1);
         assemblySupport.genUncondBr(escape);
 
         //False
         assemblySupport.genLabel(setValueToZero);
-        assemblySupport.genLoadImm("$V0",0);
+        assemblySupport.genLoadImm("$v0",0);
 
         //Out
         assemblySupport.genLabel(escape);
@@ -391,17 +386,17 @@ public class CodeGenVisitor extends Visitor{
     public Object visit(CastExpr node) {
         node.getExpr().accept(this);
         //stored in v0
-        assemblySupport.genLoadByte("$T0",0,"$V0"); //$T0 is the object value for the instance
+        assemblySupport.genLoadByte("$t0",0,"$v0"); //$t0 is the object value for the instance
         int classNumber = classIndices.get(node.getType());
         int classSubtypes = classMap.get(node.getType()).getNumDescendants();
-        assemblySupport.genLoadImm("$T1",classNumber); //$T1 is the type
+        assemblySupport.genLoadImm("$t1",classNumber); //$t1 is the type
         
         String escape = assemblySupport.getLabel();
         assemblySupport.genComment("Verify that instance class number is greater than the class number, otherwise escape");
-        assemblySupport.genCondBgt("$T0", "$T1", escape);
+        assemblySupport.genCondBgt("$t0", "$t1", escape);
         assemblySupport.genComment("Verify that instance class number is less than the class number plus the number of children");
-        assemblySupport.genLoadImm("$T1",classNumber+classSubtypes);
-        assemblySupport.genCondBlt("$T0", "$T1",escape);
+        assemblySupport.genLoadImm("$t1",classNumber+classSubtypes);
+        assemblySupport.genCondBlt("$t0", "$t1",escape);
         assemblySupport.genComment("Error, illegal case case");
         assemblySupport.genUncondBr("_class_cast_error");
         //Out
@@ -730,7 +725,7 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(UnaryDecrExpr node) {
         //// TODO: 4/11/17 Larry - use location class here
-        if(node.getExpr().getExprType() == "var")
+        if(Objects.equals(node.getExpr().getExprType(), "var"))
         node.getExpr().accept(this);
         node.getExpr().getExprType();
         //TODO worry about pre/postfix as well
