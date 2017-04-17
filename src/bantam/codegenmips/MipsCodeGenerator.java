@@ -279,7 +279,7 @@ public class MipsCodeGenerator {
     /**
      * This method generates stubs for all the user defined methods.
      */
-    private void generateInitSubs(){
+    private void generateInitStubs(){
         for(ClassTreeNode node : this.root.getClassMap().values()){
             assemblySupport.genLabel(node.getName() + "_init");
             if(node.getParent()!=null) {

@@ -24,10 +24,14 @@ public class CodeGenVisitor extends Visitor{
     private PrintStream out;
     private SymbolTable varSymbolTable;
     private Map<String, Integer> classIndices;
+    private Map<String, Integer> numLocalVarsMap;
+    private String currentClassName;
     private Hashtable<String, ClassTreeNode> classMap;
+
     //// TODO: 4/11/17 ask Dale if we can just put things in MipsSupport, instead of having to pass the PrintStream (Talked to Dale its good to do)
-    public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap, PrintStream out,
-                          Hashtable<String, ClassTreeNode> classMap, Map<String, Integer> classIndices){
+    public CodeGenVisitor(MipsSupport assemblySupport, Map<String, String> stringMap,
+                          PrintStream out, Hashtable<String, ClassTreeNode> classMap,
+                          Map<String, Integer> classIndices){
         this.assemblySupport = assemblySupport;
         this.stringMap = stringMap;
         this.out = out;
@@ -47,7 +51,77 @@ public class CodeGenVisitor extends Visitor{
         assemblySupport.genAdd("$sp", "$sp", -4);
         assemblySupport.genStoreWord(source, 0, "$sp");
     }
-    
+
+    private void genPreamble() {
+        genPush("$a0");
+        genPush("$a1");
+        genPush("$a2");
+        genPush("$a3");
+
+        genPush("$t0");
+        genPush("$t1");
+        genPush("$t2");
+        genPush("$t3");
+        genPush("$t4");
+        genPush("$t5");
+        genPush("$t6");
+        genPush("$t7");
+
+        genPush("$v0");
+        genPush("$v1");
+    }
+
+    private void genPostamble() {
+        genPop("$v1");
+        genPop("$v0");
+
+        genPop("$t7");
+        genPop("$t6");
+        genPop("$t5");
+        genPop("$t4");
+        genPop("$t3");
+        genPop("$t2");
+        genPop("$t1");
+        genPop("$t0");
+
+        genPop("$a3");
+        genPop("$a2");
+        genPop("$a1");
+        genPop("$a0");
+    }
+
+    private void genProlog(int numLocalVars) {
+        genPush("$ra");
+        genPush("$fp");
+
+        genPush("$s0");
+        genPush("$s1");
+        genPush("$s2");
+        genPush("$s3");
+        genPush("$s4");
+        genPush("$s5");
+        genPush("$s6");
+        genPush("$s7");
+
+        assemblySupport.genAdd("$fp", "$sp", -4*numLocalVars);
+    }
+
+    private void genEpilog(int numLocalVars) {
+        assemblySupport.genAdd("$sp", "$sp", 4*numLocalVars);
+
+        genPop("$s7");
+        genPop("$s6");
+        genPop("$s5");
+        genPop("$s4");
+        genPop("$s3");
+        genPop("$s2");
+        genPop("$s1");
+        genPop("$s0");
+
+        genPop("$fp");
+        genPop("$ra");
+    }
+
     //// TODO: 4/11/17 Nick - Make memory address symbol tables
     /**
      * Visit a program node
@@ -80,6 +154,7 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(Class_ node) {
         varSymbolTable.enterScope();
+        this.numLocalVarsMap = new NumLocalVarsVisitor().getNumLocalVars(node);
         node.getMemberList().accept(this);
         varSymbolTable.exitScope();
         return null;
@@ -121,8 +196,10 @@ public class CodeGenVisitor extends Visitor{
     public Object visit(Method node) {
         //// TODO: 4/11/17 Larry - use location class here
         varSymbolTable.enterScope();
+        genProlog(numLocalVarsMap.get(currentClassName+"."+node.getName()));
         node.getFormalList().accept(this);
         node.getStmtList().accept(this);
+        genEpilog(numLocalVarsMap.get(currentClassName+"."+node.getName()));
         varSymbolTable.exitScope();
         return null;
     }
@@ -296,7 +373,7 @@ public class CodeGenVisitor extends Visitor{
         if (node.getExpr() != null) {
             node.getExpr().accept(this);
         }
-        //// TODO: 4/11/17 Larry - Seems too easy, but looks right 
+        //// TODO: 4/11/17 Larry - Seems too easy, but looks right
         assemblySupport.genRetn();
         return null;
     }
@@ -308,10 +385,12 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(DispatchExpr node) {
+        genPreamble();
         if(node.getRefExpr() != null)
             node.getRefExpr().accept(this);
         node.getActualList().accept(this);
         //// TODO: 4/12/17 Larry and Jacob- This uses the location thing??
+        genPostamble();
         return null;
     }
 
@@ -338,6 +417,8 @@ public class CodeGenVisitor extends Visitor{
         //Visit the expression
         node.getExpr().accept(this);
         //stored in v0
+
+        genPreamble(); // saves $t0, $t1, $v0
         //go to that location in memory, plus one
         assemblySupport.genLoadByte("$t0",0,"$v0"); //$t0 is the object value for the instance
         //this number is the class identifier for the object
@@ -368,7 +449,9 @@ public class CodeGenVisitor extends Visitor{
 
         //Out
         assemblySupport.genLabel(escape);
+        genPostamble();
         //TODO insert less than calls
+
         //if true, store 1 in v0 otherwise store 0
         return null;
     }
@@ -381,12 +464,13 @@ public class CodeGenVisitor extends Visitor{
      */
     public Object visit(CastExpr node) {
         node.getExpr().accept(this);
+        genPreamble();
         //stored in v0
         assemblySupport.genLoadByte("$t0",0,"$v0"); //$t0 is the object value for the instance
         int classNumber = classIndices.get(node.getType());
         int classSubtypes = classMap.get(node.getType()).getNumDescendants();
         assemblySupport.genLoadImm("$t1",classNumber); //$t1 is the type
-        
+
         String escape = assemblySupport.getLabel();
         assemblySupport.genComment("Verify that instance class number is greater than the class number, otherwise escape");
         assemblySupport.genCondBgt("$t0", "$t1", escape);
@@ -397,6 +481,7 @@ public class CodeGenVisitor extends Visitor{
         assemblySupport.genUncondBr("_class_cast_error");
         //Out
         assemblySupport.genLabel(escape);
+        genPostamble();
         return null;
     }
 
