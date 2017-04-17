@@ -322,13 +322,9 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(NewExpr node) {
-        assemblySupport.genLoadAddr("$a0", node.getType() + "_template");
-        //// TODO: 4/14/2017 prelude
-        assemblySupport.genDirCall("Object.clone");
-        //// TODO: 4/14/2017 postlude
-        assemblySupport.genMove("$a0", "$v0");
+        node.accept(this);
+        //I don't know how the parameters for this are going to be handled
         assemblySupport.genDirCall(node.getType() + "_init");
-
         return null;
     }
 

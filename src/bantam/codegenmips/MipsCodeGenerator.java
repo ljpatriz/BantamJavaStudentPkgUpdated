@@ -32,7 +32,6 @@
 
 package bantam.codegenmips;
 
-import bantam.ast.ASTNode;
 import bantam.ast.Class_;
 import bantam.ast.Field;
 import bantam.ast.Method;
@@ -187,7 +186,7 @@ public class MipsCodeGenerator {
         assemblySupport.genTextStart();
 
         //8 - generate initialization subroutines
-        generateInitStubs(); //TODO fix built in class indicies to be for all classes!
+        generateInitSubs(); //TODO fix built in class indicies to be for all classes!
         CodeGenVisitor codeGenVisitor = new CodeGenVisitor(assemblySupport,stringMap,out,root.getClassMap(),builtinClassIndices);
 
         generateCode(root, codeGenVisitor);
@@ -280,12 +279,17 @@ public class MipsCodeGenerator {
     /**
      * This method generates stubs for all the user defined methods.
      */
-    private void generateInitStubs(){
+    private void generateInitSubs(){
         for(ClassTreeNode node : this.root.getClassMap().values()){
             assemblySupport.genLabel(node.getName() + "_init");
             if(node.getParent()!=null) {
                 assemblySupport.genDirCall(node.getParent().getName() + "_init");
                 assemblySupport.genComment(" call parent's init");
+                //Is this right...? I feel like there shouldn't be both
+                assemblySupport.genLoadAddr("$a0",node.getName()+ "_template");
+                //// TODO: 4/14/2017 prelude
+                assemblySupport.genDirCall("Object.clone");
+                //// TODO: 4/14/2017 postlude
             }
             out.println("     jr $ra");
 
