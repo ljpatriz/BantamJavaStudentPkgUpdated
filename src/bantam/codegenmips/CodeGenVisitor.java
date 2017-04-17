@@ -413,6 +413,7 @@ public class CodeGenVisitor extends Visitor{
     public Object visit(AssignExpr node) {
         node.getExpr().accept(this);
         Location l = (Location)varSymbolTable.lookup(node.getName());
+        assemblySupport.genComment("Assignment statement");
         assemblySupport.genStoreWord("$v0", l.getOffset(), l.getBaseReg());
         return null;
     }
