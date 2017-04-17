@@ -709,8 +709,16 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(UnaryIncrExpr node) {
-        //// TODO: 4/11/17 Larry - use location class here 
         node.getExpr().accept(this);
+        Location location = (Location)varSymbolTable.lookup(((VarExpr) node.getExpr()).getName());
+        String baseReg = location.getBaseReg();
+        int offset = location.getOffset();
+        assemblySupport.genLoadWord("$v0", offset, baseReg);
+        assemblySupport.genAdd("$v0", "$v0", 1);
+        assemblySupport.genStoreWord("$v0", offset, baseReg);
+        if(node.isPostfix()) {
+            assemblySupport.genAdd("$v0", "$v0", -1);
+        }
         return null;
     }
 
@@ -721,14 +729,11 @@ public class CodeGenVisitor extends Visitor{
      * @return result of the visit
      */
     public Object visit(UnaryDecrExpr node) {
-        //// TODO: 4/11/17 Larry - use location class here
+        node.getExpr().accept(this);
         Location location = (Location)varSymbolTable.lookup(((VarExpr) node.getExpr()).getName());
         String baseReg = location.getBaseReg();
         int offset = location.getOffset();
         assemblySupport.genLoadWord("$v0", offset, baseReg);
-
-            node.getExpr();
-
         assemblySupport.genAdd("$v0", "$v0", -1);
         assemblySupport.genStoreWord("$v0", offset, baseReg);
         if(node.isPostfix()) {
